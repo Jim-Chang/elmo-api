@@ -1,3 +1,4 @@
+import './datetime.setup';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
