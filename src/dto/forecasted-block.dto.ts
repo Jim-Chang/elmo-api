@@ -1,21 +1,6 @@
 import { z } from 'zod';
 import { createZodDto } from '@anatine/zod-nestjs';
-
-export enum PhaseIndicator {
-  Unknown = 'UNKNOWN',
-  One = 'ONE',
-  Two = 'TWO',
-  Three = 'THREE',
-  All = 'ALL',
-}
-
-export enum ForecastedBlockUnit {
-  A = 'A',
-  W = 'W',
-  Kw = 'KW',
-  Wh = 'WH',
-  Kwh = 'KWH',
-}
+import { ForecastedBlockUnit, PhaseIndicator } from './enums';
 
 export const ForecastedBlockSchema = z.object({
   capacity: z.number().min(0),
