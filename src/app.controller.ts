@@ -15,6 +15,7 @@ import { RegisterDto } from './dto/register.dto';
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
 import { HandshakeDto } from './dto/handshake.dto';
 import { GroupCapacityComplianceErrorDto } from './dto/group-capacity-compliance-error.dto';
+import { AdjustGroupCapacityForecastDto } from './dto/adjust-group-capacity-forecast.dto';
 
 @Controller()
 @UsePipes(ZodValidationPipe)
@@ -69,6 +70,19 @@ export class AppController {
   ): Promise<void> {
     this.logger.log(
       `[Received request]: /group_capacity_compliance_error POST, body: ${JSON.stringify(groupCapacityComplianceErrorDto)}`,
+    );
+  }
+
+  @Post('adjust_group_capacity_forecast')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async adjustGroupCapacityForecast(
+    @Body()
+    adjustGroupCapacityForecastDto: AdjustGroupCapacityForecastDto,
+  ): Promise<void> {
+    this.logger.log(
+      `[Received request]: /adjust_group_capacity_forecast POST, body: ${JSON.stringify(
+        adjustGroupCapacityForecastDto,
+      )}`,
     );
   }
 }
