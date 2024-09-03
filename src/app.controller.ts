@@ -14,6 +14,7 @@ import { AppService } from './app.service';
 import { RegisterDto } from './dto/register.dto';
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
 import { HandshakeDto } from './dto/handshake.dto';
+import { GroupCapacityComplianceErrorDto } from './dto/group-capacity-compliance-error.dto';
 
 @Controller()
 @UsePipes(ZodValidationPipe)
@@ -58,6 +59,16 @@ export class AppController {
   ): Promise<void> {
     this.logger.log(
       `[Received request]: /handshake_acknowledge POST, body: ${JSON.stringify(handshakeDto)}`,
+    );
+  }
+
+  @Post('group_capacity_compliance_error')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async handleGroupCapacityComplianceError(
+    @Body() groupCapacityComplianceErrorDto: GroupCapacityComplianceErrorDto,
+  ): Promise<void> {
+    this.logger.log(
+      `[Received request]: /group_capacity_compliance_error POST, body: ${JSON.stringify(groupCapacityComplianceErrorDto)}`,
     );
   }
 }
