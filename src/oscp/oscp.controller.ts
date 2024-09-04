@@ -13,9 +13,10 @@ import { RegisterDto } from './dto/register.dto';
 import { HandshakeDto } from './dto/handshake.dto';
 import { GroupCapacityComplianceErrorDto } from './dto/group-capacity-compliance-error.dto';
 import { AdjustGroupCapacityForecastDto } from './dto/adjust-group-capacity-forecast.dto';
+import { OSCP_API_PREFIX } from '../constants';
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
 
-@Controller('oscp/2.0')
+@Controller(OSCP_API_PREFIX)
 @UsePipes(ZodValidationPipe)
 export class OscpController {
   private logger = new Logger(OscpController.name);
