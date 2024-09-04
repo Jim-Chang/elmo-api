@@ -13,6 +13,7 @@ import {
 import { AppService } from './app.service';
 import { RegisterDto } from './dto/register.dto';
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
+import { HandshakeDto } from './dto/handshake.dto';
 
 @Controller()
 @UsePipes(ZodValidationPipe)
@@ -47,6 +48,16 @@ export class AppController {
   async deleteRegister(@Body() registerDto: RegisterDto) {
     this.logger.log(
       `[Received request]: /register DELETE, body: ${JSON.stringify(registerDto)}`,
+    );
+  }
+
+  @Post('handshake_acknowledge')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async handshakeAcknowledge(
+    @Body() handshakeDto: HandshakeDto,
+  ): Promise<void> {
+    this.logger.log(
+      `[Received request]: /handshake_acknowledge POST, body: ${JSON.stringify(handshakeDto)}`,
     );
   }
 }
