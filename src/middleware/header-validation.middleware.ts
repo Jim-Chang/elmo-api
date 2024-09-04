@@ -5,11 +5,13 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
-import { AUTH_TOKEN } from '../constants';
+import { AUTH_TOKEN, OSCP_API_PREFIX } from '../constants';
 
 @Injectable()
 export class HeadersValidationMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
+    const url = req.originalUrl;
+
     const authorization = req.headers['authorization'];
     const requestId = req.headers['x-request-id'];
 
@@ -23,8 +25,10 @@ export class HeadersValidationMiddleware implements NestMiddleware {
       throw new ForbiddenException('Invalid authorization token');
     }
 
-    if (!requestId) {
-      throw new ForbiddenException('Missing mandatory header: x-request-id');
+    if (url.startsWith(OSCP_API_PREFIX)) {
+      if (!requestId) {
+        throw new ForbiddenException('Missing mandatory header: x-request-id');
+      }
     }
 
     // TODO: Should implement check with other headers defined in documentation

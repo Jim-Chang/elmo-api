@@ -1,10 +1,6 @@
 import { z } from 'zod';
 import { createZodDto } from '@anatine/zod-nestjs';
-
-export enum MeasurementConfiguration {
-  Continuous = 'CONTINUOUS',
-  Intermittent = 'INTERMITTENT',
-}
+import { MeasurementConfiguration } from './enums';
 
 export const RequiredBehaviourSchema = z.object({
   heartbeat_interval: z.number().optional(),
