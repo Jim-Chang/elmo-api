@@ -15,6 +15,7 @@ import { GroupCapacityComplianceErrorDto } from './dto/group-capacity-compliance
 import { AdjustGroupCapacityForecastDto } from './dto/adjust-group-capacity-forecast.dto';
 import { OSCP_API_PREFIX } from '../constants';
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
+import { UpdateGroupMeasurementsDto } from './dto/update-group-measurements.dto';
 
 @Controller(OSCP_API_PREFIX)
 @UsePipes(ZodValidationPipe)
@@ -75,6 +76,16 @@ export class OscpController {
       `[Received request]: /adjust_group_capacity_forecast POST, body: ${JSON.stringify(
         adjustGroupCapacityForecastDto,
       )}`,
+    );
+  }
+
+  @Post('update_group_measurements')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateGroupMeasurements(
+    @Body() updateGroupMeasurementsDto: UpdateGroupMeasurementsDto,
+  ) {
+    this.logger.log(
+      `[Received request]: /update_group_measurements POST, body: ${JSON.stringify(updateGroupMeasurementsDto)}`,
     );
   }
 }
