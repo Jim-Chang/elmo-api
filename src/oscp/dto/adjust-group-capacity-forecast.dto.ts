@@ -5,7 +5,8 @@ import {
 } from './forecasted-block.dto';
 import { createZodDto } from '@anatine/zod-nestjs';
 import { CapacityForecastType } from './enums';
-import dayjs from 'dayjs';
+import { DateTime } from 'luxon';
+import { TAIPEI_TZ } from '../../constants';
 
 const FORECASTED_BLOCKS_COUNT = 24;
 
@@ -30,37 +31,44 @@ function validateForecastedBlocks(blocks: ForecastedBlockDto[]) {
     return false;
   }
 
-  const firstBlockStartTime = dayjs(blocks[0].start_time).startOf('day');
+  const firstBlockStartTime = DateTime.fromISO(blocks[0].start_time)
+    .setZone(TAIPEI_TZ)
+    .startOf('day');
 
   for (let i = 0; i < FORECASTED_BLOCKS_COUNT; i++) {
     const block = blocks[i];
-    const startTime = dayjs(block.start_time);
-    const endTime = dayjs(block.end_time);
+    const startTime = DateTime.fromISO(block.start_time).setZone(TAIPEI_TZ);
+    const endTime = DateTime.fromISO(block.end_time).setZone(TAIPEI_TZ);
 
     // Check if the start and end times are on the same day as the first block
     if (i < FORECASTED_BLOCKS_COUNT - 1) {
       if (
-        !startTime.isSame(firstBlockStartTime, 'day') ||
-        !endTime.isSame(firstBlockStartTime, 'day')
+        !startTime.hasSame(firstBlockStartTime, 'day') ||
+        !endTime.hasSame(firstBlockStartTime, 'day')
       ) {
         return false;
       }
     } else {
       // For the last block, the end time should be on the next day
       if (
-        !startTime.isSame(firstBlockStartTime, 'day') ||
-        !endTime.isSame(firstBlockStartTime.add(1, 'day'), 'day')
+        !startTime.hasSame(firstBlockStartTime, 'day') ||
+        !endTime.hasSame(firstBlockStartTime.plus({ days: 1 }), 'day')
       ) {
         return false;
       }
     }
 
     // Check if the block times are consecutive and cover a full hour
-    if (i > 0 && !startTime.isSame(blocks[i - 1].end_time)) {
-      return false;
+    if (i > 0) {
+      const lastEndTime = DateTime.fromISO(blocks[i - 1].end_time).setZone(
+        TAIPEI_TZ,
+      );
+      if (!startTime.equals(lastEndTime)) {
+        return false;
+      }
     }
 
-    if (endTime.diff(startTime, 'hour') !== 1) {
+    if (endTime.diff(startTime, 'hours').hours !== 1) {
       return false;
     }
   }
