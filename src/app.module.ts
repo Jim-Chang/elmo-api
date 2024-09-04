@@ -4,8 +4,6 @@ import { AppService } from './app.service';
 import { getEnvPath } from './config/utils';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
-import { CorrelationIdInterceptor } from './interceptor/correlation-id.interceptor';
-import { APP_INTERCEPTOR } from '@nestjs/core';
 import { OscpModule } from './oscp/oscp.module';
 
 @Module({
@@ -40,12 +38,6 @@ import { OscpModule } from './oscp/oscp.module';
     OscpModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: CorrelationIdInterceptor,
-    },
-  ],
+  providers: [AppService],
 })
 export class AppModule {}
