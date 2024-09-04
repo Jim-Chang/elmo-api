@@ -18,7 +18,7 @@ const AdjustGroupCapacityForecastSchema = z.object({
     .min(FORECASTED_BLOCKS_COUNT)
     .refine(validateForecastedBlocks, {
       message:
-        'Forecasted blocks must be 24 consecutive hourly blocks starting from the same day',
+        'Must be 24 consecutive hourly blocks starting from the same day',
     }),
 });
 
