@@ -6,8 +6,8 @@ export const ForecastedBlockSchema = z.object({
   capacity: z.number().min(0),
   phase: z.nativeEnum(PhaseIndicator),
   unit: z.nativeEnum(ForecastedBlockUnit),
-  start_time: z.string().datetime(),
-  end_time: z.string().datetime(),
+  start_time: z.string().datetime({ offset: true }),
+  end_time: z.string().datetime({ offset: true }),
 });
 
 export class ForecastedBlockDto extends createZodDto(ForecastedBlockSchema) {}
