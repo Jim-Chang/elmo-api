@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
 import { CorrelationIdInterceptor } from './interceptor/correlation-id.interceptor';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { OscpModule } from './oscp/oscp.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
         },
       },
     }),
+    OscpModule,
   ],
   controllers: [AppController],
   providers: [
