@@ -6,6 +6,23 @@ export enum PhaseIndicator {
   All = 'ALL',
 }
 
+export enum EnergyFlowDirection {
+  Net = 'NET',
+  Import = 'IMPORT',
+  Export = 'EXPORT',
+}
+
+export enum EnergyMeasurementUnit {
+  Wh = 'WH',
+  Kwh = 'KWH',
+}
+
+export enum EnergyType {
+  Flexible = 'FLEXIBLE',
+  NonFlexible = 'NONFLEXIBLE',
+  Total = 'TOTAL',
+}
+
 export enum ForecastedBlockUnit {
   A = 'A',
   W = 'W',
