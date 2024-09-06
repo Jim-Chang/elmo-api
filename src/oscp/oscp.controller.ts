@@ -1,7 +1,9 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
+  Headers,
   HttpCode,
   HttpStatus,
   Logger,
@@ -50,20 +52,36 @@ export class OscpController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async handshakeAcknowledge(
     @Body() handshakeDto: HandshakeDto,
+    @Headers('x-correlation-id') correlationId: string,
   ): Promise<void> {
     this.logger.log(
       `[Received request]: /handshake_acknowledge POST, body: ${JSON.stringify(handshakeDto)}`,
     );
+
+    if (!correlationId) {
+      this.logger.error(
+        '[Received request]: /handshake_acknowledge POST, missing x-correlation-id',
+      );
+      throw new BadRequestException('Missing x-correlation-id header');
+    }
   }
 
   @Post('group_capacity_compliance_error')
   @HttpCode(HttpStatus.NO_CONTENT)
   async handleGroupCapacityComplianceError(
     @Body() groupCapacityComplianceErrorDto: GroupCapacityComplianceErrorDto,
+    @Headers('x-correlation-id') correlationId: string,
   ): Promise<void> {
     this.logger.log(
       `[Received request]: /group_capacity_compliance_error POST, body: ${JSON.stringify(groupCapacityComplianceErrorDto)}`,
     );
+
+    if (!correlationId) {
+      this.logger.error(
+        '[Received request]: /group_capacity_compliance_error POST, missing x-correlation-id',
+      );
+      throw new BadRequestException('Missing x-correlation-id header');
+    }
   }
 
   @Post('adjust_group_capacity_forecast')
