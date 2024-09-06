@@ -1,0 +1,8 @@
+# database
+DATABASE_HOST=localhost
+DATABASE_PORT=3306
+# (required)
+DATABASE_USER=
+# (required)
+DATABASE_PASSWORD=
+DATABASE_NAME=elmo

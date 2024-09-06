@@ -5,12 +5,19 @@ import { getEnvPath } from './config/utils';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
 import { OscpModule } from './oscp/oscp.module';
+import { mikroOrmConfig } from './config/mikro-orm.config';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: getEnvPath(),
       load: [],
+    }),
+    MikroOrmModule.forRootAsync({
+      imports: [ConfigModule.forFeature(mikroOrmConfig)],
+      inject: [mikroOrmConfig.KEY],
+      useFactory: (config) => config,
     }),
     LoggerModule.forRoot({
       pinoHttp: {
