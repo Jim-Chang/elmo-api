@@ -1,5 +1,5 @@
 {
-  "name": "elmo-testbed-api",
+  "name": "elmo-api",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -24,6 +24,10 @@
   },
   "dependencies": {
     "@anatine/zod-nestjs": "^2.0.9",
+    "@mikro-orm/core": "^6.3.8",
+    "@mikro-orm/mysql": "^6.3.8",
+    "@mikro-orm/nestjs": "^6.0.2",
+    "@nestjs/axios": "^3.0.3",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.3",
     "@nestjs/core": "^10.0.0",
