@@ -1,0 +1,23 @@
+services:
+  elmo.db:
+    image: mysql:8.0
+    container_name: elmo.db
+    environment:
+      MYSQL_DATABASE: '${DATABASE_NAME}'
+      MYSQL_USER: '${MYSQL_USER}'
+      MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
+      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+    restart: unless-stopped
+    networks:
+      - elmo
+    ports:
+      - '3306:3306'
+    volumes:
+      - elmo_db:/var/lib/mysql
+
+volumes:
+  elmo_db:
+
+networks:
+  elmo:
+    external: true

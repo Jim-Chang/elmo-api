@@ -1,0 +1,14 @@
+services:
+  elmo.db-migration:
+    image: elmo.api:latest
+    container_name: elmo.db-migration
+    restart: no
+    command: npx mikro-orm migration:up
+    networks:
+      - elmo
+    env_file:
+      - './env.local'
+
+networks:
+  elmo:
+    external: true

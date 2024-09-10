@@ -2,7 +2,12 @@ import { existsSync } from 'fs';
 import { join, resolve } from 'path';
 
 const BASE_DIR = `${process.cwd()}/envs`;
-const ENV_FILE_NAMES = ['env.$NODE_ENV.local', 'env.$NODE_ENV', 'env'];
+const ENV_FILE_NAMES = [
+  'env.$NODE_ENV.local',
+  'env.$NODE_ENV',
+  'env.local',
+  'env',
+];
 
 export function getEnvPath(): string {
   const env: string = process.env.NODE_ENV || 'development';
