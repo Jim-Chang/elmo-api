@@ -15,7 +15,7 @@ import { RegisterDto } from './dto/register.dto';
 import { HandshakeDto } from './dto/handshake.dto';
 import { GroupCapacityComplianceErrorDto } from './dto/group-capacity-compliance-error.dto';
 import { AdjustGroupCapacityForecastDto } from './dto/adjust-group-capacity-forecast.dto';
-import { OSCP_API_PREFIX } from '../constants';
+import { OSCP_API_PREFIX } from '../../../constants';
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
 import { UpdateGroupMeasurementsDto } from './dto/update-group-measurements.dto';
 

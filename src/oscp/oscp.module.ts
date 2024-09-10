@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { OscpController } from './oscp.controller';
+import { OscpController } from './adapter/in/oscp.controller';
 
 @Module({
   controllers: [OscpController],
