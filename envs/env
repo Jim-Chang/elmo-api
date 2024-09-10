@@ -6,3 +6,14 @@ DATABASE_USER=
 # (required)
 DATABASE_PASSWORD=
 DATABASE_NAME=elmo
+
+
+# MQ
+MQ_HOST=localhost
+MQ_PORT=5672
+# (required)
+MQ_USER=
+# (required)
+MQ_PASSWORD=
+MQ_EXCHANGE=elmo
+MQ_ROUTING_KEY=elmo

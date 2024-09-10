@@ -7,12 +7,13 @@ import { LoggerModule } from 'nestjs-pino';
 import { OscpModule } from './oscp/oscp.module';
 import { mikroOrmConfig } from './config/mikro-orm.config';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { mqConfig } from './config/mq.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: getEnvPath(),
-      load: [],
+      load: [mqConfig],
     }),
     MikroOrmModule.forRootAsync({
       imports: [ConfigModule.forFeature(mikroOrmConfig)],
