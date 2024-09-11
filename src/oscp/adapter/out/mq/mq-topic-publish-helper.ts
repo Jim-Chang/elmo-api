@@ -2,24 +2,46 @@ import amqp, {
   AmqpConnectionManager,
   ChannelWrapper,
 } from 'amqp-connection-manager';
-import { Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { MQConfig } from '../../../../config/mq.config';
+import { ChargingStationMeasureData } from '../../../application/charging-station/types';
 
+@Injectable()
 export class MqTopicPublishHelper {
-  private static urlToConnectionMap: Record<string, AmqpConnectionManager> = {};
   private readonly logger = new Logger('MqTopicPublishHelper');
+  private readonly mqConfig: MQConfig;
 
-  constructor(private url: string) {}
+  constructor(private readonly configService: ConfigService) {
+    this.mqConfig = this.configService.get<MQConfig>('mq');
+  }
 
-  private static getConnection(url: string): AmqpConnectionManager {
-    if (!this.urlToConnectionMap[url]) {
-      this.urlToConnectionMap[url] = amqp.connect(url);
+  private static _connection: AmqpConnectionManager;
+
+  private get connection(): AmqpConnectionManager {
+    if (!MqTopicPublishHelper._connection) {
+      // SSL Ref: https://amqp-node.github.io/amqplib/ssl.html
+      MqTopicPublishHelper._connection = amqp.connect(this.mqUrl, {
+        connectionOptions: {
+          enableTrace: true,
+          requestCert: true,
+          rejectUnauthorized: false, // Disable automatic rejection of self-signed certificates
+          checkServerIdentity: () => undefined, // Disable hostname verification
+          ca: this.mqConfig.caCert, // Use self-signed CA certificate
+          cert: this.mqConfig.clientCert, // Use client certificate
+          key: this.mqConfig.clientKey, // Use client key
+        },
+      });
     }
-    const connection = this.urlToConnectionMap[url];
-    if (!connection.isConnected()) {
-      connection.reconnect();
+    if (!MqTopicPublishHelper._connection.isConnected()) {
+      MqTopicPublishHelper._connection.reconnect();
     }
+    return MqTopicPublishHelper._connection;
+  }
 
-    return connection;
+  private get mqUrl(): string {
+    const { user, password, host, port } = this.mqConfig;
+    return `amqps://${user}:${password}@${host}:${port}`;
   }
 
   async publish(exchange: string, routingKey: string, message: any) {
@@ -38,9 +60,12 @@ export class MqTopicPublishHelper {
     await channel.close();
   }
 
+  async publishToChargingStationExchange(data: ChargingStationMeasureData) {
+    await this.publish(this.mqConfig.chargingStationExchange, '', data);
+  }
+
   private async createChannel(exchange: string): Promise<ChannelWrapper> {
-    const connection = MqTopicPublishHelper.getConnection(this.url);
-    const channel = connection.createChannel();
+    const channel = this.connection.createChannel();
     await channel.assertExchange(exchange, 'topic', { durable: true });
     return channel;
   }
