@@ -15,14 +15,19 @@ import { RegisterDto } from './dto/register.dto';
 import { HandshakeDto } from './dto/handshake.dto';
 import { GroupCapacityComplianceErrorDto } from './dto/group-capacity-compliance-error.dto';
 import { AdjustGroupCapacityForecastDto } from './dto/adjust-group-capacity-forecast.dto';
-import { OSCP_API_PREFIX } from '../constants';
+import { OSCP_API_PREFIX } from '../../../constants';
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
 import { UpdateGroupMeasurementsDto } from './dto/update-group-measurements.dto';
+import { ChargingStationService } from '../../application/charging-station.service';
 
 @Controller(OSCP_API_PREFIX)
 @UsePipes(ZodValidationPipe)
 export class OscpController {
   private logger = new Logger(OscpController.name);
+
+  constructor(
+    private readonly chargingStationService: ChargingStationService,
+  ) {}
 
   @Post('register')
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -105,5 +110,17 @@ export class OscpController {
     this.logger.log(
       `[Received request]: /update_group_measurements POST, body: ${JSON.stringify(updateGroupMeasurementsDto)}`,
     );
+    const isChargingStationExist =
+      await this.chargingStationService.isChargingStationExist(
+        updateGroupMeasurementsDto.group_id,
+      );
+
+    if (!isChargingStationExist) {
+      throw new BadRequestException(
+        `Charging station with uid ${updateGroupMeasurementsDto.group_id} does not exist`,
+      );
+    }
+
+    // TODO: push data to MQ
   }
 }

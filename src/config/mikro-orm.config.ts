@@ -27,7 +27,7 @@ export const mikroOrmConfig = registerAs(
         path: baseDir + './database/seeders',
       },
       forceUtcTimezone: true,
-      autoLoadEntities: true,
+      autoLoadEntities: false,
       logger: logger.log.bind(console),
       findOneOrFailHandler: (entityName) => {
         return new NotFoundException(`${entityName} not found!`);
