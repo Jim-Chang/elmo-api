@@ -18,7 +18,7 @@ import { AdjustGroupCapacityForecastDto } from './dto/adjust-group-capacity-fore
 import { OSCP_API_PREFIX } from '../../../constants';
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
 import { UpdateGroupMeasurementsDto } from './dto/update-group-measurements.dto';
-import { ChargingStationService } from '../../application/charging-station.service';
+import { ChargingStationService } from '../../application/charging-station/charging-station.service';
 
 @Controller(OSCP_API_PREFIX)
 @UsePipes(ZodValidationPipe)
@@ -121,6 +121,8 @@ export class OscpController {
       );
     }
 
-    // TODO: push data to MQ
+    await this.chargingStationService.publishChargingStationMeasurements(
+      updateGroupMeasurementsDto,
+    );
   }
 }
