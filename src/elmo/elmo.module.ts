@@ -11,4 +11,4 @@ import { ConfigModule } from '@nestjs/config';
   controllers: [OscpController],
   providers: [ChargingStationService, MqTopicPublishHelper],
 })
-export class OscpModule {}
+export class ElmoModule {}

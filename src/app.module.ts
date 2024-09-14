@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { getEnvPath } from './config/utils';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
-import { OscpModule } from './oscp/oscp.module';
+import { ElmoModule } from './elmo/elmo.module';
 import { mikroOrmConfig } from './config/mikro-orm.config';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { mqConfig } from './config/mq.config';
@@ -43,7 +43,7 @@ import { mqConfig } from './config/mq.config';
         },
       },
     }),
-    OscpModule,
+    ElmoModule,
   ],
   controllers: [AppController],
   providers: [AppService],
