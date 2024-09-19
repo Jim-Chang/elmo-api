@@ -60,6 +60,246 @@
       "checks": [],
       "foreignKeys": {},
       "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "length": null,
+          "mappedType": "integer"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "mappedType": "datetime"
+        },
+        "date": {
+          "name": "date",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "mappedType": "datetime"
+        },
+        "charging_station_id": {
+          "name": "charging_station_id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "mappedType": "integer"
+        },
+        "apply_detail_id": {
+          "name": "apply_detail_id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": null,
+          "mappedType": "integer"
+        },
+        "last_detail_status": {
+          "name": "last_detail_status",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "default": "'INITIAL_EDIT'",
+          "mappedType": "string"
+        }
+      },
+      "name": "available_capacity_negotiations",
+      "indexes": [
+        {
+          "columnNames": [
+            "charging_station_id"
+          ],
+          "composite": false,
+          "keyName": "available_capacity_negotiations_charging_station_id_index",
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "apply_detail_id"
+          ],
+          "composite": false,
+          "keyName": "available_capacity_negotiations_apply_detail_id_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "PRIMARY",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "available_capacity_negotiations_charging_station_id_foreign": {
+          "constraintName": "available_capacity_negotiations_charging_station_id_foreign",
+          "columnNames": [
+            "charging_station_id"
+          ],
+          "localTableName": "available_capacity_negotiations",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "charging_stations",
+          "updateRule": "cascade"
+        },
+        "available_capacity_negotiations_apply_detail_id_foreign": {
+          "constraintName": "available_capacity_negotiations_apply_detail_id_foreign",
+          "columnNames": [
+            "apply_detail_id"
+          ],
+          "localTableName": "available_capacity_negotiations",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "available_capacity_negotiation_details",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "length": null,
+          "mappedType": "integer"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "mappedType": "datetime"
+        },
+        "negotiation_id": {
+          "name": "negotiation_id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "mappedType": "integer"
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "hour_capacities": {
+          "name": "hour_capacities",
+          "type": "json",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "mappedType": "json"
+        }
+      },
+      "name": "available_capacity_negotiation_details",
+      "indexes": [
+        {
+          "columnNames": [
+            "negotiation_id"
+          ],
+          "composite": false,
+          "keyName": "available_capacity_negotiation_details_negotiation_id_index",
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "PRIMARY",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "available_capacity_negotiation_details_negotiation_id_foreign": {
+          "constraintName": "available_capacity_negotiation_details_negotiation_id_foreign",
+          "columnNames": [
+            "negotiation_id"
+          ],
+          "localTableName": "available_capacity_negotiation_details",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "available_capacity_negotiations",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {}
     }
   ],
   "nativeEnums": {}

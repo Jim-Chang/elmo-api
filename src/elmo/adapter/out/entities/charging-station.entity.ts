@@ -1,4 +1,12 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+import {
+  Cascade,
+  Collection,
+  Entity,
+  OneToMany,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
+import { AvailableCapacityNegotiationEntity } from './available-capacity-negotiation.entity';
 
 @Entity({ tableName: 'charging_stations' })
 export class ChargingStationEntity {
@@ -10,4 +18,12 @@ export class ChargingStationEntity {
 
   @Property()
   name: string;
+
+  @OneToMany({
+    entity: () => AvailableCapacityNegotiationEntity,
+    mappedBy: 'chargingStation',
+    cascade: [Cascade.ALL],
+  })
+  availableCapacityNegotiations =
+    new Collection<AvailableCapacityNegotiationEntity>(this);
 }
