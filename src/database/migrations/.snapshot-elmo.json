@@ -32,6 +32,28 @@
           "nullable": false,
           "length": 255,
           "mappedType": "string"
+        },
+        "is_connected": {
+          "name": "is_connected",
+          "type": "tinyint(1)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 1,
+          "default": "false",
+          "mappedType": "boolean"
+        },
+        "contract_capacity": {
+          "name": "contract_capacity",
+          "type": "float",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "default": "0",
+          "mappedType": "float"
         }
       },
       "name": "charging_stations",
