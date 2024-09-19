@@ -8,6 +8,7 @@ import { ElmoModule } from './elmo/elmo.module';
 import { mikroOrmConfig } from './config/mikro-orm.config';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { mqConfig } from './config/mq.config';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { mqConfig } from './config/mq.config';
         },
       },
     }),
+    ScheduleModule.forRoot(),
     ElmoModule,
   ],
   controllers: [AppController],
