@@ -1,6 +1,11 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
+import { customAlphabet } from 'nanoid';
 import { firstValueFrom } from 'rxjs';
+import {
+  OSCP_REQUEST_ID_ALPHABET,
+  OSCP_REQUEST_ID_LENGTH,
+} from '../../../../constants';
 import { CsmsEntity } from '../entities/csms.entity';
 import {
   CsmsOscpRequestFailedError,
@@ -38,15 +43,18 @@ export class CsmsOscpRequestHelper {
   }
 
   private generateRequestConfig(token: string) {
+    const requestId = this.generateOscpRequestId();
+
     return {
       headers: {
         Authorization: `Token ${token}`,
-        'X-Request-ID': this.generateUniqueRequestId(),
+        'X-Request-ID': requestId,
       },
     };
   }
 
-  private generateUniqueRequestId() {
-    return 'ABCD'; // TODO: generate request ID
+  private generateOscpRequestId(): string {
+    const generateCustomNanoid = customAlphabet(OSCP_REQUEST_ID_ALPHABET);
+    return generateCustomNanoid(OSCP_REQUEST_ID_LENGTH);
   }
 }
