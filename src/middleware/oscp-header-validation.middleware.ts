@@ -8,7 +8,7 @@ import { NextFunction, Request, Response } from 'express';
 import { AUTH_TOKEN, OSCP_API_PREFIX } from '../constants';
 
 @Injectable()
-export class HeadersValidationMiddleware implements NestMiddleware {
+export class OscpHeadersValidationMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const url = req.originalUrl;
 
@@ -21,7 +21,7 @@ export class HeadersValidationMiddleware implements NestMiddleware {
       );
     }
 
-    if (authorization !== `Bearer ${AUTH_TOKEN}`) {
+    if (authorization !== `Token ${AUTH_TOKEN}`) {
       throw new ForbiddenException('Invalid authorization token');
     }
 

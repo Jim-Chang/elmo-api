@@ -1,5 +1,6 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { OscpController } from './adapter/in/oscp.controller';
+import { OscpHeadersValidationMiddleware } from '../middleware/oscp-header-validation.middleware';
 import { AvailableCapacityNegotiationCronjobService } from './adapter/in/cronjob/available-capacity-negotiation.cronjob.service';
 import { AvailableCapacityNegotiationService } from './application/available-capacity/available-capacity-negotiation.service';
 import { ChargingStationService } from './application/charging-station/charging-station.service';
@@ -27,4 +28,8 @@ import { ConfigModule } from '@nestjs/config';
     MqTopicPublishHelper,
   ],
 })
-export class ElmoModule {}
+export class ElmoModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(OscpHeadersValidationMiddleware).forRoutes(OscpController);
+  }
+}
