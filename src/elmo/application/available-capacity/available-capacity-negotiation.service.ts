@@ -16,6 +16,13 @@ import {
 } from '../../adapter/out/entities/available-capacity-negotiation-detail.entity';
 import { ChargingStationService } from '../charging-station/charging-station.service';
 import { ChargingStationEntity } from '../../adapter/out/entities/charging-station.entity';
+import {
+  CapacityForecastType,
+  ForecastedBlockUnit,
+  PhaseIndicator,
+} from '../../adapter/in/dto/enums';
+import { CsmsOscpRequestHelper } from '../../adapter/out/csms-oscp/csms-oscp-request-helper';
+import { UpdateGroupCapacityForecast } from '../oscp/types';
 
 @Injectable()
 export class AvailableCapacityNegotiationService {
@@ -29,6 +36,7 @@ export class AvailableCapacityNegotiationService {
     @InjectRepository(AvailableCapacityNegotiationDetailEntity)
     private readonly detailRepo: EntityRepository<AvailableCapacityNegotiationDetailEntity>,
     private readonly chargingStationService: ChargingStationService,
+    private readonly oscpRequestHelper: CsmsOscpRequestHelper,
   ) {}
 
   async getNegotiationDetailByStatus(
@@ -93,10 +101,12 @@ export class AvailableCapacityNegotiationService {
     const negotiations = await this.negotiationRepo.find(
       {
         date: zonedNextDay,
-        chargingStation: { isConnected: true },
+        chargingStation: { csms: { isConnected: true } },
         lastDetailStatus: NegotiationStatus.INITIAL_EDIT,
       },
-      { populate: ['chargingStation'] },
+      {
+        populate: ['chargingStation', 'chargingStation.csms'],
+      },
     );
 
     const em = this.negotiationRepo.getEntityManager();
@@ -106,7 +116,7 @@ export class AvailableCapacityNegotiationService {
           this.assignAvailableCapacityByNegotiation(
             em,
             negotiation,
-            negotiation.chargingStation.uid,
+            negotiation.chargingStation,
           ),
         ),
       );
@@ -116,16 +126,34 @@ export class AvailableCapacityNegotiationService {
   async assignAvailableCapacityByNegotiation(
     em: EntityManager,
     negotiation: AvailableCapacityNegotiationEntity,
-    chargingStationUid: string,
+    chargingStation: ChargingStationEntity,
   ): Promise<AvailableCapacityNegotiationEntity> {
     const initialEditDetail = await this.getNegotiationDetailByStatus(
       negotiation,
       NegotiationStatus.INITIAL_EDIT,
     );
-
     const hourCapacities = initialEditDetail.hourCapacities;
 
-    // TODO: 發送「指定可用容量」給充電站
+    // 準備「指定可用容量」，並發送給充電站
+    const message = this.buildUpdateGroupCapacityForecast(
+      chargingStation,
+      negotiation,
+      hourCapacities,
+    );
+    try {
+      await this.oscpRequestHelper.sendUpdateGroupCapacityForecastToCsms(
+        chargingStation.csms,
+        message,
+      );
+      this.logger.log(
+        `ChargingStation[${chargingStation.uid}] assigned available capacity`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `ChargingStation[${chargingStation.uid}] failed to assign available capacity`,
+      );
+      return negotiation;
+    }
 
     // 更新協商狀態
     const detailData = {
@@ -136,6 +164,32 @@ export class AvailableCapacityNegotiationService {
     await this.transitionNegotiationStatus(em, negotiation, detailData, true);
 
     return negotiation;
+  }
+
+  buildUpdateGroupCapacityForecast(
+    chargingStation: ChargingStationEntity,
+    negotiation: AvailableCapacityNegotiationEntity,
+    hourCapacities: AvailableCapacityNegotiationHourCapacity[],
+  ): UpdateGroupCapacityForecast {
+    return {
+      group_id: chargingStation.uid,
+      type: CapacityForecastType.Consumption,
+      forecasted_blocks: hourCapacities.map((hc) => ({
+        capacity: hc.capacity,
+        phase: PhaseIndicator.All,
+        unit: ForecastedBlockUnit.Kw,
+        start_time: this.getZonedDateTimeISO(
+          negotiation.date,
+          hc.hour,
+          TAIPEI_TZ,
+        ),
+        end_time: this.getZonedDateTimeISO(
+          negotiation.date,
+          hc.hour + 1,
+          TAIPEI_TZ,
+        ),
+      })),
+    };
   }
 
   /**
@@ -172,6 +226,17 @@ export class AvailableCapacityNegotiationService {
     const now = DateTime.now().setZone(timeZone);
     const nextDayMidnight = now.plus({ days: 1 }).startOf('day');
     return nextDayMidnight.toJSDate();
+  }
+
+  getZonedDateTimeISO(
+    startOfDay: Date,
+    hour: number,
+    timeZone: string,
+  ): string {
+    return DateTime.fromJSDate(startOfDay)
+      .setZone(timeZone)
+      .set({ hour })
+      .toISO();
   }
 
   async predictHourCapacities(

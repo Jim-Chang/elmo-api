@@ -1,4 +1,6 @@
+import { HttpModule } from '@nestjs/axios';
 import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { HTTP_TIMEOUT_MILLISECONDS } from '../constants';
 import { OscpController } from './adapter/in/oscp.controller';
 import { OscpHeadersValidationMiddleware } from '../middleware/oscp-header-validation.middleware';
 import { AvailableCapacityNegotiationCronjobService } from './adapter/in/cronjob/available-capacity-negotiation.cronjob.service';
@@ -7,6 +9,7 @@ import { ChargingStationService } from './application/charging-station/charging-
 import { AvailableCapacityNegotiationEntity } from './adapter/out/entities/available-capacity-negotiation.entity';
 import { AvailableCapacityNegotiationDetailEntity } from './adapter/out/entities/available-capacity-negotiation-detail.entity';
 import { ChargingStationEntity } from './adapter/out/entities/charging-station.entity';
+import { CsmsOscpRequestHelper } from './adapter/out/csms-oscp/csms-oscp-request-helper';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { MqTopicPublishHelper } from './adapter/out/mq/mq-topic-publish-helper';
 import { ConfigModule } from '@nestjs/config';
@@ -14,6 +17,9 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
     ConfigModule,
+    HttpModule.register({
+      timeout: HTTP_TIMEOUT_MILLISECONDS,
+    }),
     MikroOrmModule.forFeature([
       ChargingStationEntity,
       AvailableCapacityNegotiationEntity,
@@ -25,6 +31,7 @@ import { ConfigModule } from '@nestjs/config';
     AvailableCapacityNegotiationCronjobService,
     AvailableCapacityNegotiationService,
     ChargingStationService,
+    CsmsOscpRequestHelper,
     MqTopicPublishHelper,
   ],
 })
