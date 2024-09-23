@@ -24,7 +24,9 @@ export class ChargingStationService {
 
   async getConnectedChargingStations(): Promise<ChargingStationEntity[]> {
     return this.chargingStationRepo.find({
-      isConnected: true,
+      csms: {
+        isConnected: true,
+      },
     });
   }
 
