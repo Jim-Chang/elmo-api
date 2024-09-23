@@ -22,6 +22,12 @@ export class ChargingStationService {
     return !!chargingStation;
   }
 
+  async getConnectedChargingStations(): Promise<ChargingStationEntity[]> {
+    return this.chargingStationRepo.find({
+      isConnected: true,
+    });
+  }
+
   async publishChargingStationMeasurements(
     measurementsDto: UpdateGroupMeasurementsDto,
   ) {

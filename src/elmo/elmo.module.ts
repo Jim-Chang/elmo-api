@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { OscpController } from './adapter/in/oscp.controller';
+import { AvailableCapacityNegotiationCronjobService } from './adapter/in/cronjob/available-capacity-negotiation.cronjob.service';
+import { AvailableCapacityNegotiationService } from './application/available-capacity/available-capacity-negotiation.service';
 import { ChargingStationService } from './application/charging-station/charging-station.service';
 import { AvailableCapacityNegotiationEntity } from './adapter/out/entities/available-capacity-negotiation.entity';
 import { AvailableCapacityNegotiationDetailEntity } from './adapter/out/entities/available-capacity-negotiation-detail.entity';
@@ -18,6 +20,11 @@ import { ConfigModule } from '@nestjs/config';
     ]),
   ],
   controllers: [OscpController],
-  providers: [ChargingStationService, MqTopicPublishHelper],
+  providers: [
+    AvailableCapacityNegotiationCronjobService,
+    AvailableCapacityNegotiationService,
+    ChargingStationService,
+    MqTopicPublishHelper,
+  ],
 })
 export class ElmoModule {}
