@@ -1,7 +1,12 @@
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { AvailableCapacityNegotiationEntity } from '../../adapter/out/entities/available-capacity-negotiation.entity';
-import { EntityManager, EntityRepository } from '@mikro-orm/core';
+import {
+  EntityManager,
+  EntityRepository,
+  RequiredEntityData,
+  wrap,
+} from '@mikro-orm/core';
 import { DateTime } from 'luxon';
 import { TAIPEI_TZ } from '../../../constants';
 import { NegotiationStatus } from './types';
@@ -14,11 +19,24 @@ import { ChargingStationEntity } from '../../adapter/out/entities/charging-stati
 
 @Injectable()
 export class AvailableCapacityNegotiationService {
+  private readonly logger = new Logger(
+    AvailableCapacityNegotiationService.name,
+  );
+
   constructor(
     @InjectRepository(AvailableCapacityNegotiationEntity)
     private readonly negotiationRepo: EntityRepository<AvailableCapacityNegotiationEntity>,
+    @InjectRepository(AvailableCapacityNegotiationDetailEntity)
+    private readonly detailRepo: EntityRepository<AvailableCapacityNegotiationDetailEntity>,
     private readonly chargingStationService: ChargingStationService,
   ) {}
+
+  async getNegotiationDetailByStatus(
+    negotiation: AvailableCapacityNegotiationEntity,
+    status: NegotiationStatus,
+  ): Promise<AvailableCapacityNegotiationDetailEntity | null> {
+    return this.detailRepo.findOne({ negotiation, status });
+  }
 
   /**
    * 建立初始「日前型協商」
@@ -64,6 +82,90 @@ export class AvailableCapacityNegotiationService {
     await em.persistAndFlush(detail);
 
     return negotiation;
+  }
+
+  /**
+   * 發送「指定可用容量」給充電站
+   */
+  async assignAvailableCapacity() {
+    const zonedNextDay = this.getZonedNextDay(TAIPEI_TZ);
+
+    const negotiations = await this.negotiationRepo.find(
+      {
+        date: zonedNextDay,
+        chargingStation: { isConnected: true },
+        lastDetailStatus: NegotiationStatus.INITIAL_EDIT,
+      },
+      { populate: ['chargingStation'] },
+    );
+
+    const em = this.negotiationRepo.getEntityManager();
+    return await em.transactional(async (em: EntityManager) => {
+      await Promise.all(
+        negotiations.map((negotiation) =>
+          this.assignAvailableCapacityByNegotiation(
+            em,
+            negotiation,
+            negotiation.chargingStation.uid,
+          ),
+        ),
+      );
+    });
+  }
+
+  async assignAvailableCapacityByNegotiation(
+    em: EntityManager,
+    negotiation: AvailableCapacityNegotiationEntity,
+    chargingStationUid: string,
+  ): Promise<AvailableCapacityNegotiationEntity> {
+    const initialEditDetail = await this.getNegotiationDetailByStatus(
+      negotiation,
+      NegotiationStatus.INITIAL_EDIT,
+    );
+
+    const hourCapacities = initialEditDetail.hourCapacities;
+
+    // TODO: 發送「指定可用容量」給充電站
+
+    // 更新協商狀態
+    const detailData = {
+      negotiation,
+      status: NegotiationStatus.NEGOTIATING,
+      hourCapacities,
+    };
+    await this.transitionNegotiationStatus(em, negotiation, detailData, true);
+
+    return negotiation;
+  }
+
+  /**
+   * 更新「日前型協商」的狀態
+   */
+  async transitionNegotiationStatus(
+    em: EntityManager,
+    negotiation: AvailableCapacityNegotiationEntity,
+    detailData: RequiredEntityData<AvailableCapacityNegotiationDetailEntity>,
+    isApplyDetail: boolean,
+  ) {
+    // Create a new detail with new status
+    const newDetailEntity = em.create(
+      AvailableCapacityNegotiationDetailEntity,
+      detailData,
+    );
+    await em.persistAndFlush(newDetailEntity);
+
+    // Update the negotiation with the new detail
+    const updateData = {
+      lastDetailStatus: newDetailEntity.status,
+    };
+    if (isApplyDetail) {
+      updateData['applyDetail'] = newDetailEntity;
+    }
+    wrap(negotiation).assign(updateData, { em, mergeObjectProperties: true });
+
+    this.logger.log(
+      `Transition negotiation[${negotiation.id}] to "${newDetailEntity.status}", detail[${newDetailEntity.id}], apply[${isApplyDetail}]`,
+    );
   }
 
   getZonedNextDay(timeZone: string): Date {
