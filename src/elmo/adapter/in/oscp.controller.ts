@@ -18,7 +18,9 @@ import { AdjustGroupCapacityForecastDto } from './dto/adjust-group-capacity-fore
 import { OSCP_API_PREFIX } from '../../../constants';
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
 import { UpdateGroupMeasurementsDto } from './dto/update-group-measurements.dto';
+import { AvailableCapacityNegotiationService } from '../../application/available-capacity/available-capacity-negotiation.service';
 import { ChargingStationService } from '../../application/charging-station/charging-station.service';
+import { transformNegotiationForecastedBlocksToHourCapacities } from './oscp.helper';
 
 @Controller(OSCP_API_PREFIX)
 @UsePipes(ZodValidationPipe)
@@ -26,6 +28,7 @@ export class OscpController {
   private logger = new Logger(OscpController.name);
 
   constructor(
+    private readonly availableCapacityNegotiationService: AvailableCapacityNegotiationService,
     private readonly chargingStationService: ChargingStationService,
   ) {}
 
@@ -99,6 +102,16 @@ export class OscpController {
       `[Received request]: /adjust_group_capacity_forecast POST, body: ${JSON.stringify(
         adjustGroupCapacityForecastDto,
       )}`,
+    );
+
+    const chargingStationUid = adjustGroupCapacityForecastDto.group_id;
+    const hourCapacities = transformNegotiationForecastedBlocksToHourCapacities(
+      adjustGroupCapacityForecastDto.forecasted_blocks,
+    );
+
+    await this.availableCapacityNegotiationService.requestExtraCapacity(
+      chargingStationUid,
+      hourCapacities,
     );
   }
 

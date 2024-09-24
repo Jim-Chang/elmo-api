@@ -1,5 +1,10 @@
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { AvailableCapacityNegotiationEntity } from '../../adapter/out/entities/available-capacity-negotiation.entity';
 import {
   EntityManager,
@@ -166,6 +171,67 @@ export class AvailableCapacityNegotiationService {
     return negotiation;
   }
 
+  /**
+   * 接收充電站的「申請額外可用容量」
+   */
+  async requestExtraCapacity(
+    chargingStationUid: string,
+    hourCapacities: AvailableCapacityNegotiationHourCapacity[],
+  ) {
+    const validOldStatusList = [NegotiationStatus.NEGOTIATING];
+
+    // 取得明日的協商
+    const zonedNextDay = this.getZonedNextDay(TAIPEI_TZ);
+    const negotiation = await this.negotiationRepo.findOne({
+      date: zonedNextDay,
+      chargingStation: { uid: chargingStationUid },
+    });
+
+    // 驗證協商狀態
+    if (!negotiation) {
+      const errorMessage = `ChargingStation[${chargingStationUid}] negotiation not found`;
+      this.logger.error(errorMessage);
+      throw new NotFoundException(errorMessage);
+    }
+    this.validateNegotiationStatusOrFail(
+      negotiation.lastDetailStatus,
+      validOldStatusList,
+      `ChargingStation[${chargingStationUid}] negotiation status (${negotiation.lastDetailStatus}) is not valid ${validOldStatusList}`,
+    );
+
+    // 更新協商狀態
+    const em = this.negotiationRepo.getEntityManager();
+    return await em.transactional(async (em: EntityManager) => {
+      // 建立 Detail (存放充電站申請額外可用容量資訊)
+      const detailData = {
+        negotiation,
+        status: NegotiationStatus.EXTRA_REQUEST,
+        hourCapacities,
+      };
+      await this.transitionNegotiationStatus(
+        em,
+        negotiation,
+        detailData,
+        false,
+      );
+
+      // 建立 Detail (管理員待確認變更容量)
+      const detailDataForReply = {
+        negotiation,
+        status: NegotiationStatus.EXTRA_REPLY_EDIT,
+        hourCapacities,
+      };
+      await this.transitionNegotiationStatus(
+        em,
+        negotiation,
+        detailDataForReply,
+        false,
+      );
+
+      return negotiation;
+    });
+  }
+
   buildUpdateGroupCapacityForecast(
     chargingStation: ChargingStationEntity,
     negotiation: AvailableCapacityNegotiationEntity,
@@ -190,6 +256,24 @@ export class AvailableCapacityNegotiationService {
         ),
       })),
     };
+  }
+
+  validateNegotiationStatusOrFail(
+    status: NegotiationStatus,
+    validStatusList: NegotiationStatus[],
+    errorMessage: string,
+  ) {
+    if (!this.validateNegotiationStatus(status, validStatusList)) {
+      this.logger.error(errorMessage);
+      throw new BadRequestException(errorMessage);
+    }
+  }
+
+  validateNegotiationStatus(
+    status: NegotiationStatus,
+    validStatusList: NegotiationStatus[],
+  ) {
+    return validStatusList.includes(status);
   }
 
   /**
