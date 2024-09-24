@@ -364,6 +364,97 @@ export class AvailableCapacityNegotiationService {
     return success;
   }
 
+  /**
+   * 結束所有未完成的協商
+   */
+  async finishAllNegotiations() {
+    const unfinishedStatusList = [
+      NegotiationStatus.INITIAL_EDIT,
+      NegotiationStatus.NEGOTIATING,
+      NegotiationStatus.EXTRA_REQUEST,
+      NegotiationStatus.EXTRA_REPLY_EDIT,
+    ];
+
+    const zonedNextDay = this.getZonedNextDay(TAIPEI_TZ);
+
+    const negotiations = await this.negotiationRepo.find(
+      {
+        date: zonedNextDay,
+        lastDetailStatus: { $in: unfinishedStatusList },
+      },
+      {
+        populate: ['chargingStation'],
+      },
+    );
+
+    const em = this.negotiationRepo.getEntityManager();
+    return await em.transactional(async (em: EntityManager) => {
+      await Promise.all(
+        negotiations.map((negotiation) =>
+          this.finishNegotiationByNegotiation(
+            em,
+            negotiation,
+            negotiation.chargingStation,
+          ),
+        ),
+      );
+    });
+  }
+
+  async finishNegotiationByNegotiation(
+    em: EntityManager,
+    negotiation: AvailableCapacityNegotiationEntity,
+    chargingStation: ChargingStationEntity,
+  ) {
+    // 決定協商的下一個 status 與 hourCapacities
+    const finalStatusMap = {
+      [NegotiationStatus.INITIAL_EDIT]: NegotiationStatus.NEGOTIATING_FAILED,
+      [NegotiationStatus.NEGOTIATING]: NegotiationStatus.FINISH,
+      [NegotiationStatus.EXTRA_REQUEST]: NegotiationStatus.EXTRA_REPLY_FAILED,
+      [NegotiationStatus.EXTRA_REPLY_EDIT]:
+        NegotiationStatus.EXTRA_REPLY_FAILED,
+    };
+    const nextStatus = finalStatusMap[negotiation.lastDetailStatus];
+
+    if (!nextStatus) {
+      return; // 協商已結束
+    }
+
+    let hourCapacities: AvailableCapacityNegotiationHourCapacity[];
+    switch (negotiation.lastDetailStatus) {
+      // 以充電站契約容量作結
+      case NegotiationStatus.INITIAL_EDIT:
+        hourCapacities =
+          this.buildHourCapacitiesByChargingStationContractCapacity(
+            chargingStation,
+          );
+        break;
+
+      // 以 ELMO 第一次指定容量作結
+      case NegotiationStatus.NEGOTIATING:
+      case NegotiationStatus.EXTRA_REQUEST:
+      case NegotiationStatus.EXTRA_REPLY_EDIT:
+        const negotiatingDetail = await this.getNegotiationDetailByStatus(
+          negotiation,
+          NegotiationStatus.NEGOTIATING,
+        );
+        hourCapacities = negotiatingDetail.hourCapacities;
+        break;
+
+      // 協商已結束
+      default:
+        return;
+    }
+
+    // 更新協商狀態
+    const detailData = {
+      negotiation,
+      status: nextStatus,
+      hourCapacities,
+    };
+    await this.transitionNegotiationStatus(em, negotiation, detailData, true);
+  }
+
   buildUpdateGroupCapacityForecast(
     chargingStation: ChargingStationEntity,
     negotiation: AvailableCapacityNegotiationEntity,
@@ -459,6 +550,14 @@ export class AvailableCapacityNegotiationService {
     chargingStation: ChargingStationEntity,
   ): Promise<AvailableCapacityNegotiationHourCapacity[]> {
     // TODO: 預測各時段用電量 by 充電站
+    return this.buildHourCapacitiesByChargingStationContractCapacity(
+      chargingStation,
+    );
+  }
+
+  buildHourCapacitiesByChargingStationContractCapacity(
+    chargingStation: ChargingStationEntity,
+  ): AvailableCapacityNegotiationHourCapacity[] {
     return Array.from({ length: 24 }, (_, hour) => ({
       hour,
       capacity: chargingStation.contractCapacity,

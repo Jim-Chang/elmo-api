@@ -60,4 +60,19 @@ export class AvailableCapacityNegotiationCronjobService {
       '[AvailableCapacityNegotiationCronjobService]: handleReplyExtraCapacityAuto finished',
     );
   }
+
+  // 系統自動結束所有未完成協商，每天 16:05 執行
+  @Cron('0 5 16 * * *', {
+    timeZone: TAIPEI_TZ,
+  })
+  @CreateRequestContext()
+  async handleFinishAllNegotiations() {
+    this.logger.log(
+      '[AvailableCapacityNegotiationCronjobService]: trigger handleFinishAllNegotiations',
+    );
+    await this.negotiationService.finishAllNegotiations();
+    this.logger.log(
+      '[AvailableCapacityNegotiationCronjobService]: handleFinishAllNegotiations finished',
+    );
+  }
 }
