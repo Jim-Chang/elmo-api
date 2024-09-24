@@ -5,6 +5,7 @@ import {
   OneToMany,
   PrimaryKey,
   Property,
+  types,
 } from '@mikro-orm/core';
 import { AvailableCapacityNegotiationEntity } from './available-capacity-negotiation.entity';
 
@@ -18,6 +19,14 @@ export class ChargingStationEntity {
 
   @Property()
   name: string;
+
+  // 已完成 OSCP Register 與 Handshake
+  @Property({ default: false })
+  isConnected: boolean;
+
+  // 契約容量 (kW)
+  @Property({ type: types.float, default: 0 })
+  contractCapacity: number;
 
   @OneToMany({
     entity: () => AvailableCapacityNegotiationEntity,
