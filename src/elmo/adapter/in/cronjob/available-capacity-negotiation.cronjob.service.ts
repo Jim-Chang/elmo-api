@@ -46,6 +46,21 @@ export class AvailableCapacityNegotiationCronjobService {
     );
   }
 
+  // 系統針對未收到「申請額外可用容量」的充電站，結束協商流程，每天 14:05 執行
+  @Cron('0 5 14 * * *', {
+    timeZone: TAIPEI_TZ,
+  })
+  @CreateRequestContext()
+  async handleFinishNegotiationsUnderNegotiating() {
+    this.logger.log(
+      '[AvailableCapacityNegotiationCronjobService]: trigger handleFinishNegotiationsUnderNegotiating',
+    );
+    await this.negotiationService.finishNegotiationsUnderNegotiating();
+    this.logger.log(
+      '[AvailableCapacityNegotiationCronjobService]: handleFinishNegotiationsUnderNegotiating finished',
+    );
+  }
+
   // 系統自動發送「申請額外可用容量回覆」給尚未回覆「申請額外可用容量」的充電站，每天 16:00 執行
   @Cron(CronExpression.EVERY_DAY_AT_4PM, {
     timeZone: TAIPEI_TZ,

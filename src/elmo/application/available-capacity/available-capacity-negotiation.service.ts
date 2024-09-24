@@ -365,6 +365,36 @@ export class AvailableCapacityNegotiationService {
   }
 
   /**
+   * 針對未收到「申請額外可用容量」的充電站，結束協商流程
+   */
+  async finishNegotiationsUnderNegotiating() {
+    const zonedNextDay = this.getZonedNextDay(TAIPEI_TZ);
+
+    const negotiations = await this.negotiationRepo.find(
+      {
+        date: zonedNextDay,
+        lastDetailStatus: NegotiationStatus.NEGOTIATING,
+      },
+      {
+        populate: ['chargingStation'],
+      },
+    );
+
+    const em = this.negotiationRepo.getEntityManager();
+    return await em.transactional(async (em: EntityManager) => {
+      await Promise.all(
+        negotiations.map((negotiation) =>
+          this.finishNegotiationByNegotiation(
+            em,
+            negotiation,
+            negotiation.chargingStation,
+          ),
+        ),
+      );
+    });
+  }
+
+  /**
    * 結束所有未完成的協商
    */
   async finishAllNegotiations() {
