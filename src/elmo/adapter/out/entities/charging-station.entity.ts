@@ -2,12 +2,14 @@ import {
   Cascade,
   Collection,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryKey,
   Property,
   types,
 } from '@mikro-orm/core';
 import { AvailableCapacityNegotiationEntity } from './available-capacity-negotiation.entity';
+import { CsmsEntity } from './csms.entity';
 
 @Entity({ tableName: 'charging_stations' })
 export class ChargingStationEntity {
@@ -20,10 +22,6 @@ export class ChargingStationEntity {
   @Property()
   name: string;
 
-  // 已完成 OSCP Register 與 Handshake
-  @Property({ default: false })
-  isConnected: boolean;
-
   // 契約容量 (kW)
   @Property({ type: types.float, default: 0 })
   contractCapacity: number;
@@ -35,4 +33,10 @@ export class ChargingStationEntity {
   })
   availableCapacityNegotiations =
     new Collection<AvailableCapacityNegotiationEntity>(this);
+
+  @ManyToOne(() => CsmsEntity, {
+    nullable: true,
+    deleteRule: 'set null',
+  })
+  csms: CsmsEntity;
 }

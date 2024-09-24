@@ -30,4 +30,19 @@ export class AvailableCapacityNegotiationCronjobService {
       '[AvailableCapacityNegotiationCronjobService]: handleInitiateNegotiation finished',
     );
   }
+
+  // This cron job is set to run at 10:00 AM every day, based on the Asia/Taipei timezone.
+  @Cron(CronExpression.EVERY_DAY_AT_10AM, {
+    timeZone: TAIPEI_TZ,
+  })
+  @CreateRequestContext()
+  async handleAssignAvailableCapacity() {
+    this.logger.log(
+      '[AvailableCapacityNegotiationCronjobService]: trigger handleAssignAvailableCapacity',
+    );
+    await this.negotiationService.assignAvailableCapacity();
+    this.logger.log(
+      '[AvailableCapacityNegotiationCronjobService]: handleAssignAvailableCapacity finished',
+    );
+  }
 }

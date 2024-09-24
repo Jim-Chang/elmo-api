@@ -39,6 +39,7 @@
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.4",
     "luxon": "^3.5.0",
+    "nanoid": "3",
     "nestjs-pino": "^4.1.0",
     "pino-pretty": "^11.2.2",
     "reflect-metadata": "^0.2.0",
