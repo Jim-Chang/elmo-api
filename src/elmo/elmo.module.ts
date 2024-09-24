@@ -6,6 +6,7 @@ import { OscpHeadersValidationMiddleware } from '../middleware/oscp-header-valid
 import { AvailableCapacityNegotiationCronjobService } from './adapter/in/cronjob/available-capacity-negotiation.cronjob.service';
 import { AvailableCapacityNegotiationService } from './application/available-capacity/available-capacity-negotiation.service';
 import { ChargingStationService } from './application/charging-station/charging-station.service';
+import { AvailableCapacityEmergencyEntity } from './adapter/out/entities/available-capacity-emergency.entity';
 import { AvailableCapacityNegotiationEntity } from './adapter/out/entities/available-capacity-negotiation.entity';
 import { AvailableCapacityNegotiationDetailEntity } from './adapter/out/entities/available-capacity-negotiation-detail.entity';
 import { ChargingStationEntity } from './adapter/out/entities/charging-station.entity';
@@ -22,6 +23,7 @@ import { ConfigModule } from '@nestjs/config';
     }),
     MikroOrmModule.forFeature([
       ChargingStationEntity,
+      AvailableCapacityEmergencyEntity,
       AvailableCapacityNegotiationEntity,
       AvailableCapacityNegotiationDetailEntity,
     ]),
