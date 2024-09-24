@@ -32,8 +32,7 @@ export class ChargingStationEntity {
     mappedBy: 'chargingStation',
     cascade: [Cascade.ALL],
   })
-  availableCapacityNegotiations =
-    new Collection<AvailableCapacityNegotiationEntity>(this);
+  negotiations = new Collection<AvailableCapacityNegotiationEntity>(this);
 
   @OneToMany({
     entity: () => AvailableCapacityEmergencyEntity,
