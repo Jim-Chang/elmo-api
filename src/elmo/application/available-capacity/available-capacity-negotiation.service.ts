@@ -233,6 +233,45 @@ export class AvailableCapacityNegotiationService {
   }
 
   /**
+   * 管理員回覆充電站的「申請額外可用容量」
+   */
+  async replyExtraCapacity(negotiationId: number) {
+    const validOldStatusList = [NegotiationStatus.EXTRA_REPLY_EDIT];
+
+    // 取得協商
+    const negotiation = await this.negotiationRepo.findOne(
+      {
+        id: negotiationId,
+      },
+      {
+        populate: ['chargingStation', 'chargingStation.csms'],
+      },
+    );
+
+    // 驗證協商狀態
+    if (!negotiation) {
+      const errorMessage = `Negotiation[${negotiationId}] not found`;
+      this.logger.error(errorMessage);
+      throw new NotFoundException(errorMessage);
+    }
+    this.validateNegotiationStatusOrFail(
+      negotiation.lastDetailStatus,
+      validOldStatusList,
+      `Negotiation[${negotiationId}] status (${negotiation.lastDetailStatus}) is not valid ${validOldStatusList}`,
+    );
+
+    // 發送「申請額外可用容量回覆」給充電站，並更新協商狀態
+    const em = this.negotiationRepo.getEntityManager();
+    return await em.transactional(async (em: EntityManager) => {
+      await this.replyExtraCapacityByNegotiation(
+        em,
+        negotiation,
+        NegotiationStatus.EXTRA_REPLY_FINISH,
+      );
+    });
+  }
+
+  /**
    * 系統自動發送「申請額外可用容量回覆」給尚未回覆「申請額外可用容量」的充電站
    */
   async replyExtraCapacityAuto() {
