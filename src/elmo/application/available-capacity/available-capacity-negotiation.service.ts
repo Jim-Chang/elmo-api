@@ -232,6 +232,81 @@ export class AvailableCapacityNegotiationService {
     });
   }
 
+  /**
+   * 系統自動發送「申請額外可用容量回覆」給尚未回覆「申請額外可用容量」的充電站
+   */
+  async replyExtraCapacityAuto() {
+    const zonedNextDay = this.getZonedNextDay(TAIPEI_TZ);
+
+    const negotiations = await this.negotiationRepo.find(
+      {
+        date: zonedNextDay,
+        lastDetailStatus: NegotiationStatus.EXTRA_REPLY_EDIT,
+      },
+      {
+        populate: ['chargingStation', 'chargingStation.csms'],
+      },
+    );
+
+    const em = this.negotiationRepo.getEntityManager();
+    return await em.transactional(async (em: EntityManager) => {
+      await Promise.all(
+        negotiations.map((negotiation) =>
+          this.replyExtraCapacityByNegotiation(
+            em,
+            negotiation,
+            NegotiationStatus.EXTRA_REPLY_AUTO,
+          ),
+        ),
+      );
+    });
+  }
+
+  async replyExtraCapacityByNegotiation(
+    em: EntityManager,
+    negotiation: AvailableCapacityNegotiationEntity,
+    nextStatus: NegotiationStatus,
+  ): Promise<AvailableCapacityNegotiationEntity> {
+    const chargingStation = negotiation.chargingStation;
+
+    const extraReplyEditDetail = await this.getNegotiationDetailByStatus(
+      negotiation,
+      NegotiationStatus.EXTRA_REPLY_EDIT,
+    );
+    const hourCapacities = extraReplyEditDetail.hourCapacities;
+
+    // 準備「申請額外可用容量回覆」，並發送給充電站
+    const message = this.buildUpdateGroupCapacityForecast(
+      chargingStation,
+      negotiation,
+      hourCapacities,
+    );
+    try {
+      await this.oscpRequestHelper.sendUpdateGroupCapacityForecastToCsms(
+        chargingStation.csms,
+        message,
+      );
+      this.logger.log(
+        `ChargingStation[${chargingStation.uid}] replied extra capacity`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `ChargingStation[${chargingStation.uid}] failed to reply extra capacity`,
+      );
+      return negotiation;
+    }
+
+    // 更新協商狀態
+    const detailData = {
+      negotiation,
+      status: nextStatus,
+      hourCapacities,
+    };
+    await this.transitionNegotiationStatus(em, negotiation, detailData, true);
+
+    return negotiation;
+  }
+
   buildUpdateGroupCapacityForecast(
     chargingStation: ChargingStationEntity,
     negotiation: AvailableCapacityNegotiationEntity,
