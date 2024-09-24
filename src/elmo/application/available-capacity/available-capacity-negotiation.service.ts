@@ -235,7 +235,7 @@ export class AvailableCapacityNegotiationService {
   /**
    * 管理員回覆充電站的「申請額外可用容量」
    */
-  async replyExtraCapacity(negotiationId: number) {
+  async replyExtraCapacity(negotiationId: number): Promise<boolean> {
     const validOldStatusList = [NegotiationStatus.EXTRA_REPLY_EDIT];
 
     // 取得協商
@@ -263,7 +263,7 @@ export class AvailableCapacityNegotiationService {
     // 發送「申請額外可用容量回覆」給充電站，並更新協商狀態
     const em = this.negotiationRepo.getEntityManager();
     return await em.transactional(async (em: EntityManager) => {
-      await this.replyExtraCapacityByNegotiation(
+      return await this.replyExtraCapacityByNegotiation(
         em,
         negotiation,
         NegotiationStatus.EXTRA_REPLY_FINISH,
@@ -287,25 +287,24 @@ export class AvailableCapacityNegotiationService {
       },
     );
 
+    // 發送「申請額外可用容量回覆」給充電站，並更新協商狀態
     const em = this.negotiationRepo.getEntityManager();
-    return await em.transactional(async (em: EntityManager) => {
-      await Promise.all(
-        negotiations.map((negotiation) =>
-          this.replyExtraCapacityByNegotiation(
-            em,
-            negotiation,
-            NegotiationStatus.EXTRA_REPLY_AUTO,
-          ),
-        ),
-      );
-    });
+    for (const negotiation of negotiations) {
+      await em.transactional(async (em: EntityManager) => {
+        await this.replyExtraCapacityByNegotiation(
+          em,
+          negotiation,
+          NegotiationStatus.EXTRA_REPLY_AUTO,
+        );
+      });
+    }
   }
 
   async replyExtraCapacityByNegotiation(
     em: EntityManager,
     negotiation: AvailableCapacityNegotiationEntity,
-    nextStatus: NegotiationStatus,
-  ): Promise<AvailableCapacityNegotiationEntity> {
+    statusOnSuccess: NegotiationStatus,
+  ): Promise<boolean> {
     const chargingStation = negotiation.chargingStation;
 
     const extraReplyEditDetail = await this.getNegotiationDetailByStatus(
@@ -320,6 +319,8 @@ export class AvailableCapacityNegotiationService {
       negotiation,
       hourCapacities,
     );
+
+    let success: boolean;
     try {
       await this.oscpRequestHelper.sendUpdateGroupCapacityForecastToCsms(
         chargingStation.csms,
@@ -328,22 +329,39 @@ export class AvailableCapacityNegotiationService {
       this.logger.log(
         `ChargingStation[${chargingStation.uid}] replied extra capacity`,
       );
+      success = true;
     } catch (error) {
       this.logger.error(
         `ChargingStation[${chargingStation.uid}] failed to reply extra capacity`,
       );
-      return negotiation;
+      success = false;
+    }
+
+    // 決定協商的下一個 status 與 hourCapacities
+    let nextStatus: NegotiationStatus;
+    let applyHourCapacities: AvailableCapacityNegotiationHourCapacity[];
+    if (success) {
+      nextStatus = statusOnSuccess;
+      applyHourCapacities = hourCapacities;
+    } else {
+      // 若發送失敗，以 ELMO 第一次指定容量作結
+      const negotiatingDetail = await this.getNegotiationDetailByStatus(
+        negotiation,
+        NegotiationStatus.NEGOTIATING,
+      );
+      nextStatus = NegotiationStatus.EXTRA_REPLY_FAILED;
+      applyHourCapacities = negotiatingDetail.hourCapacities;
     }
 
     // 更新協商狀態
     const detailData = {
       negotiation,
       status: nextStatus,
-      hourCapacities,
+      hourCapacities: applyHourCapacities,
     };
     await this.transitionNegotiationStatus(em, negotiation, detailData, true);
 
-    return negotiation;
+    return success;
   }
 
   buildUpdateGroupCapacityForecast(
