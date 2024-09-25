@@ -8,6 +8,7 @@ import {
   Property,
   types,
 } from '@mikro-orm/core';
+import { AvailableCapacityEmergencyEntity } from './available-capacity-emergency.entity';
 import { AvailableCapacityNegotiationEntity } from './available-capacity-negotiation.entity';
 import { CsmsEntity } from './csms.entity';
 
@@ -31,8 +32,14 @@ export class ChargingStationEntity {
     mappedBy: 'chargingStation',
     cascade: [Cascade.ALL],
   })
-  availableCapacityNegotiations =
-    new Collection<AvailableCapacityNegotiationEntity>(this);
+  negotiations = new Collection<AvailableCapacityNegotiationEntity>(this);
+
+  @OneToMany({
+    entity: () => AvailableCapacityEmergencyEntity,
+    mappedBy: 'chargingStation',
+    cascade: [Cascade.ALL],
+  })
+  emergencies = new Collection<AvailableCapacityEmergencyEntity>(this);
 
   @ManyToOne(() => CsmsEntity, {
     nullable: true,
