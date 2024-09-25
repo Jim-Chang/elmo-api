@@ -38,6 +38,7 @@
     "@nestjs/schedule": "^4.1.1",
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.4",
+    "https-proxy-agent": "^7.0.5",
     "luxon": "^3.5.0",
     "nanoid": "3",
     "nestjs-pino": "^4.1.0",
