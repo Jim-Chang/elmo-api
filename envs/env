@@ -15,3 +15,8 @@ MQ_CA_CERT=
 MQ_CLIENT_CERT=
 MQ_CLIENT_KEY=
 MQ_CHARGING_STATION_EXCHANGE=log.elmo.charging_station
+
+
+# Proxy
+# (example) https://user:pass@example.com:8080
+PROXY_URL=
