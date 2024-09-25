@@ -94,6 +94,126 @@
           "length": null,
           "mappedType": "integer"
         },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        }
+      },
+      "name": "districts",
+      "indexes": [
+        {
+          "keyName": "PRIMARY",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "length": null,
+          "mappedType": "integer"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        }
+      },
+      "name": "feed_lines",
+      "indexes": [
+        {
+          "keyName": "PRIMARY",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "length": null,
+          "mappedType": "integer"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        }
+      },
+      "name": "load_sites",
+      "indexes": [
+        {
+          "keyName": "PRIMARY",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "length": null,
+          "mappedType": "integer"
+        },
         "uid": {
           "name": "uid",
           "type": "varchar(255)",
@@ -125,8 +245,48 @@
           "default": "0",
           "mappedType": "float"
         },
+        "electricity_account_no": {
+          "name": "electricity_account_no",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "mappedType": "string"
+        },
         "csms_id": {
           "name": "csms_id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": null,
+          "mappedType": "integer"
+        },
+        "load_site_id": {
+          "name": "load_site_id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": null,
+          "mappedType": "integer"
+        },
+        "feed_line_id": {
+          "name": "feed_line_id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": null,
+          "mappedType": "integer"
+        },
+        "district_id": {
+          "name": "district_id",
           "type": "int",
           "unsigned": true,
           "autoincrement": false,
@@ -159,6 +319,36 @@
           "unique": false
         },
         {
+          "columnNames": [
+            "load_site_id"
+          ],
+          "composite": false,
+          "keyName": "charging_stations_load_site_id_index",
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "feed_line_id"
+          ],
+          "composite": false,
+          "keyName": "charging_stations_feed_line_id_index",
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "district_id"
+          ],
+          "composite": false,
+          "keyName": "charging_stations_district_id_index",
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
+        {
           "keyName": "PRIMARY",
           "columnNames": [
             "id"
@@ -181,6 +371,45 @@
             "id"
           ],
           "referencedTableName": "csms",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "charging_stations_load_site_id_foreign": {
+          "constraintName": "charging_stations_load_site_id_foreign",
+          "columnNames": [
+            "load_site_id"
+          ],
+          "localTableName": "charging_stations",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "load_sites",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "charging_stations_feed_line_id_foreign": {
+          "constraintName": "charging_stations_feed_line_id_foreign",
+          "columnNames": [
+            "feed_line_id"
+          ],
+          "localTableName": "charging_stations",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "feed_lines",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "charging_stations_district_id_foreign": {
+          "constraintName": "charging_stations_district_id_foreign",
+          "columnNames": [
+            "district_id"
+          ],
+          "localTableName": "charging_stations",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "districts",
           "deleteRule": "set null",
           "updateRule": "cascade"
         }

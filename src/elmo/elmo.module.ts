@@ -15,6 +15,9 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { MqTopicPublishHelper } from './adapter/out/mq/mq-topic-publish-helper';
 import { ProxyHelper } from './adapter/out/proxy/proxy-helper';
 import { ConfigModule } from '@nestjs/config';
+import { FeedLineEntity } from './adapter/out/entities/feed-line.entity';
+import { LoadSiteEntity } from './adapter/out/entities/load-site.entity';
+import { DistrictEntity } from './adapter/out/entities/district.entity';
 
 @Module({
   imports: [
@@ -27,6 +30,9 @@ import { ConfigModule } from '@nestjs/config';
       AvailableCapacityEmergencyEntity,
       AvailableCapacityNegotiationEntity,
       AvailableCapacityNegotiationDetailEntity,
+      FeedLineEntity,
+      LoadSiteEntity,
+      DistrictEntity,
     ]),
   ],
   controllers: [OscpController],

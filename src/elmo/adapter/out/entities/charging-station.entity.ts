@@ -11,6 +11,9 @@ import {
 import { AvailableCapacityEmergencyEntity } from './available-capacity-emergency.entity';
 import { AvailableCapacityNegotiationEntity } from './available-capacity-negotiation.entity';
 import { CsmsEntity } from './csms.entity';
+import { LoadSiteEntity } from './load-site.entity';
+import { FeedLineEntity } from './feed-line.entity';
+import { DistrictEntity } from './district.entity';
 
 @Entity({ tableName: 'charging_stations' })
 export class ChargingStationEntity {
@@ -26,6 +29,9 @@ export class ChargingStationEntity {
   // 契約容量 (kW)
   @Property({ type: types.float, default: 0 })
   contractCapacity: number;
+
+  @Property({ nullable: true })
+  electricityAccountNo?: string;
 
   @OneToMany({
     entity: () => AvailableCapacityNegotiationEntity,
@@ -45,5 +51,23 @@ export class ChargingStationEntity {
     nullable: true,
     deleteRule: 'set null',
   })
-  csms: CsmsEntity;
+  csms?: CsmsEntity;
+
+  @ManyToOne(() => LoadSiteEntity, {
+    nullable: true,
+    deleteRule: 'set null',
+  })
+  loadSite?: LoadSiteEntity;
+
+  @ManyToOne(() => FeedLineEntity, {
+    nullable: true,
+    deleteRule: 'set null',
+  })
+  feedLine?: FeedLineEntity;
+
+  @ManyToOne(() => DistrictEntity, {
+    nullable: true,
+    deleteRule: 'set null',
+  })
+  district?: DistrictEntity;
 }
