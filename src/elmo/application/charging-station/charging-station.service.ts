@@ -8,12 +8,16 @@ import { ChargingStationMeasureData } from './types';
 import { DateTime } from 'luxon';
 import { EnergyMeasurementUnit } from '../../adapter/in/dto/enums';
 import { EnergyMeasurementDto } from '../../adapter/in/dto/energy-measurement.dto';
+import { NegotiationStatus } from '../available-capacity/types';
+import { AvailableCapacityNegotiationEntity } from '../../adapter/out/entities/available-capacity-negotiation.entity';
 
 @Injectable()
 export class ChargingStationService {
   constructor(
     @InjectRepository(ChargingStationEntity)
     private readonly chargingStationRepo: EntityRepository<ChargingStationEntity>,
+    @InjectRepository(AvailableCapacityNegotiationEntity)
+    private readonly availableCapacityNegotiationRepo: EntityRepository<AvailableCapacityNegotiationEntity>,
     private readonly mqHelper: MqTopicPublishHelper,
   ) {}
 
@@ -27,6 +31,96 @@ export class ChargingStationService {
       csms: {
         isConnected: true,
       },
+    });
+  }
+
+  async findChargingStationWithNegotiation(filterBy: {
+    date: Date;
+    districtId?: number;
+    feedLineId?: number;
+    loadSiteId?: number;
+    negotiationStatusList?: NegotiationStatus[];
+    keyword?: string;
+  }): Promise<ChargingStationEntity[]> {
+    const {
+      date,
+      districtId,
+      feedLineId,
+      loadSiteId,
+      negotiationStatusList,
+      keyword,
+    } = filterBy;
+
+    // filter charging stations by feed line, load site, keyword
+    let chargingStationFilters: any = {};
+
+    if (districtId) {
+      chargingStationFilters.district = { id: districtId };
+    }
+
+    if (feedLineId) {
+      chargingStationFilters.feedLine = { id: feedLineId };
+    }
+
+    if (loadSiteId) {
+      chargingStationFilters.loadSite = { id: loadSiteId };
+    }
+
+    if (keyword) {
+      chargingStationFilters = {
+        ...chargingStationFilters,
+        ...{
+          $or: [
+            { name: { $like: `%${keyword}%` } },
+            { electricityAccountNo: { $like: `%${keyword}%` } },
+            { loadSite: { name: { $like: `%${keyword}%` } } },
+          ],
+        },
+      };
+    }
+
+    const chargingStations = await this.chargingStationRepo.find(
+      chargingStationFilters,
+      {
+        populate: ['feedLine', 'loadSite'],
+      },
+    );
+
+    // filter negotiations by date, charging stations, negotiation status
+    const negotiationFilter: any = {
+      date,
+      chargingStation: {
+        $in: chargingStations,
+      },
+    };
+
+    if (negotiationStatusList && negotiationStatusList.length > 0) {
+      negotiationFilter.lastDetailStatus = { $in: negotiationStatusList };
+    }
+
+    const negotiations = await this.availableCapacityNegotiationRepo.find(
+      negotiationFilter,
+      {
+        orderBy: { chargingStation: { id: 'asc' } },
+      },
+    );
+
+    // TODO: query emergency
+
+    // combine charging stations with negotiations
+    const chargingStationIdMap = chargingStations.reduce(
+      (map, chargingStation) => {
+        map[chargingStation.id] = chargingStation;
+        return map;
+      },
+      {},
+    );
+
+    return negotiations.map((negotiation) => {
+      const chargingStation =
+        chargingStationIdMap[negotiation.chargingStation.id];
+      chargingStation.negotiations = [negotiation];
+      return chargingStation;
     });
   }
 

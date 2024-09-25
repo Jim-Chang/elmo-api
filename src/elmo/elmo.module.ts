@@ -15,6 +15,7 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { MqTopicPublishHelper } from './adapter/out/mq/mq-topic-publish-helper';
 import { ProxyHelper } from './adapter/out/proxy/proxy-helper';
 import { ConfigModule } from '@nestjs/config';
+import { ChargingStationNegotiationController } from './adapter/in/charging-station-negotiation.controller';
 import { FeedLineEntity } from './adapter/out/entities/feed-line.entity';
 import { LoadSiteEntity } from './adapter/out/entities/load-site.entity';
 import { DistrictEntity } from './adapter/out/entities/district.entity';
@@ -35,7 +36,7 @@ import { DistrictEntity } from './adapter/out/entities/district.entity';
       DistrictEntity,
     ]),
   ],
-  controllers: [OscpController],
+  controllers: [OscpController, ChargingStationNegotiationController],
   providers: [
     AvailableCapacityNegotiationCronjobService,
     AvailableCapacityNegotiationService,
