@@ -114,22 +114,17 @@ export class AvailableCapacityNegotiationService {
       },
     );
 
-    const em = this.negotiationRepo.getEntityManager();
-    return await em.transactional(async (em: EntityManager) => {
-      await Promise.all(
-        negotiations.map((negotiation) =>
-          this.assignAvailableCapacityByNegotiation(
-            em,
-            negotiation,
-            negotiation.chargingStation,
-          ),
+    await Promise.all(
+      negotiations.map((negotiation) =>
+        this.assignAvailableCapacityByNegotiation(
+          negotiation,
+          negotiation.chargingStation,
         ),
-      );
-    });
+      ),
+    );
   }
 
   async assignAvailableCapacityByNegotiation(
-    em: EntityManager,
     negotiation: AvailableCapacityNegotiationEntity,
     chargingStation: ChargingStationEntity,
   ): Promise<AvailableCapacityNegotiationEntity> {
@@ -166,7 +161,11 @@ export class AvailableCapacityNegotiationService {
       status: NegotiationStatus.NEGOTIATING,
       hourCapacities,
     };
-    await this.transitionNegotiationStatus(em, negotiation, detailData, true);
+
+    const em = this.negotiationRepo.getEntityManager();
+    await em.transactional(async (em: EntityManager) => {
+      await this.transitionNegotiationStatus(em, negotiation, detailData, true);
+    });
 
     return negotiation;
   }
@@ -261,14 +260,10 @@ export class AvailableCapacityNegotiationService {
     );
 
     // 發送「申請額外可用容量回覆」給充電站，並更新協商狀態
-    const em = this.negotiationRepo.getEntityManager();
-    return await em.transactional(async (em: EntityManager) => {
-      return await this.replyExtraCapacityByNegotiation(
-        em,
-        negotiation,
-        NegotiationStatus.EXTRA_REPLY_FINISH,
-      );
-    });
+    return await this.replyExtraCapacityByNegotiation(
+      negotiation,
+      NegotiationStatus.EXTRA_REPLY_FINISH,
+    );
   }
 
   /**
@@ -288,20 +283,17 @@ export class AvailableCapacityNegotiationService {
     );
 
     // 發送「申請額外可用容量回覆」給充電站，並更新協商狀態
-    const em = this.negotiationRepo.getEntityManager();
-    for (const negotiation of negotiations) {
-      await em.transactional(async (em: EntityManager) => {
-        await this.replyExtraCapacityByNegotiation(
-          em,
+    await Promise.all(
+      negotiations.map((negotiation) =>
+        this.replyExtraCapacityByNegotiation(
           negotiation,
           NegotiationStatus.EXTRA_REPLY_AUTO,
-        );
-      });
-    }
+        ),
+      ),
+    );
   }
 
   async replyExtraCapacityByNegotiation(
-    em: EntityManager,
     negotiation: AvailableCapacityNegotiationEntity,
     statusOnSuccess: NegotiationStatus,
   ): Promise<boolean> {
@@ -359,7 +351,11 @@ export class AvailableCapacityNegotiationService {
       status: nextStatus,
       hourCapacities: applyHourCapacities,
     };
-    await this.transitionNegotiationStatus(em, negotiation, detailData, true);
+
+    const em = this.negotiationRepo.getEntityManager();
+    await em.transactional(async (em: EntityManager) => {
+      await this.transitionNegotiationStatus(em, negotiation, detailData, true);
+    });
 
     return success;
   }
@@ -380,18 +376,14 @@ export class AvailableCapacityNegotiationService {
       },
     );
 
-    const em = this.negotiationRepo.getEntityManager();
-    return await em.transactional(async (em: EntityManager) => {
-      await Promise.all(
-        negotiations.map((negotiation) =>
-          this.finishNegotiationByNegotiation(
-            em,
-            negotiation,
-            negotiation.chargingStation,
-          ),
+    await Promise.all(
+      negotiations.map((negotiation) =>
+        this.finishNegotiationByNegotiation(
+          negotiation,
+          negotiation.chargingStation,
         ),
-      );
-    });
+      ),
+    );
   }
 
   /**
@@ -417,22 +409,17 @@ export class AvailableCapacityNegotiationService {
       },
     );
 
-    const em = this.negotiationRepo.getEntityManager();
-    return await em.transactional(async (em: EntityManager) => {
-      await Promise.all(
-        negotiations.map((negotiation) =>
-          this.finishNegotiationByNegotiation(
-            em,
-            negotiation,
-            negotiation.chargingStation,
-          ),
+    await Promise.all(
+      negotiations.map((negotiation) =>
+        this.finishNegotiationByNegotiation(
+          negotiation,
+          negotiation.chargingStation,
         ),
-      );
-    });
+      ),
+    );
   }
 
   async finishNegotiationByNegotiation(
-    em: EntityManager,
     negotiation: AvailableCapacityNegotiationEntity,
     chargingStation: ChargingStationEntity,
   ) {
@@ -482,7 +469,11 @@ export class AvailableCapacityNegotiationService {
       status: nextStatus,
       hourCapacities,
     };
-    await this.transitionNegotiationStatus(em, negotiation, detailData, true);
+
+    const em = this.negotiationRepo.getEntityManager();
+    return await em.transactional(async (em: EntityManager) => {
+      await this.transitionNegotiationStatus(em, negotiation, detailData, true);
+    });
   }
 
   buildUpdateGroupCapacityForecast(
