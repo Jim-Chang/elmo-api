@@ -6,6 +6,7 @@ import {
   OSCP_REQUEST_ID_ALPHABET,
   OSCP_REQUEST_ID_LENGTH,
 } from '../../../../constants';
+import { ProxyHelper } from '../proxy/proxy-helper';
 import { CsmsEntity } from '../entities/csms.entity';
 import {
   CsmsOscpRequestFailedError,
@@ -16,7 +17,10 @@ import {
 export class CsmsOscpRequestHelper {
   private readonly logger = new Logger(CsmsOscpRequestHelper.name);
 
-  constructor(private readonly httpService: HttpService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly proxyHelper: ProxyHelper,
+  ) {}
 
   async sendUpdateGroupCapacityForecastToCsms(
     csms: CsmsEntity,
@@ -50,6 +54,7 @@ export class CsmsOscpRequestHelper {
         Authorization: `Token ${token}`,
         'X-Request-ID': requestId,
       },
+      ...this.proxyHelper.getConfigForAxiosRequest(),
     };
   }
 
