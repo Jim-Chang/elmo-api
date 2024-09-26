@@ -15,6 +15,8 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { MqTopicPublishHelper } from './adapter/out/mq/mq-topic-publish-helper';
 import { ProxyHelper } from './adapter/out/proxy/proxy-helper';
 import { ConfigModule } from '@nestjs/config';
+import { InternalApiController } from './adapter/in/internal-api.controller';
+import { InternalNegotiationHelper } from './adapter/in/internal-api/internal-negotiation-helper';
 
 @Module({
   imports: [
@@ -29,12 +31,13 @@ import { ConfigModule } from '@nestjs/config';
       AvailableCapacityNegotiationDetailEntity,
     ]),
   ],
-  controllers: [OscpController],
+  controllers: [InternalApiController, OscpController],
   providers: [
     AvailableCapacityNegotiationCronjobService,
     AvailableCapacityNegotiationService,
     ChargingStationService,
     CsmsOscpRequestHelper,
+    InternalNegotiationHelper,
     MqTopicPublishHelper,
     ProxyHelper,
   ],
