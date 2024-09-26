@@ -18,7 +18,10 @@ import { ConfigModule } from '@nestjs/config';
 import { ChargingStationNegotiationController } from './adapter/in/charging-station-negotiation.controller';
 import { FeedLineEntity } from './adapter/out/entities/feed-line.entity';
 import { LoadSiteEntity } from './adapter/out/entities/load-site.entity';
+import { FeedLineService } from './application/feed-line/feed-line.service';
+import { FilterOptionsController } from './adapter/filter-options.controller';
 import { DistrictEntity } from './adapter/out/entities/district.entity';
+import { DistrictService } from './application/district/district.service';
 
 @Module({
   imports: [
@@ -36,7 +39,11 @@ import { DistrictEntity } from './adapter/out/entities/district.entity';
       DistrictEntity,
     ]),
   ],
-  controllers: [OscpController, ChargingStationNegotiationController],
+  controllers: [
+    OscpController,
+    ChargingStationNegotiationController,
+    FilterOptionsController,
+  ],
   providers: [
     AvailableCapacityNegotiationCronjobService,
     AvailableCapacityNegotiationService,
@@ -44,6 +51,8 @@ import { DistrictEntity } from './adapter/out/entities/district.entity';
     CsmsOscpRequestHelper,
     MqTopicPublishHelper,
     ProxyHelper,
+    FeedLineService,
+    DistrictService,
   ],
 })
 export class ElmoModule {

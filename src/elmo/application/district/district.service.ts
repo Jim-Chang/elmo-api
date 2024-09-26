@@ -1,0 +1,16 @@
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { EntityRepository } from '@mikro-orm/core';
+import { DistrictEntity } from '../../adapter/out/entities/district.entity';
+
+@Injectable()
+export class DistrictService {
+  constructor(
+    @InjectRepository(DistrictEntity)
+    private readonly districtRepository: EntityRepository<DistrictEntity>,
+  ) {}
+
+  async getAllDistricts(): Promise<DistrictEntity[]> {
+    return await this.districtRepository.findAll();
+  }
+}
