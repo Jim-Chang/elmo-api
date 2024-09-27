@@ -34,6 +34,17 @@ export class ChargingStationService {
     });
   }
 
+  async findChargingStationByNegotiationId(
+    negotiationId: number,
+  ): Promise<ChargingStationEntity> {
+    const negotiation =
+      await this.availableCapacityNegotiationRepo.findOneOrFail(negotiationId, {
+        populate: ['chargingStation'],
+      });
+
+    return negotiation.chargingStation;
+  }
+
   async findChargingStationWithNegotiation(filterBy: {
     date: Date;
     districtId?: number;

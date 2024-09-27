@@ -44,6 +44,12 @@ export class AvailableCapacityNegotiationService {
     private readonly oscpRequestHelper: CsmsOscpRequestHelper,
   ) {}
 
+  async getNegotiationById(
+    id: number,
+  ): Promise<AvailableCapacityNegotiationEntity | null> {
+    return this.negotiationRepo.findOne({ id });
+  }
+
   async getNegotiationDetailByStatus(
     negotiation: AvailableCapacityNegotiationEntity,
     status: NegotiationStatus,

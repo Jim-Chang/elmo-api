@@ -1,4 +1,13 @@
-import { Controller, Get, Logger, Query, UsePipes } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Logger,
+  NotFoundException,
+  Param,
+  ParseIntPipe,
+  Query,
+  UsePipes,
+} from '@nestjs/common';
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
 import { ChargingStationService } from '../../../application/charging-station/charging-station.service';
 import {
@@ -7,13 +16,18 @@ import {
 } from './dto/charging-station-negotiation-list.dto';
 import { DateTime } from 'luxon';
 import { TAIPEI_TZ } from '../../../../constants';
+import { ChargingStationNegotiationDto } from './dto/charging-station-negotiation.dto';
+import { AvailableCapacityNegotiationService } from '../../../application/available-capacity/available-capacity-negotiation.service';
 
 @Controller('/api/charging-station-negotiation')
 @UsePipes(ZodValidationPipe)
 export class ChargingStationNegotiationController {
   private logger = new Logger(ChargingStationNegotiationController.name);
 
-  constructor(private chargingStationService: ChargingStationService) {}
+  constructor(
+    private chargingStationService: ChargingStationService,
+    private availableCapacityNegotiationService: AvailableCapacityNegotiationService,
+  ) {}
 
   @Get()
   async getListItems(
@@ -48,6 +62,46 @@ export class ChargingStationNegotiationController {
 
     return {
       items: itemDataList,
+    };
+  }
+
+  @Get('/negotiation/:id')
+  async getNegotiationDetail(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ChargingStationNegotiationDto> {
+    const negotiation =
+      await this.availableCapacityNegotiationService.getNegotiationById(id);
+    if (negotiation === null) {
+      throw new NotFoundException(`Negotiation with id ${id} not found`);
+    }
+
+    // TODO: should get all negotiation details
+    const negotiationDetail =
+      await this.availableCapacityNegotiationService.getNegotiationDetailByStatus(
+        negotiation,
+        negotiation.lastDetailStatus,
+      );
+    if (negotiationDetail === null) {
+      throw new NotFoundException(
+        `Negotiation detail with status ${negotiation.lastDetailStatus} not found`,
+      );
+    }
+
+    const chargingStation =
+      await this.chargingStationService.findChargingStationByNegotiationId(
+        negotiation.id,
+      );
+
+    return {
+      charging_station: {
+        name: chargingStation.name,
+        contract_capacity: chargingStation.contractCapacity,
+      },
+      negotiation_id: negotiation.id,
+      date: negotiation.date,
+      status: negotiation.lastDetailStatus,
+      // TODO: should return all negotiation details
+      hour_capacities: negotiationDetail.hourCapacities,
     };
   }
 }
