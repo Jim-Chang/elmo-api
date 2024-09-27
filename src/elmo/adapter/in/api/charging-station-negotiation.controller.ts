@@ -50,8 +50,7 @@ export class ChargingStationNegotiationController {
       );
 
     const itemDataList = chargingStations.map((chargingStation) => ({
-      id: chargingStation.id,
-      uid: chargingStation.uid,
+      negotiation_id: chargingStation.negotiations[0]?.id ?? null,
       feed_line: chargingStation.feedLine?.name ?? null,
       electricity_account_no: chargingStation.electricityAccountNo ?? null,
       charging_station_name: chargingStation.name,
