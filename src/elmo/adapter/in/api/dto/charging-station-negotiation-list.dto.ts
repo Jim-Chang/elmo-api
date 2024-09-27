@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { NegotiationStatus } from '../../../application/available-capacity/types';
+import { NegotiationStatus } from '../../../../application/available-capacity/types';
 import { createZodDto } from '@anatine/zod-nestjs';
 import { DateTime } from 'luxon';
-import { TAIPEI_TZ } from '../../../../constants';
+import { TAIPEI_TZ } from '../../../../../constants';
 
 function checkDateQueryParam(date: string) {
   const parsedDate = DateTime.fromFormat(date, 'yyyy-MM-dd', {

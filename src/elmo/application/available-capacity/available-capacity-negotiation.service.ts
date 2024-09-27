@@ -25,7 +25,7 @@ import {
   CapacityForecastType,
   ForecastedBlockUnit,
   PhaseIndicator,
-} from '../../adapter/in/dto/enums';
+} from '../../adapter/in/oscp/dto/enums';
 import { CsmsOscpRequestHelper } from '../../adapter/out/csms-oscp/csms-oscp-request-helper';
 import { UpdateGroupCapacityForecast } from '../oscp/types';
 

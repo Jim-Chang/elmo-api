@@ -3,11 +3,11 @@ import { ChargingStationEntity } from '../../adapter/out/entities/charging-stati
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/core';
 import { MqTopicPublishHelper } from '../../adapter/out/mq/mq-topic-publish-helper';
-import { UpdateGroupMeasurementsDto } from '../../adapter/in/dto/update-group-measurements.dto';
+import { UpdateGroupMeasurementsDto } from '../../adapter/in/oscp/dto/update-group-measurements.dto';
 import { ChargingStationMeasureData } from './types';
 import { DateTime } from 'luxon';
-import { EnergyMeasurementUnit } from '../../adapter/in/dto/enums';
-import { EnergyMeasurementDto } from '../../adapter/in/dto/energy-measurement.dto';
+import { EnergyMeasurementUnit } from '../../adapter/in/oscp/dto/enums';
+import { EnergyMeasurementDto } from '../../adapter/in/oscp/dto/energy-measurement.dto';
 import { NegotiationStatus } from '../available-capacity/types';
 import { AvailableCapacityNegotiationEntity } from '../../adapter/out/entities/available-capacity-negotiation.entity';
 

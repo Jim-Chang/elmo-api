@@ -1,12 +1,12 @@
 import { Controller, Get, Logger, Query, UsePipes } from '@nestjs/common';
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
-import { ChargingStationService } from '../../application/charging-station/charging-station.service';
+import { ChargingStationService } from '../../../application/charging-station/charging-station.service';
 import {
   ChargingStationNegotiationListDataDto,
   ChargingStationNegotiationListQueryDto,
 } from './dto/charging-station-negotiation-list.dto';
 import { DateTime } from 'luxon';
-import { TAIPEI_TZ } from '../../../constants';
+import { TAIPEI_TZ } from '../../../../constants';
 
 @Controller('/api/charging-station-negotiation')
 @UsePipes(ZodValidationPipe)

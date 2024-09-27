@@ -6,7 +6,7 @@ import {
 import { createZodDto } from '@anatine/zod-nestjs';
 import { CapacityForecastType } from './enums';
 import { DateTime } from 'luxon';
-import { TAIPEI_TZ } from '../../../../constants';
+import { TAIPEI_TZ } from '../../../../../constants';
 
 const FORECASTED_BLOCKS_COUNT = 24;
 
