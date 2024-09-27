@@ -13,6 +13,7 @@ import { ChargingStationEntity } from './adapter/out/entities/charging-station.e
 import { CsmsOscpRequestHelper } from './adapter/out/csms-oscp/csms-oscp-request-helper';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { MqTopicPublishHelper } from './adapter/out/mq/mq-topic-publish-helper';
+import { ProxyHelper } from './adapter/out/proxy/proxy-helper';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -35,6 +36,7 @@ import { ConfigModule } from '@nestjs/config';
     ChargingStationService,
     CsmsOscpRequestHelper,
     MqTopicPublishHelper,
+    ProxyHelper,
   ],
 })
 export class ElmoModule {
