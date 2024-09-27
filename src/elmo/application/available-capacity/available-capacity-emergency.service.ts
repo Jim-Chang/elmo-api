@@ -1,4 +1,4 @@
-import { EntityManager, EntityRepository } from '@mikro-orm/core';
+import { EntityManager, EntityRepository, wrap } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { DateTime } from 'luxon';
@@ -39,22 +39,35 @@ export class AvailableCapacityEmergencyService {
         periodStartAt,
         periodEndAt,
         capacity,
+        isSuccessSent: false,
       });
       await em.persistAndFlush(entity);
       return entity;
     });
 
     // 發送「可用容量緊急通知」給 ChargingStation
-    const message = this.buildUpdateGroupCapacityForecast(
-      emergency,
-      chargingStation,
-    );
-    await this.oscpRequestHelper.sendUpdateGroupCapacityForecastToCsms(
-      chargingStation.csms,
-      message,
-    );
+    try {
+      const message = this.buildUpdateGroupCapacityForecast(
+        emergency,
+        chargingStation,
+      );
+      await this.oscpRequestHelper.sendUpdateGroupCapacityForecastToCsms(
+        chargingStation.csms,
+        message,
+      );
+    } catch (error) {
+      this.logger.error(
+        `ChargingStation[${chargingStation.uid}] failed to send emergency (error: ${error})`,
+      );
+      return emergency;
+    }
 
-    // TODO: 處理發送失敗的情況
+    // 更新「可用容量緊急通知」為已成功發送
+    wrap(emergency).assign(
+      { isSuccessSent: true },
+      { em, mergeObjectProperties: true },
+    );
+    await em.persistAndFlush(emergency);
 
     return emergency;
   }

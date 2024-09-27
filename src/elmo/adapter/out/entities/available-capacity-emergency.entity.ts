@@ -23,4 +23,8 @@ export class AvailableCapacityEmergencyEntity extends TimestampBaseEntity {
   // 可用容量 (kW)
   @Property()
   capacity!: number;
+
+  // 是否成功發送 OSCP message 給充電站
+  @Property({ default: false })
+  isSuccessSent!: boolean;
 }
