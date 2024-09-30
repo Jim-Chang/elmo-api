@@ -16,7 +16,14 @@ import { MqTopicPublishHelper } from './adapter/out/mq/mq-topic-publish-helper';
 import { ProxyHelper } from './adapter/out/proxy/proxy-helper';
 import { ConfigModule } from '@nestjs/config';
 import { InternalApiController } from './adapter/in/internal-api.controller';
+import { ChargingStationNegotiationController } from './adapter/in/charging-station-negotiation.controller';
+import { FeedLineEntity } from './adapter/out/entities/feed-line.entity';
+import { LoadSiteEntity } from './adapter/out/entities/load-site.entity';
+import { FilterOptionsController } from './adapter/filter-options.controller';
+import { DistrictEntity } from './adapter/out/entities/district.entity';
 import { InternalNegotiationHelper } from './adapter/in/internal-api/internal-negotiation-helper';
+import { FeedLineService } from './application/feed-line/feed-line.service';
+import { DistrictService } from './application/district/district.service';
 
 @Module({
   imports: [
@@ -29,9 +36,17 @@ import { InternalNegotiationHelper } from './adapter/in/internal-api/internal-ne
       AvailableCapacityEmergencyEntity,
       AvailableCapacityNegotiationEntity,
       AvailableCapacityNegotiationDetailEntity,
+      FeedLineEntity,
+      LoadSiteEntity,
+      DistrictEntity,
     ]),
   ],
-  controllers: [InternalApiController, OscpController],
+  controllers: [
+    InternalApiController,
+    OscpController,
+    ChargingStationNegotiationController,
+    FilterOptionsController,
+  ],
   providers: [
     AvailableCapacityNegotiationCronjobService,
     AvailableCapacityNegotiationService,
@@ -40,6 +55,8 @@ import { InternalNegotiationHelper } from './adapter/in/internal-api/internal-ne
     InternalNegotiationHelper,
     MqTopicPublishHelper,
     ProxyHelper,
+    FeedLineService,
+    DistrictService,
   ],
 })
 export class ElmoModule {
