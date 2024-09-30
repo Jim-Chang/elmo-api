@@ -1,3 +1,4 @@
+import { ZodValidationPipe } from '@anatine/zod-nestjs';
 import {
   Body,
   Controller,
@@ -5,14 +6,15 @@ import {
   HttpStatus,
   NotFoundException,
   Post,
+  UsePipes,
 } from '@nestjs/common';
-import { DateTime } from 'luxon';
 import { API_PREFIX } from '../../../constants';
 import { AvailableCapacityEmergencyService } from '../../application/available-capacity/available-capacity-emergency.service';
 import { ChargingStationService } from '../../application/charging-station/charging-station.service';
 import { CreateAndSendEmergencyDto } from './dto/create-and-send-emergency.dto';
 
 @Controller(`${API_PREFIX}/available-capacity-emergency`)
+@UsePipes(ZodValidationPipe)
 export class AvailableCapacityEmergencyController {
   constructor(
     private readonly chargingStationService: ChargingStationService,
@@ -35,8 +37,8 @@ export class AvailableCapacityEmergencyController {
 
     return await this.emergencyService.createAndSendEmergency(
       chargingStation,
-      DateTime.fromISO(dto.periodStartAt).toJSDate(),
-      DateTime.fromISO(dto.periodEndAt).toJSDate(),
+      dto.periodStartAt,
+      dto.periodEndAt,
       dto.capacity,
     );
   }
