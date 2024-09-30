@@ -15,12 +15,14 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { MqTopicPublishHelper } from './adapter/out/mq/mq-topic-publish-helper';
 import { ProxyHelper } from './adapter/out/proxy/proxy-helper';
 import { ConfigModule } from '@nestjs/config';
+import { InternalApiController } from './adapter/in/internal-api.controller';
 import { ChargingStationNegotiationController } from './adapter/in/api/charging-station-negotiation.controller';
 import { FeedLineEntity } from './adapter/out/entities/feed-line.entity';
 import { LoadSiteEntity } from './adapter/out/entities/load-site.entity';
 import { FeedLineService } from './application/feed-line/feed-line.service';
 import { FilterOptionsController } from './adapter/in/api/filter-options.controller';
 import { DistrictEntity } from './adapter/out/entities/district.entity';
+import { InternalNegotiationHelper } from './adapter/in/internal-api/internal-negotiation-helper';
 import { DistrictService } from './application/district/district.service';
 
 @Module({
@@ -40,6 +42,7 @@ import { DistrictService } from './application/district/district.service';
     ]),
   ],
   controllers: [
+    InternalApiController,
     OscpController,
     ChargingStationNegotiationController,
     FilterOptionsController,
@@ -49,6 +52,7 @@ import { DistrictService } from './application/district/district.service';
     AvailableCapacityNegotiationService,
     ChargingStationService,
     CsmsOscpRequestHelper,
+    InternalNegotiationHelper,
     MqTopicPublishHelper,
     ProxyHelper,
     FeedLineService,
