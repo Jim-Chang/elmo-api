@@ -26,6 +26,10 @@ export class ChargingStationService {
     return !!chargingStation;
   }
 
+  async getChargingStationByUid(uid: string): Promise<ChargingStationEntity> {
+    return this.chargingStationRepo.findOne({ uid });
+  }
+
   async getConnectedChargingStations(): Promise<ChargingStationEntity[]> {
     return this.chargingStationRepo.find({
       csms: {

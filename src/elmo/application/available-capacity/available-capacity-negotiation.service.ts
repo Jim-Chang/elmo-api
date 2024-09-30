@@ -140,6 +140,8 @@ export class AvailableCapacityNegotiationService {
       negotiation,
       hourCapacities,
     );
+
+    let success: boolean;
     try {
       await this.oscpRequestHelper.sendUpdateGroupCapacityForecastToCsms(
         chargingStation.csms,
@@ -148,19 +150,34 @@ export class AvailableCapacityNegotiationService {
       this.logger.log(
         `ChargingStation[${chargingStation.uid}] assigned available capacity`,
       );
+      success = true;
     } catch (error) {
       this.logger.error(
         `ChargingStation[${chargingStation.uid}] failed to assign available capacity`,
       );
-      return negotiation;
+      success = false;
     }
 
     // 更新協商狀態
-    const detailData = {
-      negotiation,
-      status: NegotiationStatus.NEGOTIATING,
-      hourCapacities,
-    };
+    let detailData: RequiredEntityData<AvailableCapacityNegotiationDetailEntity>;
+    if (success) {
+      // 若發送成功，進入「NEGOTIATING」狀態
+      detailData = {
+        negotiation,
+        status: NegotiationStatus.NEGOTIATING,
+        hourCapacities,
+      };
+    } else {
+      // 若發送失敗，以充電站契約容量作結
+      detailData = {
+        negotiation,
+        status: NegotiationStatus.NEGOTIATING_FAILED,
+        hourCapacities:
+          this.buildHourCapacitiesByChargingStationContractCapacity(
+            chargingStation,
+          ),
+      };
+    }
 
     const em = this.negotiationRepo.getEntityManager();
     await em.transactional(async (em: EntityManager) => {
