@@ -12,12 +12,25 @@ const ChargingStationSchema = z.object({
   contract_capacity: z.number(),
 });
 
+const ChargingStationNegotiationDetailDataSchema = z.object({
+  id: z.number(),
+  status: z.nativeEnum(NegotiationStatus),
+  hour_capacities: z.array(AvailableCapacityNegotiationHourCapacitySchema),
+  created_at: z.date(),
+});
+
+export class ChargingStationNegotiationDetailDto extends createZodDto(
+  ChargingStationNegotiationDetailDataSchema,
+) {}
+
 const ChargingStationNegotiationDataSchema = z.object({
   charging_station: ChargingStationSchema,
   negotiation_id: z.number(),
   date: z.date(),
-  status: z.nativeEnum(NegotiationStatus),
-  hour_capacities: z.array(AvailableCapacityNegotiationHourCapacitySchema),
+  initial_detail: ChargingStationNegotiationDetailDataSchema,
+  request_detail: ChargingStationNegotiationDetailDataSchema.nullable(),
+  reply_detail: ChargingStationNegotiationDetailDataSchema.nullable(),
+  last_status: z.nativeEnum(NegotiationStatus),
 });
 
 export class ChargingStationNegotiationDto extends createZodDto(
