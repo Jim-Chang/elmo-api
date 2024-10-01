@@ -4,8 +4,8 @@ import { z } from 'zod';
 
 const CreateAndSendEmergencySchema = z
   .object({
-    chargingStationId: z.number().int().positive(),
-    periodStartAt: z
+    charging_station_id: z.number().int().positive(),
+    period_start_at: z
       .string()
       .datetime({ offset: true })
       .transform(transformFromISOToDate)
@@ -15,7 +15,7 @@ const CreateAndSendEmergencySchema = z
       .refine(validateDateIsAtLeast15MinutesLater, {
         message: 'must be later than 15 minutes from now',
       }),
-    periodEndAt: z
+    period_end_at: z
       .string()
       .datetime({ offset: true })
       .transform(transformFromISOToDate)
@@ -51,9 +51,9 @@ function validateDateBeforeTomorrow(date: Date) {
   return datetime <= DateTime.now().plus({ days: 1 }).startOf('day');
 }
 
-function validatePeriodEndAfterStart(data) {
+function validatePeriodEndAfterStart(data: any) {
   return (
-    DateTime.fromJSDate(data.periodEndAt) >
-    DateTime.fromJSDate(data.periodStartAt)
+    DateTime.fromJSDate(data.period_end_at) >
+    DateTime.fromJSDate(data.period_start_at)
   );
 }

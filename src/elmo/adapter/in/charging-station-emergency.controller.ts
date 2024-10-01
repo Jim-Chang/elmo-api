@@ -13,9 +13,9 @@ import { AvailableCapacityEmergencyService } from '../../application/available-c
 import { ChargingStationService } from '../../application/charging-station/charging-station.service';
 import { CreateAndSendEmergencyDto } from './dto/create-and-send-emergency.dto';
 
-@Controller(`${API_PREFIX}/available-capacity-emergency`)
+@Controller(`${API_PREFIX}/charging-station-emergency`)
 @UsePipes(ZodValidationPipe)
-export class AvailableCapacityEmergencyController {
+export class ChargingStationEmergencyController {
   constructor(
     private readonly chargingStationService: ChargingStationService,
     private readonly emergencyService: AvailableCapacityEmergencyService,
@@ -27,18 +27,18 @@ export class AvailableCapacityEmergencyController {
     // 檢查充電站是否存在且已連線
     const chargingStation =
       await this.chargingStationService.getConnectedChargingStationById(
-        dto.chargingStationId,
+        dto.charging_station_id,
       );
     if (!chargingStation) {
       throw new NotFoundException(
-        `ChargingStation[${dto.chargingStationId}] not exist or not connected`,
+        `ChargingStation[${dto.charging_station_id}] not exist or not connected`,
       );
     }
 
     return await this.emergencyService.createAndSendEmergency(
       chargingStation,
-      dto.periodStartAt,
-      dto.periodEndAt,
+      dto.period_start_at,
+      dto.period_end_at,
       dto.capacity,
     );
   }
