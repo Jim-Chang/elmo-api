@@ -3,8 +3,8 @@ import { NegotiationStatus } from '../../../../application/available-capacity/ty
 import { createZodDto } from '@anatine/zod-nestjs';
 
 const AvailableCapacityNegotiationHourCapacitySchema = z.object({
-  hour: z.number(),
-  capacity: z.number(),
+  hour: z.number().int().min(0).max(23),
+  capacity: z.number().positive(),
 });
 
 const ChargingStationSchema = z.object({
@@ -35,4 +35,26 @@ const ChargingStationNegotiationDataSchema = z.object({
 
 export class ChargingStationNegotiationDto extends createZodDto(
   ChargingStationNegotiationDataSchema,
+) {}
+
+const ChargingStationNegotiationPostDataSchema = z.object({
+  negotiation_id: z.number(),
+  hour_capacities: z
+    .array(AvailableCapacityNegotiationHourCapacitySchema)
+    .refine(
+      (hourCapacities) => {
+        const hours = hourCapacities.map((item) => item.hour);
+        return (
+          hours.length === 24 && hours.every((hour, index) => hour === index)
+        );
+      },
+      {
+        message:
+          'hour_capacities must contain each hour from 0 to 23 exactly once',
+      },
+    ),
+});
+
+export class ChargingStationNegotiationPostDataDto extends createZodDto(
+  ChargingStationNegotiationPostDataSchema,
 ) {}

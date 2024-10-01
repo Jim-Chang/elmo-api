@@ -1,10 +1,15 @@
 import {
+  Body,
   Controller,
+  ForbiddenException,
   Get,
+  HttpCode,
+  HttpStatus,
   Logger,
   NotFoundException,
   Param,
   ParseIntPipe,
+  Post,
   Query,
   UsePipes,
 } from '@nestjs/common';
@@ -19,6 +24,7 @@ import { TAIPEI_TZ } from '../../../../constants';
 import {
   ChargingStationNegotiationDetailDto,
   ChargingStationNegotiationDto,
+  ChargingStationNegotiationPostDataDto,
 } from './dto/charging-station-negotiation.dto';
 import { AvailableCapacityNegotiationService } from '../../../application/available-capacity/available-capacity-negotiation.service';
 import { AvailableCapacityNegotiationDetailEntity } from '../../out/entities/available-capacity-negotiation-detail.entity';
@@ -135,6 +141,37 @@ export class ChargingStationNegotiationController {
         : null,
       reply_detail: replyDetail ? buildNegotiationDetailDto(replyDetail) : null,
       last_status: negotiation.lastDetailStatus,
+    };
+  }
+
+  @Post('/negotiation/edit-initial')
+  @HttpCode(HttpStatus.OK)
+  async editInitialNegotiation(
+    @Body() negotiationPostData: ChargingStationNegotiationPostDataDto,
+  ): Promise<ChargingStationNegotiationDetailDto> {
+    const { negotiation_id, hour_capacities } = negotiationPostData;
+    const negotiation =
+      await this.availableCapacityNegotiationService.getNegotiationById(
+        negotiation_id,
+      );
+
+    if (negotiation.lastDetailStatus !== NegotiationStatus.INITIAL_EDIT) {
+      throw new ForbiddenException(
+        `Negotiation with id ${negotiation_id} is not in initial edit status`,
+      );
+    }
+
+    const negotiationDetail =
+      await this.availableCapacityNegotiationService.updateInitialNegotiation(
+        negotiation_id,
+        hour_capacities as { hour: number; capacity: number }[],
+      );
+
+    return {
+      id: negotiationDetail.id,
+      status: negotiationDetail.status,
+      hour_capacities: negotiationDetail.hourCapacities,
+      created_at: negotiationDetail.createdAt,
     };
   }
 }
