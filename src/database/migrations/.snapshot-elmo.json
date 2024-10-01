@@ -727,6 +727,17 @@
           "nullable": false,
           "length": null,
           "mappedType": "integer"
+        },
+        "is_success_sent": {
+          "name": "is_success_sent",
+          "type": "tinyint(1)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 1,
+          "default": "false",
+          "mappedType": "boolean"
         }
       },
       "name": "available_capacity_emergencies",

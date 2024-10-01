@@ -27,8 +27,9 @@ export class CsmsOscpRequestHelper {
     message: UpdateGroupCapacityForecast,
   ) {
     if (!csms.isConnected) {
-      this.logger.error(`CSMS[${csms.id}] is not connected.`);
-      return;
+      throw new CsmsOscpRequestFailedError(
+        `CSMS[${csms.id}] is not connected.`,
+      );
     }
 
     const url = `${csms.oscpBaseUrl}${csms.oscpEndpoint}/update_group_capacity_forecast`;
