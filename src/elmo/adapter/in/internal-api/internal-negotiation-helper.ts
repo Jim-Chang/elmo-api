@@ -9,8 +9,8 @@ import {
   AvailableCapacityNegotiationHourCapacity,
 } from '../../out/entities/available-capacity-negotiation-detail.entity';
 import { NegotiationStatus } from '../../../application/available-capacity/types';
-import { InternalApiNegotiationRefreshDto } from '../dto/internal-api-negotiation-refresh.dto';
 import { ChargingStationEntity } from '../../out/entities/charging-station.entity';
+import { InternalApiNegotiationRefreshDto } from '../oscp/dto/internal-api-negotiation-refresh.dto';
 
 const ALL_STATUS_IN_ORDER = [
   NegotiationStatus.INITIAL_EDIT,

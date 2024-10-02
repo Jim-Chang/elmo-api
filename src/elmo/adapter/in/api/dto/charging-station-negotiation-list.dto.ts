@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { NegotiationStatus } from '../../../application/available-capacity/types';
+import { NegotiationStatus } from '../../../../application/available-capacity/types';
 import { createZodDto } from '@anatine/zod-nestjs';
 import { DateTime } from 'luxon';
-import { TAIPEI_TZ } from '../../../../constants';
+import { TAIPEI_TZ } from '../../../../../constants';
 
 function checkDateQueryParam(date: string) {
   const parsedDate = DateTime.fromFormat(date, 'yyyy-MM-dd', {
@@ -53,8 +53,7 @@ export class ChargingStationNegotiationListQueryDto extends createZodDto(
 ) {}
 
 const ChargingStationNegotiationDashboardItemDataSchema = z.object({
-  id: z.number(),
-  uid: z.string(),
+  negotiation_id: z.number(),
   feed_line: z.string(),
   electricity_account_no: z.string(),
   charging_station_name: z.string(),

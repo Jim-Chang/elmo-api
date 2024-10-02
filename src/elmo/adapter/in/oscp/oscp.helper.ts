@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { AvailableCapacityNegotiationHourCapacity } from '../out/entities/available-capacity-negotiation-detail.entity';
+import { AvailableCapacityNegotiationHourCapacity } from '../../out/entities/available-capacity-negotiation-detail.entity';
 import { ForecastedBlockDto } from './dto/forecasted-block.dto';
 
 export function transformNegotiationForecastedBlocksToHourCapacities(

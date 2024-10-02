@@ -2,7 +2,7 @@ import {
   CapacityForecastType,
   ForecastedBlockUnit,
   PhaseIndicator,
-} from '../../adapter/in/dto/enums';
+} from '../../adapter/in/oscp/dto/enums';
 
 export class CsmsOscpRequestFailedError extends Error {
   constructor(message: string) {

@@ -1,7 +1,7 @@
 import { HttpModule } from '@nestjs/axios';
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { HTTP_TIMEOUT_MILLISECONDS } from '../constants';
-import { OscpController } from './adapter/in/oscp.controller';
+import { OscpController } from './adapter/in/oscp/oscp.controller';
 import { OscpHeadersValidationMiddleware } from '../middleware/oscp-header-validation.middleware';
 import { AvailableCapacityEmergencyService } from './application/available-capacity/available-capacity-emergency.service';
 import { AvailableCapacityNegotiationCronjobService } from './adapter/in/cronjob/available-capacity-negotiation.cronjob.service';
@@ -18,13 +18,13 @@ import { ProxyHelper } from './adapter/out/proxy/proxy-helper';
 import { ConfigModule } from '@nestjs/config';
 import { ChargingStationEmergencyController } from './adapter/in/charging-station-emergency.controller';
 import { InternalApiController } from './adapter/in/internal-api.controller';
-import { ChargingStationNegotiationController } from './adapter/in/charging-station-negotiation.controller';
+import { ChargingStationNegotiationController } from './adapter/in/api/charging-station-negotiation.controller';
 import { FeedLineEntity } from './adapter/out/entities/feed-line.entity';
 import { LoadSiteEntity } from './adapter/out/entities/load-site.entity';
-import { FilterOptionsController } from './adapter/filter-options.controller';
+import { FeedLineService } from './application/feed-line/feed-line.service';
+import { FilterOptionsController } from './adapter/in/api/filter-options.controller';
 import { DistrictEntity } from './adapter/out/entities/district.entity';
 import { InternalNegotiationHelper } from './adapter/in/internal-api/internal-negotiation-helper';
-import { FeedLineService } from './application/feed-line/feed-line.service';
 import { DistrictService } from './application/district/district.service';
 
 @Module({

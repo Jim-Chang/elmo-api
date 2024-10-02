@@ -1,6 +1,6 @@
 import { createZodDto } from '@anatine/zod-nestjs';
 import { z } from 'zod';
-import { NegotiationStatus } from '../../../application/available-capacity/types';
+import { NegotiationStatus } from '../../../../application/available-capacity/types';
 
 const InternalApiNegotiationRefreshSchema = z.object({
   chargingStationUid: z.string(),
