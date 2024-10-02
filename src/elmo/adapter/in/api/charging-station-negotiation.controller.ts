@@ -65,7 +65,7 @@ export class ChargingStationNegotiationController {
   }
 
   @Get('/negotiation/:id')
-  async getNegotiationDetail(
+  async getNegotiation(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<ChargingStationNegotiationDto> {
     const negotiation =
