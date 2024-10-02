@@ -29,6 +29,7 @@ const ChargingStationNegotiationDataSchema = z.object({
   date: z.date(),
   initial_detail: ChargingStationNegotiationDetailDataSchema,
   request_detail: ChargingStationNegotiationDetailDataSchema.nullable(),
+  reply_edit_detail: ChargingStationNegotiationDetailDataSchema.nullable(),
   reply_detail: ChargingStationNegotiationDetailDataSchema.nullable(),
   last_status: z.nativeEnum(NegotiationStatus),
 });

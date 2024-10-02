@@ -110,6 +110,11 @@ export class ChargingStationNegotiationController {
       NegotiationStatus.EXTRA_REQUEST,
     );
 
+    const replyEditDetail = findDetailByStatus(
+      negotiationDetails,
+      NegotiationStatus.EXTRA_REPLY_EDIT,
+    );
+
     const replyDetail =
       findDetailByStatus(
         negotiationDetails,
@@ -139,6 +144,9 @@ export class ChargingStationNegotiationController {
       request_detail: requestDetail
         ? buildNegotiationDetailDto(requestDetail)
         : null,
+      reply_edit_detail: replyEditDetail
+        ? buildNegotiationDetailDto(replyEditDetail)
+        : null,
       reply_detail: replyDetail ? buildNegotiationDetailDto(replyDetail) : null,
       last_status: negotiation.lastDetailStatus,
     };
@@ -163,6 +171,37 @@ export class ChargingStationNegotiationController {
 
     const negotiationDetail =
       await this.availableCapacityNegotiationService.updateInitialNegotiation(
+        negotiation_id,
+        hour_capacities as { hour: number; capacity: number }[],
+      );
+
+    return {
+      id: negotiationDetail.id,
+      status: negotiationDetail.status,
+      hour_capacities: negotiationDetail.hourCapacities,
+      created_at: negotiationDetail.createdAt,
+    };
+  }
+
+  @Post('/negotiation/edit-extra-reply')
+  @HttpCode(HttpStatus.OK)
+  async editExtraReplyNegotiation(
+    @Body() negotiationPostData: ChargingStationNegotiationPostDataDto,
+  ): Promise<ChargingStationNegotiationDetailDto> {
+    const { negotiation_id, hour_capacities } = negotiationPostData;
+    const negotiation =
+      await this.availableCapacityNegotiationService.getNegotiationById(
+        negotiation_id,
+      );
+
+    if (negotiation.lastDetailStatus !== NegotiationStatus.EXTRA_REPLY_EDIT) {
+      throw new ForbiddenException(
+        `Negotiation with id ${negotiation_id} is not in extra reply edit status`,
+      );
+    }
+
+    const negotiationDetail =
+      await this.availableCapacityNegotiationService.updateExtraReplyNegotiation(
         negotiation_id,
         hour_capacities as { hour: number; capacity: number }[],
       );
