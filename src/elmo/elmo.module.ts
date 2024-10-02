@@ -3,6 +3,7 @@ import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { HTTP_TIMEOUT_MILLISECONDS } from '../constants';
 import { OscpController } from './adapter/in/oscp/oscp.controller';
 import { OscpHeadersValidationMiddleware } from '../middleware/oscp-header-validation.middleware';
+import { AvailableCapacityEmergencyService } from './application/available-capacity/available-capacity-emergency.service';
 import { AvailableCapacityNegotiationCronjobService } from './adapter/in/cronjob/available-capacity-negotiation.cronjob.service';
 import { AvailableCapacityNegotiationService } from './application/available-capacity/available-capacity-negotiation.service';
 import { ChargingStationService } from './application/charging-station/charging-station.service';
@@ -15,6 +16,7 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { MqTopicPublishHelper } from './adapter/out/mq/mq-topic-publish-helper';
 import { ProxyHelper } from './adapter/out/proxy/proxy-helper';
 import { ConfigModule } from '@nestjs/config';
+import { ChargingStationEmergencyController } from './adapter/in/charging-station-emergency.controller';
 import { InternalApiController } from './adapter/in/internal-api.controller';
 import { ChargingStationNegotiationController } from './adapter/in/api/charging-station-negotiation.controller';
 import { FeedLineEntity } from './adapter/out/entities/feed-line.entity';
@@ -42,12 +44,14 @@ import { DistrictService } from './application/district/district.service';
     ]),
   ],
   controllers: [
-    InternalApiController,
-    OscpController,
+    ChargingStationEmergencyController,
     ChargingStationNegotiationController,
     FilterOptionsController,
+    InternalApiController,
+    OscpController,
   ],
   providers: [
+    AvailableCapacityEmergencyService,
     AvailableCapacityNegotiationCronjobService,
     AvailableCapacityNegotiationService,
     ChargingStationService,

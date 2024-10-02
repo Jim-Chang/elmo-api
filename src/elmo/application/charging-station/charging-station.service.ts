@@ -139,6 +139,20 @@ export class ChargingStationService {
     });
   }
 
+  async getConnectedChargingStationById(
+    id: number,
+  ): Promise<ChargingStationEntity | null> {
+    return this.chargingStationRepo.findOne(
+      {
+        id,
+        csms: { isConnected: true },
+      },
+      {
+        populate: ['csms'],
+      },
+    );
+  }
+
   async publishChargingStationMeasurements(
     measurementsDto: UpdateGroupMeasurementsDto,
   ) {
