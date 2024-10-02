@@ -11,7 +11,7 @@ import {
 import { API_PREFIX } from '../../../constants';
 import { AvailableCapacityEmergencyService } from '../../application/available-capacity/available-capacity-emergency.service';
 import { ChargingStationService } from '../../application/charging-station/charging-station.service';
-import { CreateAndSendEmergencyDto } from './dto/create-and-send-emergency.dto';
+import { CreateAndSendEmergencyDto } from './oscp/dto/create-and-send-emergency.dto';
 
 @Controller(`${API_PREFIX}/charging-station-emergency`)
 @UsePipes(ZodValidationPipe)
