@@ -109,6 +109,32 @@ export class AvailableCapacityNegotiationService {
     return negotiation;
   }
 
+  async updateInitialNegotiation(
+    negotiationId: number,
+    hourCapacities: { hour: number; capacity: number }[],
+  ): Promise<AvailableCapacityNegotiationDetailEntity> {
+    const negotiation = await this.negotiationRepo.findOneOrFail(negotiationId);
+    // assert negotiation is in status INITIAL_EDIT
+    if (negotiation.lastDetailStatus !== NegotiationStatus.INITIAL_EDIT) {
+      throw new Error(
+        `Negotiation[${negotiationId}] is not in status ${NegotiationStatus.INITIAL_EDIT} when update initial negotiation`,
+      );
+    }
+
+    // update detail with new hourCapacities
+    const detail = await this.detailRepo.findOneOrFail({
+      negotiation,
+      status: NegotiationStatus.INITIAL_EDIT,
+    });
+
+    detail.hourCapacities = hourCapacities;
+
+    const em = this.detailRepo.getEntityManager();
+    await em.persistAndFlush(detail);
+
+    return detail;
+  }
+
   /**
    * 發送「指定可用容量」給充電站
    */
