@@ -22,6 +22,7 @@ import {
 import { DateTime } from 'luxon';
 import { TAIPEI_TZ } from '../../../../constants';
 import {
+  ChargingStationNegotiationConfirmPostDataDto,
   ChargingStationNegotiationDetailDto,
   ChargingStationNegotiationDto,
   ChargingStationNegotiationPostDataDto,
@@ -212,6 +213,31 @@ export class ChargingStationNegotiationController {
       hour_capacities: negotiationDetail.hourCapacities,
       created_at: negotiationDetail.createdAt,
     };
+  }
+
+  @Post('/negotiation/confirm-extra-reply')
+  @HttpCode(HttpStatus.OK)
+  async confirmExtraReplyNegotiation(
+    @Body()
+    negotiationConfirmPostData: ChargingStationNegotiationConfirmPostDataDto,
+  ): Promise<object> {
+    const { negotiation_id } = negotiationConfirmPostData;
+    const negotiation =
+      await this.availableCapacityNegotiationService.getNegotiationById(
+        negotiation_id,
+      );
+
+    if (negotiation.lastDetailStatus !== NegotiationStatus.EXTRA_REPLY_EDIT) {
+      throw new ForbiddenException(
+        `Negotiation with id ${negotiation_id} is not in extra reply edit status`,
+      );
+    }
+
+    await this.availableCapacityNegotiationService.replyExtraCapacity(
+      negotiation_id,
+    );
+
+    return {};
   }
 }
 

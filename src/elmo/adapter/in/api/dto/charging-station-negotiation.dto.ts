@@ -59,3 +59,11 @@ const ChargingStationNegotiationPostDataSchema = z.object({
 export class ChargingStationNegotiationPostDataDto extends createZodDto(
   ChargingStationNegotiationPostDataSchema,
 ) {}
+
+const ChargingStationNegotiationConfirmPostDataSchema = z.object({
+  negotiation_id: z.number(),
+});
+
+export class ChargingStationNegotiationConfirmPostDataDto extends createZodDto(
+  ChargingStationNegotiationConfirmPostDataSchema,
+) {}
