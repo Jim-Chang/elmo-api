@@ -57,6 +57,12 @@ export class AvailableCapacityNegotiationService {
     return this.detailRepo.findOne({ negotiation, status });
   }
 
+  async getAllNegotiationDetailsByNegotiation(
+    negotiation: AvailableCapacityNegotiationEntity,
+  ): Promise<AvailableCapacityNegotiationDetailEntity[]> {
+    return this.detailRepo.find({ negotiation }, { orderBy: { id: 'asc' } });
+  }
+
   /**
    * 建立初始「日前型協商」
    */

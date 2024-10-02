@@ -16,8 +16,13 @@ import {
 } from './dto/charging-station-negotiation-list.dto';
 import { DateTime } from 'luxon';
 import { TAIPEI_TZ } from '../../../../constants';
-import { ChargingStationNegotiationDto } from './dto/charging-station-negotiation.dto';
+import {
+  ChargingStationNegotiationDetailDto,
+  ChargingStationNegotiationDto,
+} from './dto/charging-station-negotiation.dto';
 import { AvailableCapacityNegotiationService } from '../../../application/available-capacity/available-capacity-negotiation.service';
+import { AvailableCapacityNegotiationDetailEntity } from '../../out/entities/available-capacity-negotiation-detail.entity';
+import { NegotiationStatus } from '../../../application/available-capacity/types';
 
 @Controller('/api/charging-station-negotiation')
 @UsePipes(ZodValidationPipe)
@@ -74,21 +79,47 @@ export class ChargingStationNegotiationController {
       throw new NotFoundException(`Negotiation with id ${id} not found`);
     }
 
-    // TODO: should get all negotiation details
-    const negotiationDetail =
-      await this.availableCapacityNegotiationService.getNegotiationDetailByStatus(
+    const negotiationDetails =
+      await this.availableCapacityNegotiationService.getAllNegotiationDetailsByNegotiation(
         negotiation,
-        negotiation.lastDetailStatus,
       );
-    if (negotiationDetail === null) {
+    if (negotiationDetails.length === 0) {
       throw new NotFoundException(
-        `Negotiation detail with status ${negotiation.lastDetailStatus} not found`,
+        `Negotiation detail with negotiation id ${id} not found`,
       );
     }
 
     const chargingStation =
       await this.chargingStationService.findChargingStationByNegotiationId(
         negotiation.id,
+      );
+
+    const initialDetail = findDetailByStatus(
+      negotiationDetails,
+      NegotiationStatus.INITIAL_EDIT,
+    );
+
+    const requestDetail = findDetailByStatus(
+      negotiationDetails,
+      NegotiationStatus.EXTRA_REQUEST,
+    );
+
+    const replyDetail =
+      findDetailByStatus(
+        negotiationDetails,
+        NegotiationStatus.EXTRA_REPLY_FINISH,
+      ) ||
+      findDetailByStatus(
+        negotiationDetails,
+        NegotiationStatus.EXTRA_REPLY_AUTO,
+      ) ||
+      findDetailByStatus(
+        negotiationDetails,
+        NegotiationStatus.EXTRA_REPLY_FAILED,
+      ) ||
+      findDetailByStatus(
+        negotiationDetails,
+        NegotiationStatus.NEGOTIATING_FAILED,
       );
 
     return {
@@ -98,9 +129,30 @@ export class ChargingStationNegotiationController {
       },
       negotiation_id: negotiation.id,
       date: negotiation.date,
-      status: negotiation.lastDetailStatus,
-      // TODO: should return all negotiation details
-      hour_capacities: negotiationDetail.hourCapacities,
+      initial_detail: buildNegotiationDetailDto(initialDetail),
+      request_detail: requestDetail
+        ? buildNegotiationDetailDto(requestDetail)
+        : null,
+      reply_detail: replyDetail ? buildNegotiationDetailDto(replyDetail) : null,
+      last_status: negotiation.lastDetailStatus,
     };
   }
+}
+
+function findDetailByStatus(
+  negotiationDetails: AvailableCapacityNegotiationDetailEntity[],
+  status: NegotiationStatus,
+): AvailableCapacityNegotiationDetailEntity | null {
+  return negotiationDetails.find((detail) => detail.status === status) ?? null;
+}
+
+function buildNegotiationDetailDto(
+  detail: AvailableCapacityNegotiationDetailEntity,
+): ChargingStationNegotiationDetailDto {
+  return {
+    id: detail.id,
+    status: detail.status,
+    hour_capacities: detail.hourCapacities,
+    created_at: detail.createdAt,
+  };
 }
