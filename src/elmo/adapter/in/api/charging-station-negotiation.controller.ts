@@ -138,6 +138,12 @@ export class ChargingStationNegotiationController {
         NegotiationStatus.NEGOTIATING_FAILED,
       );
 
+    const applyDetail = negotiation.applyDetail
+      ? await this.availableCapacityNegotiationService.getNegotiationDetailById(
+          negotiation.applyDetail.id,
+        )
+      : null;
+
     const lastEmergency = negotiation.lastEmergency
       ? await this.availableCapacityEmergencyService.getEmergencyById(
           negotiation.lastEmergency.id,
@@ -159,6 +165,7 @@ export class ChargingStationNegotiationController {
         ? buildNegotiationDetailDto(replyEditDetail)
         : null,
       reply_detail: replyDetail ? buildNegotiationDetailDto(replyDetail) : null,
+      apply_detail: applyDetail ? buildNegotiationDetailDto(applyDetail) : null,
       last_status: negotiation.lastDetailStatus,
       last_emergency: lastEmergency
         ? buildNegotiationEmergencyDto(lastEmergency)

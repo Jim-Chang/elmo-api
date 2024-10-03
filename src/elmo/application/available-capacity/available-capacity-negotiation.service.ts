@@ -50,6 +50,12 @@ export class AvailableCapacityNegotiationService {
     return this.negotiationRepo.findOne({ id });
   }
 
+  async getNegotiationDetailById(
+    id: number,
+  ): Promise<AvailableCapacityNegotiationDetailEntity | null> {
+    return this.detailRepo.findOne({ id });
+  }
+
   async getNegotiationDetailByStatus(
     negotiation: AvailableCapacityNegotiationEntity,
     status: NegotiationStatus,

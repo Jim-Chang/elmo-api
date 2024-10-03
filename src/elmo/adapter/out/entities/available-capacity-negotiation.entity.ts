@@ -34,6 +34,7 @@ export class AvailableCapacityNegotiationEntity extends TimestampBaseEntity {
   })
   details = new Collection<AvailableCapacityNegotiationDetailEntity>(this);
 
+  // 最終協商可用容量的 detail
   @OneToOne(() => AvailableCapacityNegotiationDetailEntity, {
     owner: true,
     nullable: true,

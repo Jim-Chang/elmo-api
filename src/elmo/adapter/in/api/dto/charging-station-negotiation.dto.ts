@@ -44,6 +44,7 @@ const ChargingStationNegotiationDataSchema = z.object({
   request_detail: ChargingStationNegotiationDetailDataSchema.nullable(),
   reply_edit_detail: ChargingStationNegotiationDetailDataSchema.nullable(),
   reply_detail: ChargingStationNegotiationDetailDataSchema.nullable(),
+  apply_detail: ChargingStationNegotiationDetailDataSchema.nullable(),
   last_status: z.nativeEnum(NegotiationStatus),
   last_emergency: ChargingStationNegotiationEmergencyDataSchema.nullable(),
 });
