@@ -1,11 +1,17 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { ChargingStationEntity } from './charging-station.entity';
 import { TimestampBaseEntity } from './timestamp-base.entity';
+import { AvailableCapacityNegotiationEntity } from './available-capacity-negotiation.entity';
 
 @Entity({ tableName: 'available_capacity_emergencies' })
 export class AvailableCapacityEmergencyEntity extends TimestampBaseEntity {
   @PrimaryKey()
   id!: number;
+
+  @ManyToOne(() => AvailableCapacityNegotiationEntity, {
+    nullable: false,
+  })
+  negotiation!: AvailableCapacityNegotiationEntity;
 
   @ManyToOne(() => ChargingStationEntity, {
     nullable: false,

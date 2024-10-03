@@ -488,6 +488,16 @@
           "length": 255,
           "default": "'INITIAL_EDIT'",
           "mappedType": "string"
+        },
+        "last_emergency_id": {
+          "name": "last_emergency_id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": null,
+          "mappedType": "integer"
         }
       },
       "name": "available_capacity_negotiations",
@@ -508,6 +518,16 @@
           ],
           "composite": false,
           "keyName": "available_capacity_negotiations_apply_detail_id_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "last_emergency_id"
+          ],
+          "composite": false,
+          "keyName": "available_capacity_negotiations_last_emergency_id_unique",
           "constraint": true,
           "primary": false,
           "unique": true
@@ -547,6 +567,19 @@
             "id"
           ],
           "referencedTableName": "available_capacity_negotiation_details",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "available_capacity_negotiations_last_emergency_id_foreign": {
+          "constraintName": "available_capacity_negotiations_last_emergency_id_foreign",
+          "columnNames": [
+            "last_emergency_id"
+          ],
+          "localTableName": "available_capacity_negotiations",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "available_capacity_emergencies",
           "deleteRule": "set null",
           "updateRule": "cascade"
         }
@@ -688,6 +721,16 @@
           "length": null,
           "mappedType": "datetime"
         },
+        "negotiation_id": {
+          "name": "negotiation_id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "mappedType": "integer"
+        },
         "charging_station_id": {
           "name": "charging_station_id",
           "type": "int",
@@ -744,6 +787,16 @@
       "indexes": [
         {
           "columnNames": [
+            "negotiation_id"
+          ],
+          "composite": false,
+          "keyName": "available_capacity_emergencies_negotiation_id_index",
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
             "charging_station_id"
           ],
           "composite": false,
@@ -765,6 +818,18 @@
       ],
       "checks": [],
       "foreignKeys": {
+        "available_capacity_emergencies_negotiation_id_foreign": {
+          "constraintName": "available_capacity_emergencies_negotiation_id_foreign",
+          "columnNames": [
+            "negotiation_id"
+          ],
+          "localTableName": "available_capacity_emergencies",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "available_capacity_negotiations",
+          "updateRule": "cascade"
+        },
         "available_capacity_emergencies_charging_station_id_foreign": {
           "constraintName": "available_capacity_emergencies_charging_station_id_foreign",
           "columnNames": [
