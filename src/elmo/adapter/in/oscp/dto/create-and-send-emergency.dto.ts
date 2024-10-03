@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 const CreateAndSendEmergencySchema = z
   .object({
-    charging_station_id: z.number().int().positive(),
+    negotiation_id: z.number().int().positive(),
     period_start_at: z
       .string()
       .datetime({ offset: true })
