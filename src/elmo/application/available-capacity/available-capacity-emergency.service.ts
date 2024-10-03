@@ -27,6 +27,12 @@ export class AvailableCapacityEmergencyService {
     private readonly oscpRequestHelper: CsmsOscpRequestHelper,
   ) {}
 
+  async getEmergencyById(
+    id: number,
+  ): Promise<AvailableCapacityEmergencyEntity | null> {
+    return this.emergencyRepo.findOne({ id });
+  }
+
   async createAndSendEmergency(
     negotiationId: number,
     periodStartAt: Date,
