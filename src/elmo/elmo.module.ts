@@ -26,6 +26,8 @@ import { FilterOptionsController } from './adapter/in/api/filter-options.control
 import { DistrictEntity } from './adapter/out/entities/district.entity';
 import { InternalNegotiationHelper } from './adapter/in/internal-api/internal-negotiation-helper';
 import { DistrictService } from './application/district/district.service';
+import { CsmsService } from './application/csms/csms.service';
+import { CsmsEntity } from './adapter/out/entities/csms.entity';
 
 @Module({
   imports: [
@@ -41,6 +43,7 @@ import { DistrictService } from './application/district/district.service';
       FeedLineEntity,
       LoadSiteEntity,
       DistrictEntity,
+      CsmsEntity,
     ]),
   ],
   controllers: [
@@ -61,6 +64,7 @@ import { DistrictService } from './application/district/district.service';
     ProxyHelper,
     FeedLineService,
     DistrictService,
+    CsmsService,
   ],
 })
 export class ElmoModule {
