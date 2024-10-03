@@ -2,7 +2,7 @@ import { HttpModule } from '@nestjs/axios';
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { HTTP_TIMEOUT_MILLISECONDS } from '../constants';
 import { OscpController } from './adapter/in/oscp/oscp.controller';
-import { OscpHeadersValidationMiddleware } from '../middleware/oscp-header-validation.middleware';
+import { OscpHeadersValidationMiddleware } from './adapter/in/middleware/oscp-header-validation.middleware';
 import { AvailableCapacityEmergencyService } from './application/available-capacity/available-capacity-emergency.service';
 import { AvailableCapacityNegotiationCronjobService } from './adapter/in/cronjob/available-capacity-negotiation.cronjob.service';
 import { AvailableCapacityNegotiationService } from './application/available-capacity/available-capacity-negotiation.service';

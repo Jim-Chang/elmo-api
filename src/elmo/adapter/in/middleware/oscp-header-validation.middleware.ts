@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
-import { AUTH_TOKEN, OSCP_API_PREFIX } from '../constants';
+import { AUTH_TOKEN, OSCP_API_PREFIX } from '../../../../constants';
 
 @Injectable()
 export class OscpHeadersValidationMiddleware implements NestMiddleware {
