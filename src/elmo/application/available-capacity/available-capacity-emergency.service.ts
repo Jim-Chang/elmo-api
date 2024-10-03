@@ -10,7 +10,7 @@ import {
   CapacityForecastType,
   ForecastedBlockUnit,
   PhaseIndicator,
-} from '../../adapter/in/dto/enums';
+} from '../../adapter/in/oscp/dto/enums';
 
 @Injectable()
 export class AvailableCapacityEmergencyService {
