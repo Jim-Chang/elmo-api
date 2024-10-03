@@ -15,12 +15,15 @@ import { RegisterDto } from './dto/register.dto';
 import { HandshakeDto } from './dto/handshake.dto';
 import { GroupCapacityComplianceErrorDto } from './dto/group-capacity-compliance-error.dto';
 import { AdjustGroupCapacityForecastDto } from './dto/adjust-group-capacity-forecast.dto';
-import { OSCP_API_PREFIX } from '../../../../constants';
+import { OSCP_API_PREFIX, OSCP_API_VERSION } from '../../../../constants';
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
 import { UpdateGroupMeasurementsDto } from './dto/update-group-measurements.dto';
 import { AvailableCapacityNegotiationService } from '../../../application/available-capacity/available-capacity-negotiation.service';
 import { ChargingStationService } from '../../../application/charging-station/charging-station.service';
 import { transformNegotiationForecastedBlocksToHourCapacities } from './oscp.helper';
+import { CsmsService } from '../../../application/csms/csms.service';
+import { CsmsId } from '../decorator/csms-id';
+import { CsmsOscpRequestHelper } from '../../out/csms-oscp/csms-oscp-request-helper';
 
 @Controller(OSCP_API_PREFIX)
 @UsePipes(ZodValidationPipe)
@@ -30,30 +33,75 @@ export class OscpController {
   constructor(
     private readonly availableCapacityNegotiationService: AvailableCapacityNegotiationService,
     private readonly chargingStationService: ChargingStationService,
+    private readonly csmsService: CsmsService,
+    private readonly csmsOscpRequestHelper: CsmsOscpRequestHelper,
   ) {}
 
   @Post('register')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async register(@Body() registerDto: RegisterDto) {
+  async register(@CsmsId() csmsId: number, @Body() registerDto: RegisterDto) {
     this.logger.log(
       `[Received request]: /register POST, body: ${JSON.stringify(registerDto)}`,
     );
+
+    // do jobs immediately after return 204
+    setImmediate(async () => {
+      // register csms
+      const oscpToken = registerDto.token;
+      const endpoint = registerDto.version_url[0].base_url;
+      await this.csmsService.register(csmsId, oscpToken, endpoint);
+
+      // send register back
+      const csmsEntity = await this.csmsService.findById(csmsId);
+      const token = await this.csmsService.generateAndSaveOscpElmoToken(csmsId);
+      const backRegisterDto: RegisterDto = {
+        token,
+        version_url: [
+          {
+            base_url: OSCP_API_PREFIX,
+            version: OSCP_API_VERSION,
+          },
+        ],
+      };
+      await this.csmsOscpRequestHelper.sendRegisterToCsms(
+        csmsEntity,
+        backRegisterDto,
+      );
+    });
   }
 
   @Put('register')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updateRegister(@Body() registerDto: RegisterDto) {
+  async updateRegister(
+    @CsmsId() csmsId: number,
+    @Body() registerDto: RegisterDto,
+  ) {
     this.logger.log(
       `[Received request]: /register PUT, body: ${JSON.stringify(registerDto)}`,
     );
+
+    // do jobs immediately after return 204
+    setImmediate(async () => {
+      const oscpToken = registerDto.token;
+      const endpoint = registerDto.version_url[0].base_url;
+      await this.csmsService.register(csmsId, oscpToken, endpoint);
+    });
   }
 
   @Delete('register')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteRegister(@Body() registerDto: RegisterDto) {
+  async deleteRegister(
+    @CsmsId() csmsId: number,
+    @Body() registerDto: RegisterDto,
+  ) {
     this.logger.log(
       `[Received request]: /register DELETE, body: ${JSON.stringify(registerDto)}`,
     );
+
+    // do jobs immediately after return 204
+    setImmediate(async () => {
+      await this.csmsService.unregister(csmsId);
+    });
   }
 
   @Post('handshake_acknowledge')

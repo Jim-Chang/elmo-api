@@ -12,6 +12,7 @@ import {
   CsmsOscpRequestFailedError,
   UpdateGroupCapacityForecast,
 } from '../../../application/oscp/types';
+import { RegisterDto } from '../../in/oscp/dto/register.dto';
 
 @Injectable()
 export class CsmsOscpRequestHelper {
@@ -21,6 +22,18 @@ export class CsmsOscpRequestHelper {
     private readonly httpService: HttpService,
     private readonly proxyHelper: ProxyHelper,
   ) {}
+
+  async sendRegisterToCsms(csms: CsmsEntity, registerDto: RegisterDto) {
+    const url = `${csms.oscpBaseUrl}${csms.oscpEndpoint}/register`;
+    const config = this.generateRequestConfig(csms.oscpCsmsToken);
+
+    try {
+      await firstValueFrom(this.httpService.post(url, registerDto, config));
+    } catch (error) {
+      this.logger.error(`CSMS[${csms.id}] register failed: ${error}`);
+      throw new CsmsOscpRequestFailedError(`CSMS[${csms.id}] register failed`);
+    }
+  }
 
   async sendUpdateGroupCapacityForecastToCsms(
     csms: CsmsEntity,
