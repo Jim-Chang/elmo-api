@@ -33,7 +33,7 @@ export class CsmsOscpRequestHelper {
     }
 
     const url = `${csms.oscpBaseUrl}${csms.oscpEndpoint}/update_group_capacity_forecast`;
-    const config = this.generateRequestConfig(csms.oscpToken);
+    const config = this.generateRequestConfig(csms.oscpCsmsToken);
 
     try {
       await firstValueFrom(this.httpService.post(url, message, config));
