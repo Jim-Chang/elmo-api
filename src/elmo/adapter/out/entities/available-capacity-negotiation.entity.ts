@@ -12,6 +12,7 @@ import { TimestampBaseEntity } from './timestamp-base.entity';
 import { AvailableCapacityNegotiationDetailEntity } from './available-capacity-negotiation-detail.entity';
 import { ChargingStationEntity } from './charging-station.entity';
 import { NegotiationStatus } from '../../../application/available-capacity/types';
+import { AvailableCapacityEmergencyEntity } from './available-capacity-emergency.entity';
 
 @Entity({ tableName: 'available_capacity_negotiations' })
 export class AvailableCapacityNegotiationEntity extends TimestampBaseEntity {
@@ -42,4 +43,17 @@ export class AvailableCapacityNegotiationEntity extends TimestampBaseEntity {
   // cache status of last AvailableCapacityNegotiationDetail
   @Property({ nullable: false, default: NegotiationStatus.INITIAL_EDIT })
   lastDetailStatus!: NegotiationStatus;
+
+  @OneToMany({
+    entity: () => AvailableCapacityEmergencyEntity,
+    mappedBy: 'negotiation',
+    cascade: [Cascade.ALL],
+  })
+  emergencies = new Collection<AvailableCapacityEmergencyEntity>(this);
+
+  @OneToOne(() => AvailableCapacityEmergencyEntity, {
+    owner: true,
+    nullable: true,
+  })
+  lastEmergency: AvailableCapacityEmergencyEntity;
 }
