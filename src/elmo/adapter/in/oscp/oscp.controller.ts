@@ -48,8 +48,8 @@ export class OscpController {
     setImmediate(async () => {
       // register csms
       const oscpToken = registerDto.token;
-      const endpoint = registerDto.version_url[0].base_url;
-      await this.csmsService.register(csmsId, oscpToken, endpoint);
+      const baseUrl = registerDto.version_url[0].base_url;
+      await this.csmsService.register(csmsId, oscpToken, baseUrl);
 
       // send register back
       const csmsEntity = await this.csmsService.findById(csmsId);
@@ -83,8 +83,8 @@ export class OscpController {
     // do jobs immediately after return 204
     setImmediate(async () => {
       const oscpToken = registerDto.token;
-      const endpoint = registerDto.version_url[0].base_url;
-      await this.csmsService.register(csmsId, oscpToken, endpoint);
+      const baseUrl = registerDto.version_url[0].base_url;
+      await this.csmsService.register(csmsId, oscpToken, baseUrl);
     });
   }
 

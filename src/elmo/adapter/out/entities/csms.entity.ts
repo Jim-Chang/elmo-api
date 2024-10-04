@@ -19,9 +19,6 @@ export class CsmsEntity {
   @Property({ nullable: true })
   oscpBaseUrl?: string;
 
-  @Property({ nullable: true })
-  oscpEndpoint?: string;
-
   // Token required when elmo (we) communicates with csms
   @Index()
   @Property({ nullable: true, length: 767, unique: true })

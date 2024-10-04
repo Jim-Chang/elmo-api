@@ -33,16 +33,6 @@
           "length": 255,
           "mappedType": "string"
         },
-        "oscp_endpoint": {
-          "name": "oscp_endpoint",
-          "type": "varchar(255)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "length": 255,
-          "mappedType": "string"
-        },
         "oscp_csms_token": {
           "name": "oscp_csms_token",
           "type": "varchar(767)",

@@ -24,7 +24,7 @@ export class CsmsOscpRequestHelper {
   ) {}
 
   async sendRegisterToCsms(csms: CsmsEntity, registerDto: RegisterDto) {
-    const url = `${csms.oscpBaseUrl}${csms.oscpEndpoint}/register`;
+    const url = `${csms.oscpBaseUrl}/register`;
     const config = this.generateRequestConfig(csms.oscpCsmsToken);
 
     try {
@@ -45,7 +45,7 @@ export class CsmsOscpRequestHelper {
       );
     }
 
-    const url = `${csms.oscpBaseUrl}${csms.oscpEndpoint}/update_group_capacity_forecast`;
+    const url = `${csms.oscpBaseUrl}/update_group_capacity_forecast`;
     const config = this.generateRequestConfig(csms.oscpCsmsToken);
 
     try {

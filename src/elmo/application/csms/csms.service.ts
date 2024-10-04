@@ -23,13 +23,13 @@ export class CsmsService {
   async register(
     csmsId: number,
     oscpCsmsToken: string,
-    oscpEndpoint: string,
+    oscpBaseUrl: string,
   ): Promise<void> {
     await this.csmsRepo.nativeUpdate(
       { id: csmsId },
       {
         oscpCsmsToken,
-        oscpEndpoint,
+        oscpBaseUrl,
       },
     );
   }
@@ -39,7 +39,7 @@ export class CsmsService {
       { id: csmsId },
       {
         oscpCsmsToken: null,
-        oscpEndpoint: null,
+        oscpBaseUrl: null,
         isConnected: false,
       },
     );
