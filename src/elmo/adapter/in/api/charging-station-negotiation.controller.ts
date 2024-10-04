@@ -121,6 +121,7 @@ export class ChargingStationNegotiationController {
     );
 
     const replyDetail =
+      findDetailByStatus(negotiationDetails, NegotiationStatus.FINISH) ||
       findDetailByStatus(
         negotiationDetails,
         NegotiationStatus.EXTRA_REPLY_FINISH,
