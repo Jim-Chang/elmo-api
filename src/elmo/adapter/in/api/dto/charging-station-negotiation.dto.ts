@@ -23,6 +23,19 @@ export class ChargingStationNegotiationDetailDto extends createZodDto(
   ChargingStationNegotiationDetailDataSchema,
 ) {}
 
+const ChargingStationNegotiationEmergencyDataSchema = z.object({
+  id: z.number(),
+  period_start_at: z.date(),
+  period_end_at: z.date(),
+  capacity: z.number(),
+  is_success_sent: z.boolean(),
+  created_at: z.date(),
+});
+
+export class ChargingStationNegotiationEmergencyDto extends createZodDto(
+  ChargingStationNegotiationEmergencyDataSchema,
+) {}
+
 const ChargingStationNegotiationDataSchema = z.object({
   charging_station: ChargingStationSchema,
   negotiation_id: z.number(),
@@ -31,7 +44,9 @@ const ChargingStationNegotiationDataSchema = z.object({
   request_detail: ChargingStationNegotiationDetailDataSchema.nullable(),
   reply_edit_detail: ChargingStationNegotiationDetailDataSchema.nullable(),
   reply_detail: ChargingStationNegotiationDetailDataSchema.nullable(),
+  apply_detail: ChargingStationNegotiationDetailDataSchema.nullable(),
   last_status: z.nativeEnum(NegotiationStatus),
+  last_emergency: ChargingStationNegotiationEmergencyDataSchema.nullable(),
 });
 
 export class ChargingStationNegotiationDto extends createZodDto(

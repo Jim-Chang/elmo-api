@@ -25,11 +25,14 @@ import {
   ChargingStationNegotiationConfirmPostDataDto,
   ChargingStationNegotiationDetailDto,
   ChargingStationNegotiationDto,
+  ChargingStationNegotiationEmergencyDto,
   ChargingStationNegotiationPostDataDto,
 } from './dto/charging-station-negotiation.dto';
+import { AvailableCapacityEmergencyEntity } from '../../out/entities/available-capacity-emergency.entity';
 import { AvailableCapacityNegotiationService } from '../../../application/available-capacity/available-capacity-negotiation.service';
 import { AvailableCapacityNegotiationDetailEntity } from '../../out/entities/available-capacity-negotiation-detail.entity';
 import { NegotiationStatus } from '../../../application/available-capacity/types';
+import { AvailableCapacityEmergencyService } from '../../../application/available-capacity/available-capacity-emergency.service';
 
 @Controller('/api/charging-station-negotiation')
 @UsePipes(ZodValidationPipe)
@@ -38,6 +41,7 @@ export class ChargingStationNegotiationController {
 
   constructor(
     private chargingStationService: ChargingStationService,
+    private availableCapacityEmergencyService: AvailableCapacityEmergencyService,
     private availableCapacityNegotiationService: AvailableCapacityNegotiationService,
   ) {}
 
@@ -117,6 +121,7 @@ export class ChargingStationNegotiationController {
     );
 
     const replyDetail =
+      findDetailByStatus(negotiationDetails, NegotiationStatus.FINISH) ||
       findDetailByStatus(
         negotiationDetails,
         NegotiationStatus.EXTRA_REPLY_FINISH,
@@ -134,6 +139,18 @@ export class ChargingStationNegotiationController {
         NegotiationStatus.NEGOTIATING_FAILED,
       );
 
+    const applyDetail = negotiation.applyDetail
+      ? await this.availableCapacityNegotiationService.getNegotiationDetailById(
+          negotiation.applyDetail.id,
+        )
+      : null;
+
+    const lastEmergency = negotiation.lastEmergency
+      ? await this.availableCapacityEmergencyService.getEmergencyById(
+          negotiation.lastEmergency.id,
+        )
+      : null;
+
     return {
       charging_station: {
         name: chargingStation.name,
@@ -149,7 +166,11 @@ export class ChargingStationNegotiationController {
         ? buildNegotiationDetailDto(replyEditDetail)
         : null,
       reply_detail: replyDetail ? buildNegotiationDetailDto(replyDetail) : null,
+      apply_detail: applyDetail ? buildNegotiationDetailDto(applyDetail) : null,
       last_status: negotiation.lastDetailStatus,
+      last_emergency: lastEmergency
+        ? buildNegotiationEmergencyDto(lastEmergency)
+        : null,
     };
   }
 
@@ -256,5 +277,18 @@ function buildNegotiationDetailDto(
     status: detail.status,
     hour_capacities: detail.hourCapacities,
     created_at: detail.createdAt,
+  };
+}
+
+function buildNegotiationEmergencyDto(
+  emergency: AvailableCapacityEmergencyEntity,
+): ChargingStationNegotiationEmergencyDto {
+  return {
+    id: emergency.id,
+    period_start_at: emergency.periodStartAt,
+    period_end_at: emergency.periodEndAt,
+    capacity: emergency.capacity,
+    is_success_sent: emergency.isSuccessSent,
+    created_at: emergency.createdAt,
   };
 }
