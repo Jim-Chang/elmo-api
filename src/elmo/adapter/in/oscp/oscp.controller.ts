@@ -24,6 +24,7 @@ import { transformNegotiationForecastedBlocksToHourCapacities } from './oscp.hel
 import { CsmsService } from '../../../application/csms/csms.service';
 import { CsmsId } from '../decorator/csms-id';
 import { CsmsOscpRequestHelper } from '../../out/csms-oscp/csms-oscp-request-helper';
+import { MeasurementConfiguration } from './dto/enums';
 
 @Controller(OSCP_API_PREFIX)
 @UsePipes(ZodValidationPipe)
@@ -54,19 +55,21 @@ export class OscpController {
       // send register back
       const csmsEntity = await this.csmsService.findById(csmsId);
       const token = await this.csmsService.generateAndSaveOscpElmoToken(csmsId);
-      const backRegisterDto: RegisterDto = {
-        token,
-        version_url: [
-          {
-            base_url: OSCP_API_PREFIX,
-            version: OSCP_API_VERSION,
-          },
-        ],
-      };
+      const backRegisterDto = buildRegisterDto(token);
       await this.csmsOscpRequestHelper.sendRegisterToCsms(
         csmsEntity,
         backRegisterDto,
       );
+
+      // do handshake after send register back in 5 seconds
+      setTimeout(async () => {
+        const handshakeDto = buildHandshakeDto();
+        await this.csmsOscpRequestHelper.sendHandshakeToCsms(
+          csmsEntity,
+          handshakeDto,
+        );
+        await this.csmsService.setSentHandshake(csmsId);
+      }, 5000);
     });
   }
 
@@ -107,6 +110,7 @@ export class OscpController {
   @Post('handshake_acknowledge')
   @HttpCode(HttpStatus.NO_CONTENT)
   async handshakeAcknowledge(
+    @CsmsId() csmsId: number,
     @Body() handshakeDto: HandshakeDto,
     @Headers('x-correlation-id') correlationId: string,
   ): Promise<void> {
@@ -120,6 +124,8 @@ export class OscpController {
       );
       throw new BadRequestException('Missing x-correlation-id header');
     }
+
+    await this.csmsService.setConnected(csmsId);
   }
 
   @Post('group_capacity_compliance_error')
@@ -186,4 +192,24 @@ export class OscpController {
       updateGroupMeasurementsDto,
     );
   }
+}
+
+function buildRegisterDto(token: string): RegisterDto {
+  return {
+    token,
+    version_url: [
+      {
+        base_url: OSCP_API_PREFIX,
+        version: OSCP_API_VERSION,
+      },
+    ],
+  };
+}
+
+function buildHandshakeDto(): HandshakeDto {
+  return {
+    required_behaviour: {
+      measurement_configuration: [MeasurementConfiguration.Continuous],
+    },
+  };
 }

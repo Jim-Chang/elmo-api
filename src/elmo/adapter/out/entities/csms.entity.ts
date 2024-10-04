@@ -29,6 +29,9 @@ export class CsmsEntity {
   @Property({ nullable: true, length: 767, unique: true })
   oscpElmoToken?: string;
 
+  @Property({ default: false })
+  isSentHandshake!: boolean;
+
   // 已完成 OSCP Register 與 Handshake
   @Property({ default: false })
   isConnected!: boolean;

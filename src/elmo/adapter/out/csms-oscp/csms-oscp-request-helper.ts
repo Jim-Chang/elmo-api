@@ -13,6 +13,7 @@ import {
   UpdateGroupCapacityForecast,
 } from '../../../application/oscp/types';
 import { RegisterDto } from '../../in/oscp/dto/register.dto';
+import { HandshakeDto } from '../../in/oscp/dto/handshake.dto';
 
 @Injectable()
 export class CsmsOscpRequestHelper {
@@ -32,6 +33,18 @@ export class CsmsOscpRequestHelper {
     } catch (error) {
       this.logger.error(`CSMS[${csms.id}] register failed: ${error}`);
       throw new CsmsOscpRequestFailedError(`CSMS[${csms.id}] register failed`);
+    }
+  }
+
+  async sendHandshakeToCsms(csms: CsmsEntity, handshakeDto: HandshakeDto) {
+    const url = `${csms.oscpBaseUrl}/handshake`;
+    const config = this.generateRequestConfig(csms.oscpCsmsToken);
+
+    try {
+      await firstValueFrom(this.httpService.post(url, handshakeDto, config));
+    } catch (error) {
+      this.logger.error(`CSMS[${csms.id}] handshake failed: ${error}`);
+      throw new CsmsOscpRequestFailedError(`CSMS[${csms.id}] handshake failed`);
     }
   }
 

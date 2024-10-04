@@ -45,6 +45,15 @@ export class CsmsService {
     );
   }
 
+  async setSentHandshake(csmsId: number): Promise<void> {
+    await this.csmsRepo.nativeUpdate(
+      { id: csmsId },
+      {
+        isSentHandshake: true,
+      },
+    );
+  }
+
   async setConnected(csmsId: number): Promise<void> {
     await this.csmsRepo.nativeUpdate(
       { id: csmsId },
