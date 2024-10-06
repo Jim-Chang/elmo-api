@@ -1,6 +1,7 @@
 import {
   Collection,
   Entity,
+  Index,
   OneToMany,
   PrimaryKey,
   Property,
@@ -18,11 +19,15 @@ export class CsmsEntity {
   @Property({ nullable: true })
   oscpBaseUrl?: string;
 
-  @Property({ nullable: true })
-  oscpEndpoint?: string;
+  // Token required when elmo (we) communicates with csms
+  @Index()
+  @Property({ nullable: true, length: 767, unique: true })
+  oscpCsmsToken?: string;
 
-  @Property({ nullable: true, length: 1024 })
-  oscpToken?: string;
+  // Token required when csms communicates with elmo (us)
+  @Index()
+  @Property({ nullable: true, length: 767, unique: true })
+  oscpElmoToken?: string;
 
   // 已完成 OSCP Register 與 Handshake
   @Property({ default: false })

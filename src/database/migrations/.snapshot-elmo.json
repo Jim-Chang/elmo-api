@@ -33,24 +33,24 @@
           "length": 255,
           "mappedType": "string"
         },
-        "oscp_endpoint": {
-          "name": "oscp_endpoint",
-          "type": "varchar(255)",
+        "oscp_csms_token": {
+          "name": "oscp_csms_token",
+          "type": "varchar(767)",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "length": 255,
+          "length": 767,
           "mappedType": "string"
         },
-        "oscp_token": {
-          "name": "oscp_token",
-          "type": "varchar(1024)",
+        "oscp_elmo_token": {
+          "name": "oscp_elmo_token",
+          "type": "varchar(767)",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "length": 1024,
+          "length": 767,
           "mappedType": "string"
         },
         "is_connected": {
@@ -67,6 +67,46 @@
       },
       "name": "csms",
       "indexes": [
+        {
+          "columnNames": [
+            "oscp_csms_token"
+          ],
+          "composite": false,
+          "keyName": "csms_oscp_csms_token_index",
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "oscp_csms_token"
+          ],
+          "composite": false,
+          "keyName": "csms_oscp_csms_token_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "oscp_elmo_token"
+          ],
+          "composite": false,
+          "keyName": "csms_oscp_elmo_token_index",
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "oscp_elmo_token"
+          ],
+          "composite": false,
+          "keyName": "csms_oscp_elmo_token_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
         {
           "keyName": "PRIMARY",
           "columnNames": [

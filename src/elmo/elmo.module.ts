@@ -2,7 +2,7 @@ import { HttpModule } from '@nestjs/axios';
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { HTTP_TIMEOUT_MILLISECONDS } from '../constants';
 import { OscpController } from './adapter/in/oscp/oscp.controller';
-import { OscpHeadersValidationMiddleware } from '../middleware/oscp-header-validation.middleware';
+import { OscpHeadersValidationMiddleware } from './adapter/in/middleware/oscp-header-validation.middleware';
 import { AvailableCapacityEmergencyService } from './application/available-capacity/available-capacity-emergency.service';
 import { AvailableCapacityNegotiationCronjobService } from './adapter/in/cronjob/available-capacity-negotiation.cronjob.service';
 import { AvailableCapacityNegotiationService } from './application/available-capacity/available-capacity-negotiation.service';
@@ -26,6 +26,8 @@ import { FilterOptionsController } from './adapter/in/api/filter-options.control
 import { DistrictEntity } from './adapter/out/entities/district.entity';
 import { InternalNegotiationHelper } from './adapter/in/internal-api/internal-negotiation-helper';
 import { DistrictService } from './application/district/district.service';
+import { CsmsService } from './application/csms/csms.service';
+import { CsmsEntity } from './adapter/out/entities/csms.entity';
 
 @Module({
   imports: [
@@ -41,6 +43,7 @@ import { DistrictService } from './application/district/district.service';
       FeedLineEntity,
       LoadSiteEntity,
       DistrictEntity,
+      CsmsEntity,
     ]),
   ],
   controllers: [
@@ -61,6 +64,7 @@ import { DistrictService } from './application/district/district.service';
     ProxyHelper,
     FeedLineService,
     DistrictService,
+    CsmsService,
   ],
 })
 export class ElmoModule {
