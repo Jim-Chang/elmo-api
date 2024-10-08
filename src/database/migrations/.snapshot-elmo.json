@@ -53,6 +53,17 @@
           "length": 767,
           "mappedType": "string"
         },
+        "is_sent_handshake": {
+          "name": "is_sent_handshake",
+          "type": "tinyint(1)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 1,
+          "default": "false",
+          "mappedType": "boolean"
+        },
         "is_connected": {
           "name": "is_connected",
           "type": "tinyint(1)",
