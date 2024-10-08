@@ -1,8 +1,8 @@
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
 import { Body, Controller, Post, UsePipes } from '@nestjs/common';
-import { InternalNegotiationHelper } from './internal-api/internal-negotiation-helper';
-import { AvailableCapacityNegotiationEntity } from '../out/entities/available-capacity-negotiation.entity';
-import { InternalApiNegotiationRefreshDto } from './oscp/dto/internal-api-negotiation-refresh.dto';
+import { InternalNegotiationHelper } from './internal-negotiation-helper';
+import { AvailableCapacityNegotiationEntity } from '../../out/entities/available-capacity-negotiation.entity';
+import { InternalApiNegotiationRefreshDto } from '../oscp/dto/internal-api-negotiation-refresh.dto';
 
 @Controller('internal-api')
 @UsePipes(ZodValidationPipe)
