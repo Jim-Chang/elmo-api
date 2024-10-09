@@ -1,6 +1,5 @@
 export type ChargingStationMeasureData = {
   charging_station_id: string;
-  timestamp: string;
-  epoch_time: number;
+  log_timestamp: string;
   life_kwh_total: number;
 };

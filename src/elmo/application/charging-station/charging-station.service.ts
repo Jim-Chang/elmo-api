@@ -176,8 +176,6 @@ export class ChargingStationService {
   ): ChargingStationMeasureData {
     const { measure_time, value, unit } = energyMeasureDto;
 
-    const epochTime = DateTime.fromISO(measure_time).toSeconds();
-
     let kwhTotal = 0;
     if (unit === EnergyMeasurementUnit.Kwh) {
       kwhTotal = value;
@@ -189,8 +187,7 @@ export class ChargingStationService {
 
     return {
       charging_station_id: chargingStationId,
-      timestamp: measure_time,
-      epoch_time: epochTime,
+      log_timestamp: measure_time,
       life_kwh_total: kwhTotal,
     };
   }
