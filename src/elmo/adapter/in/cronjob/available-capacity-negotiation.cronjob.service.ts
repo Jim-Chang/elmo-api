@@ -18,6 +18,7 @@ export class AvailableCapacityNegotiationCronjobService {
 
   // 系統自動建立初始「日前型協商」，每天 00:00 執行
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, {
+    name: 'handle-initiate-negotiation',
     timeZone: TAIPEI_TZ,
   })
   @CreateRequestContext()
@@ -33,6 +34,7 @@ export class AvailableCapacityNegotiationCronjobService {
 
   // 系統自動發送「指定可用容量」給充電站，每天 10:00 執行
   @Cron(CronExpression.EVERY_DAY_AT_10AM, {
+    name: 'handle-assign-available-capacity',
     timeZone: TAIPEI_TZ,
   })
   @CreateRequestContext()
@@ -48,6 +50,7 @@ export class AvailableCapacityNegotiationCronjobService {
 
   // 系統針對未收到「申請額外可用容量」的充電站，結束協商流程，每天 14:05 執行
   @Cron('0 5 14 * * *', {
+    name: 'handle-finish-negotiations-under-negotiating',
     timeZone: TAIPEI_TZ,
   })
   @CreateRequestContext()
@@ -63,6 +66,7 @@ export class AvailableCapacityNegotiationCronjobService {
 
   // 系統自動發送「申請額外可用容量回覆」給尚未回覆「申請額外可用容量」的充電站，每天 16:00 執行
   @Cron(CronExpression.EVERY_DAY_AT_4PM, {
+    name: 'handle-reply-extra-capacity-auto',
     timeZone: TAIPEI_TZ,
   })
   @CreateRequestContext()
@@ -78,6 +82,7 @@ export class AvailableCapacityNegotiationCronjobService {
 
   // 系統自動結束所有未完成協商，每天 16:05 執行
   @Cron('0 5 16 * * *', {
+    name: 'handle-finish-all-negotiations',
     timeZone: TAIPEI_TZ,
   })
   @CreateRequestContext()
