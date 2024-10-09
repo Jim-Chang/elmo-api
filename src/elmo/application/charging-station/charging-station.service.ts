@@ -8,7 +8,10 @@ import { ChargingStationMeasureData } from './types';
 import { DateTime } from 'luxon';
 import { EnergyMeasurementUnit } from '../../adapter/in/oscp/dto/enums';
 import { EnergyMeasurementDto } from '../../adapter/in/oscp/dto/energy-measurement.dto';
-import { NegotiationStatus } from '../available-capacity/types';
+import {
+  EmergencyStatus,
+  NegotiationStatus,
+} from '../available-capacity/types';
 import { AvailableCapacityNegotiationEntity } from '../../adapter/out/entities/available-capacity-negotiation.entity';
 
 @Injectable()
@@ -55,6 +58,7 @@ export class ChargingStationService {
     feedLineId?: number;
     loadSiteId?: number;
     negotiationStatusList?: NegotiationStatus[];
+    emergencyStatus?: EmergencyStatus;
     keyword?: string;
   }): Promise<ChargingStationEntity[]> {
     const {
@@ -63,6 +67,7 @@ export class ChargingStationService {
       feedLineId,
       loadSiteId,
       negotiationStatusList,
+      emergencyStatus,
       keyword,
     } = filterBy;
 
@@ -101,7 +106,7 @@ export class ChargingStationService {
       },
     );
 
-    // filter negotiations by date, charging stations, negotiation status
+    // filter negotiations by date, charging stations, negotiation status, emergency status
     const negotiationFilter: any = {
       date,
       chargingStation: {
@@ -113,14 +118,38 @@ export class ChargingStationService {
       negotiationFilter.lastDetailStatus = { $in: negotiationStatusList };
     }
 
+    if (emergencyStatus) {
+      const now = DateTime.now().toJSDate();
+      if (emergencyStatus === EmergencyStatus.PREPARE_EMERGENCY_CONTROL) {
+        negotiationFilter.lastEmergency = {
+          periodStartAt: { $gt: now },
+          isSuccessSent: true,
+        };
+      } else if (emergencyStatus === EmergencyStatus.EMERGENCY_CONTROL) {
+        negotiationFilter.lastEmergency = {
+          periodStartAt: { $lte: now },
+          periodEndAt: { $gt: now },
+          isSuccessSent: true,
+        };
+      } else if (emergencyStatus === EmergencyStatus.EMERGENCY_CONTROL_FINISH) {
+        negotiationFilter.lastEmergency = {
+          periodEndAt: { $lte: now },
+          isSuccessSent: true,
+        };
+      } else if (emergencyStatus === EmergencyStatus.EMERGENCY_CONTROL_FAILED) {
+        negotiationFilter.lastEmergency = {
+          isSuccessSent: false,
+        };
+      }
+    }
+
     const negotiations = await this.availableCapacityNegotiationRepo.find(
       negotiationFilter,
       {
         orderBy: { chargingStation: { id: 'asc' } },
+        populate: ['lastEmergency'],
       },
     );
-
-    // TODO: query emergency
 
     // combine charging stations with negotiations
     const chargingStationIdMap = chargingStations.reduce(

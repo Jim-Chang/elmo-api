@@ -31,7 +31,11 @@ import {
 import { AvailableCapacityEmergencyEntity } from '../../out/entities/available-capacity-emergency.entity';
 import { AvailableCapacityNegotiationService } from '../../../application/available-capacity/available-capacity-negotiation.service';
 import { AvailableCapacityNegotiationDetailEntity } from '../../out/entities/available-capacity-negotiation-detail.entity';
-import { NegotiationStatus } from '../../../application/available-capacity/types';
+import {
+  EmergencyStatus,
+  NegotiationStatus,
+  NegotiationWithEmergencyStatus,
+} from '../../../application/available-capacity/types';
 import { AvailableCapacityEmergencyService } from '../../../application/available-capacity/available-capacity-emergency.service';
 
 @Controller('/api/charging-station-negotiation')
@@ -49,6 +53,19 @@ export class ChargingStationNegotiationController {
   async getListItems(
     @Query() query: ChargingStationNegotiationListQueryDto,
   ): Promise<ChargingStationNegotiationListDataDto> {
+    const lastStatus = query.last_status;
+    let negotiationStatusList: NegotiationStatus[];
+    let emergencyStatus: EmergencyStatus;
+
+    if (lastStatus) {
+      negotiationStatusList = lastStatus.filter((status) =>
+        Object.values(NegotiationStatus).includes(status as NegotiationStatus),
+      ) as NegotiationStatus[];
+      emergencyStatus = lastStatus.find((status) =>
+        Object.values(EmergencyStatus).includes(status as EmergencyStatus),
+      ) as EmergencyStatus;
+    }
+
     const filterBy = {
       date: DateTime.fromFormat(query.date, 'yyyy-MM-dd', {
         zone: TAIPEI_TZ,
@@ -56,7 +73,8 @@ export class ChargingStationNegotiationController {
       districtId: query.district_id,
       feedLineId: query.feed_line_id,
       loadSiteId: query.load_site_id,
-      negotiationStatusList: query.negotiation_status,
+      negotiationStatusList,
+      emergencyStatus,
       keyword: query.keyword,
     };
 
@@ -65,15 +83,24 @@ export class ChargingStationNegotiationController {
         filterBy,
       );
 
-    const itemDataList = chargingStations.map((chargingStation) => ({
-      negotiation_id: chargingStation.negotiations[0]?.id ?? null,
-      feed_line: chargingStation.feedLine?.name ?? null,
-      electricity_account_no: chargingStation.electricityAccountNo ?? null,
-      charging_station_name: chargingStation.name,
-      load_site_name: chargingStation.loadSite?.name ?? null,
-      negotiation_status:
-        chargingStation.negotiations[0]?.lastDetailStatus ?? null,
-    }));
+    const itemDataList = chargingStations.map((chargingStation) => {
+      const negotiation = chargingStation.negotiations[0];
+
+      let lastStatus: NegotiationWithEmergencyStatus =
+        negotiation.lastDetailStatus;
+      if (negotiation.lastEmergency) {
+        lastStatus = determineLastStatusByEmergency(negotiation.lastEmergency);
+      }
+
+      return {
+        negotiation_id: negotiation?.id ?? null,
+        feed_line: chargingStation.feedLine?.name ?? null,
+        electricity_account_no: chargingStation.electricityAccountNo ?? null,
+        charging_station_name: chargingStation.name,
+        load_site_name: chargingStation.loadSite?.name ?? null,
+        last_status: lastStatus,
+      };
+    });
 
     return {
       items: itemDataList,
@@ -105,10 +132,9 @@ export class ChargingStationNegotiationController {
         negotiation.id,
       );
 
-    const initialDetail = findDetailByStatus(
-      negotiationDetails,
-      NegotiationStatus.INITIAL_EDIT,
-    );
+    const initialDetail =
+      findDetailByStatus(negotiationDetails, NegotiationStatus.NEGOTIATING) ||
+      findDetailByStatus(negotiationDetails, NegotiationStatus.INITIAL_EDIT);
 
     const requestDetail = findDetailByStatus(
       negotiationDetails,
@@ -151,6 +177,12 @@ export class ChargingStationNegotiationController {
         )
       : null;
 
+    let lastStatus: NegotiationWithEmergencyStatus =
+      negotiation.lastDetailStatus;
+    if (lastEmergency) {
+      lastStatus = determineLastStatusByEmergency(lastEmergency);
+    }
+
     return {
       charging_station: {
         name: chargingStation.name,
@@ -167,7 +199,7 @@ export class ChargingStationNegotiationController {
         : null,
       reply_detail: replyDetail ? buildNegotiationDetailDto(replyDetail) : null,
       apply_detail: applyDetail ? buildNegotiationDetailDto(applyDetail) : null,
-      last_status: negotiation.lastDetailStatus,
+      last_status: lastStatus,
       last_emergency: lastEmergency
         ? buildNegotiationEmergencyDto(lastEmergency)
         : null,
@@ -291,4 +323,24 @@ function buildNegotiationEmergencyDto(
     is_success_sent: emergency.isSuccessSent,
     created_at: emergency.createdAt,
   };
+}
+
+function determineLastStatusByEmergency(
+  lastEmergency: AvailableCapacityEmergencyEntity,
+): EmergencyStatus {
+  const now = DateTime.now();
+  const periodStartAt = DateTime.fromJSDate(lastEmergency.periodStartAt);
+  const periodEndAt = DateTime.fromJSDate(lastEmergency.periodEndAt);
+
+  if (!lastEmergency.isSuccessSent) {
+    return EmergencyStatus.EMERGENCY_CONTROL_FAILED;
+  }
+
+  if (now < periodStartAt) {
+    return EmergencyStatus.PREPARE_EMERGENCY_CONTROL;
+  } else if (now >= periodStartAt && now < periodEndAt) {
+    return EmergencyStatus.EMERGENCY_CONTROL;
+  } else {
+    return EmergencyStatus.EMERGENCY_CONTROL_FINISH;
+  }
 }
