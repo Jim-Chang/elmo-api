@@ -1,5 +1,8 @@
 import { z } from 'zod';
-import { NegotiationStatus } from '../../../../application/available-capacity/types';
+import {
+  NegotiationStatus,
+  NegotiationWithEmergencyStatus,
+} from '../../../../application/available-capacity/types';
 import { createZodDto } from '@anatine/zod-nestjs';
 
 const AvailableCapacityNegotiationHourCapacitySchema = z.object({
@@ -45,7 +48,7 @@ const ChargingStationNegotiationDataSchema = z.object({
   reply_edit_detail: ChargingStationNegotiationDetailDataSchema.nullable(),
   reply_detail: ChargingStationNegotiationDetailDataSchema.nullable(),
   apply_detail: ChargingStationNegotiationDetailDataSchema.nullable(),
-  last_status: z.nativeEnum(NegotiationStatus),
+  last_status: z.nativeEnum(NegotiationWithEmergencyStatus),
   last_emergency: ChargingStationNegotiationEmergencyDataSchema.nullable(),
 });
 

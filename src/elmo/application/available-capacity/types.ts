@@ -9,3 +9,18 @@ export enum NegotiationStatus {
   EXTRA_REPLY_FAILED = 'EXTRA_REPLY_FAILED', // 協商結束（額外申請失敗）
   FINISH = 'FINISH', // 協商結束
 }
+
+export enum EmergencyStatus {
+  PREPARE_EMERGENCY_CONTROL = 'PREPARE_EMERGENCY_CONTROL', // 準備進入緊急控制
+  EMERGENCY_CONTROL = 'EMERGENCY_CONTROL', // 緊急控制中
+  EMERGENCY_CONTROL_FINISH = 'EMERGENCY_CONTROL_FINISH', // 緊急通知結束
+  EMERGENCY_CONTROL_FAILED = 'EMERGENCY_CONTROL_FAILED', // 緊急通知失敗
+}
+
+export const NegotiationWithEmergencyStatus = {
+  ...NegotiationStatus,
+  ...EmergencyStatus,
+} as const;
+
+export type NegotiationWithEmergencyStatus =
+  (typeof NegotiationWithEmergencyStatus)[keyof typeof NegotiationWithEmergencyStatus];
