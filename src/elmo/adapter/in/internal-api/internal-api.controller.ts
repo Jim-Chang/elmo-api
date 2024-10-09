@@ -1,5 +1,16 @@
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
-import { Body, Controller, Post, UsePipes } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Logger,
+  Param,
+  Post,
+  UsePipes,
+} from '@nestjs/common';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { InternalNegotiationHelper } from './internal-negotiation-helper';
 import { AvailableCapacityNegotiationEntity } from '../../out/entities/available-capacity-negotiation.entity';
 import { InternalApiNegotiationRefreshDto } from '../oscp/dto/internal-api-negotiation-refresh.dto';
@@ -7,8 +18,11 @@ import { InternalApiNegotiationRefreshDto } from '../oscp/dto/internal-api-negot
 @Controller('internal-api')
 @UsePipes(ZodValidationPipe)
 export class InternalApiController {
+  private readonly logger = new Logger(InternalApiController.name);
+
   constructor(
     private readonly internalNegotiationHelper: InternalNegotiationHelper,
+    private readonly schedulerRegistry: SchedulerRegistry,
   ) {}
 
   /**
@@ -27,5 +41,19 @@ export class InternalApiController {
     @Body() dto: InternalApiNegotiationRefreshDto,
   ): Promise<AvailableCapacityNegotiationEntity> {
     return await this.internalNegotiationHelper.refreshNegotiation(dto);
+  }
+
+  @Post('cronjob/trigger/:jobName')
+  @HttpCode(HttpStatus.OK)
+  async triggerCronjob(@Param('jobName') jobName: string) {
+    try {
+      const job = this.schedulerRegistry.getCronJob(jobName);
+      this.logger.log(`[Internal API] trigger cronjob: ${jobName}`);
+      job.fireOnTick();
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+
+    return `Triggered: ${jobName}`;
   }
 }

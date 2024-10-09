@@ -23,7 +23,7 @@ export class MqTopicPublishHelper {
       // SSL Ref: https://amqp-node.github.io/amqplib/ssl.html
       MqTopicPublishHelper._connection = amqp.connect(this.mqUrl, {
         connectionOptions: {
-          enableTrace: true,
+          enableTrace: false,
           requestCert: true,
           rejectUnauthorized: false, // Disable automatic rejection of self-signed certificates
           checkServerIdentity: () => undefined, // Disable hostname verification
