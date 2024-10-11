@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { NegotiationStatus } from '../../../../application/available-capacity/types';
+import { NegotiationWithEmergencyStatus } from '../../../../application/available-capacity/types';
 import { createZodDto } from '@anatine/zod-nestjs';
 import { DateTime } from 'luxon';
 import { TAIPEI_TZ } from '../../../../../constants';
@@ -35,7 +35,7 @@ const ChargingStationNegotiationListQuerySchema = z.object({
     (val) => (val !== undefined ? Number(val) : val),
     z.number().optional(),
   ),
-  negotiation_status: z.preprocess(
+  last_status: z.preprocess(
     (val) => {
       if (val === undefined) {
         return [];
@@ -43,7 +43,7 @@ const ChargingStationNegotiationListQuerySchema = z.object({
         return Array.isArray(val) ? val : [val];
       }
     },
-    z.array(z.nativeEnum(NegotiationStatus)).optional(),
+    z.array(z.nativeEnum(NegotiationWithEmergencyStatus)).optional(),
   ),
   keyword: z.string().optional(),
 });
@@ -58,7 +58,7 @@ const ChargingStationNegotiationDashboardItemDataSchema = z.object({
   electricity_account_no: z.string(),
   charging_station_name: z.string(),
   load_site_name: z.string(),
-  negotiation_status: z.nativeEnum(NegotiationStatus).nullable(),
+  last_status: z.nativeEnum(NegotiationWithEmergencyStatus).nullable(),
 });
 
 const ChargingStationNegotiationListDataSchema = z.object({
