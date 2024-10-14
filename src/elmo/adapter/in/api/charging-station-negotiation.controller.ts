@@ -132,7 +132,7 @@ export class ChargingStationNegotiationController {
         negotiation.id,
       );
 
-    const initialDetail =
+    const initialEditDetail =
       findDetailByStatus(negotiationDetails, NegotiationStatus.NEGOTIATING) ||
       findDetailByStatus(negotiationDetails, NegotiationStatus.INITIAL_EDIT);
 
@@ -190,7 +190,7 @@ export class ChargingStationNegotiationController {
       },
       negotiation_id: negotiation.id,
       date: negotiation.date,
-      initial_detail: buildNegotiationDetailDto(initialDetail),
+      initial_edit_detail: buildNegotiationDetailDto(initialEditDetail),
       request_detail: requestDetail
         ? buildNegotiationDetailDto(requestDetail)
         : null,
