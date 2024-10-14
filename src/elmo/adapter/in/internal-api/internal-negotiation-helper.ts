@@ -13,6 +13,7 @@ import { ChargingStationEntity } from '../../out/entities/charging-station.entit
 import { InternalApiNegotiationRefreshDto } from '../oscp/dto/internal-api-negotiation-refresh.dto';
 
 const ALL_STATUS_IN_ORDER = [
+  NegotiationStatus.INITIAL,
   NegotiationStatus.INITIAL_EDIT,
   NegotiationStatus.NEGOTIATING,
   NegotiationStatus.NEGOTIATING_FAILED,
@@ -230,6 +231,7 @@ export class InternalNegotiationHelper {
     // TODO: 從 customDetailData 取得 hour capacities 設定資料
     let capacity: number;
     switch (status) {
+      case NegotiationStatus.INITIAL:
       case NegotiationStatus.INITIAL_EDIT:
       case NegotiationStatus.NEGOTIATING:
       case NegotiationStatus.EXTRA_REPLY_FAILED:
@@ -308,22 +310,29 @@ function getTransitionStatuses(
 ): NegotiationStatus[] {
   switch (targetStatus) {
     case NegotiationStatus.INITIAL_EDIT:
-      return [NegotiationStatus.INITIAL_EDIT];
+      return [NegotiationStatus.INITIAL, NegotiationStatus.INITIAL_EDIT];
     case NegotiationStatus.NEGOTIATING:
-      return [NegotiationStatus.INITIAL_EDIT, NegotiationStatus.NEGOTIATING];
+      return [
+        NegotiationStatus.INITIAL,
+        NegotiationStatus.INITIAL_EDIT,
+        NegotiationStatus.NEGOTIATING,
+      ];
     case NegotiationStatus.NEGOTIATING_FAILED:
       return [
+        NegotiationStatus.INITIAL,
         NegotiationStatus.INITIAL_EDIT,
         NegotiationStatus.NEGOTIATING_FAILED,
       ];
     case NegotiationStatus.EXTRA_REQUEST:
       return [
+        NegotiationStatus.INITIAL,
         NegotiationStatus.INITIAL_EDIT,
         NegotiationStatus.NEGOTIATING,
         NegotiationStatus.EXTRA_REQUEST,
       ];
     case NegotiationStatus.EXTRA_REPLY_EDIT:
       return [
+        NegotiationStatus.INITIAL,
         NegotiationStatus.INITIAL_EDIT,
         NegotiationStatus.NEGOTIATING,
         NegotiationStatus.EXTRA_REQUEST,
@@ -331,6 +340,7 @@ function getTransitionStatuses(
       ];
     case NegotiationStatus.EXTRA_REPLY_FINISH:
       return [
+        NegotiationStatus.INITIAL,
         NegotiationStatus.INITIAL_EDIT,
         NegotiationStatus.NEGOTIATING,
         NegotiationStatus.EXTRA_REQUEST,
@@ -339,6 +349,7 @@ function getTransitionStatuses(
       ];
     case NegotiationStatus.EXTRA_REPLY_AUTO:
       return [
+        NegotiationStatus.INITIAL,
         NegotiationStatus.INITIAL_EDIT,
         NegotiationStatus.NEGOTIATING,
         NegotiationStatus.EXTRA_REQUEST,
@@ -347,6 +358,7 @@ function getTransitionStatuses(
       ];
     case NegotiationStatus.EXTRA_REPLY_FAILED:
       return [
+        NegotiationStatus.INITIAL,
         NegotiationStatus.INITIAL_EDIT,
         NegotiationStatus.NEGOTIATING,
         NegotiationStatus.EXTRA_REQUEST,
@@ -355,6 +367,7 @@ function getTransitionStatuses(
       ];
     case NegotiationStatus.FINISH:
       return [
+        NegotiationStatus.INITIAL,
         NegotiationStatus.INITIAL_EDIT,
         NegotiationStatus.NEGOTIATING,
         NegotiationStatus.FINISH,
