@@ -6,6 +6,12 @@ DATABASE_PASSWORD=
 DATABASE_NAME=elmo
 
 
+# Redis
+# (example) redis://:password@127.0.0.1:6379/0
+# (example) rediss://:password@127.0.0.1:6380/1
+REDIS_URL=
+
+
 # MQ
 MQ_HOST=localhost
 MQ_PORT=5671

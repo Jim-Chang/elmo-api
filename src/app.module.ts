@@ -10,12 +10,13 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { mqConfig } from './config/mq.config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { proxyConfig } from './config/proxy.config';
+import { redisConfig } from './config/redis.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: getEnvPath(),
-      load: [mqConfig, proxyConfig],
+      load: [mqConfig, proxyConfig, redisConfig],
     }),
     MikroOrmModule.forRootAsync({
       imports: [ConfigModule.forFeature(mikroOrmConfig)],

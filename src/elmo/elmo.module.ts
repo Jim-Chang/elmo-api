@@ -1,3 +1,4 @@
+import { RedisModule, RedisModuleOptions } from '@liaoliaots/nestjs-redis';
 import { HttpModule } from '@nestjs/axios';
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { HTTP_TIMEOUT_MILLISECONDS } from '../constants';
@@ -15,7 +16,8 @@ import { CsmsOscpRequestHelper } from './adapter/out/csms-oscp/csms-oscp-request
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { MqTopicPublishHelper } from './adapter/out/mq/mq-topic-publish-helper';
 import { ProxyHelper } from './adapter/out/proxy/proxy-helper';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { RedisConfig } from '../config/redis.config';
 import { ChargingStationEmergencyController } from './adapter/in/api/charging-station-emergency.controller';
 import { InternalApiController } from './adapter/in/internal-api/internal-api.controller';
 import { ChargingStationNegotiationController } from './adapter/in/api/charging-station-negotiation.controller';
@@ -50,6 +52,18 @@ import { TreeGeneratorService } from './application/tree/tree-generator.service'
       TransformerEntity,
       CsmsEntity,
     ]),
+    RedisModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService): RedisModuleOptions => {
+        const redisConfig = configService.get<RedisConfig>('redis');
+        return {
+          config: {
+            url: redisConfig.url,
+          },
+        };
+      },
+    }),
   ],
   controllers: [
     ChargingStationEmergencyController,
