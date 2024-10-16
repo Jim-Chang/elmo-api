@@ -28,6 +28,7 @@ import { InternalNegotiationHelper } from './adapter/in/internal-api/internal-ne
 import { DistrictService } from './application/district/district.service';
 import { CsmsService } from './application/csms/csms.service';
 import { CsmsEntity } from './adapter/out/entities/csms.entity';
+import { TransformerEntity } from './adapter/out/entities/transformer.entity';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { CsmsEntity } from './adapter/out/entities/csms.entity';
       FeedLineEntity,
       LoadSiteEntity,
       DistrictEntity,
+      TransformerEntity,
       CsmsEntity,
     ]),
   ],
