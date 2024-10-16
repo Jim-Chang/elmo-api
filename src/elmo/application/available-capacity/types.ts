@@ -1,4 +1,5 @@
 export enum NegotiationStatus {
+  INITIAL = 'INITIAL', // 初始指定容量
   INITIAL_EDIT = 'INITIAL_EDIT', // 未通知指定容量（可編輯）
   NEGOTIATING = 'NEGOTIATING', // 等待充電站回覆
   NEGOTIATING_FAILED = 'NEGOTIATING_FAILED', // 指定容量通知失敗

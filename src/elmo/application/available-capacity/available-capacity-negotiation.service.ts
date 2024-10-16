@@ -104,13 +104,24 @@ export class AvailableCapacityNegotiationService {
     });
     await em.persistAndFlush(negotiation);
 
-    // Create detail
-    const detail = em.create(AvailableCapacityNegotiationDetailEntity, {
+    // Create detail (INITIAL)
+    const initialDetail = em.create(AvailableCapacityNegotiationDetailEntity, {
       negotiation,
       status,
       hourCapacities,
     });
-    await em.persistAndFlush(detail);
+    await em.persistAndFlush(initialDetail);
+
+    // Create detail (INITIAL_EDIT)
+    const initialEditDetail = em.create(
+      AvailableCapacityNegotiationDetailEntity,
+      {
+        negotiation,
+        status,
+        hourCapacities,
+      },
+    );
+    await em.persistAndFlush(initialEditDetail);
 
     return negotiation;
   }
