@@ -18,6 +18,7 @@ import { MqTopicPublishHelper } from './adapter/out/mq/mq-topic-publish-helper';
 import { ProxyHelper } from './adapter/out/proxy/proxy-helper';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RedisConfig } from '../config/redis.config';
+import { RedisHelper } from './adapter/out/redis/redis-helper';
 import { ChargingStationEmergencyController } from './adapter/in/api/charging-station-emergency.controller';
 import { InternalApiController } from './adapter/in/internal-api/internal-api.controller';
 import { ChargingStationNegotiationController } from './adapter/in/api/charging-station-negotiation.controller';
@@ -81,6 +82,7 @@ import { TreeGeneratorService } from './application/tree/tree-generator.service'
     InternalNegotiationHelper,
     MqTopicPublishHelper,
     ProxyHelper,
+    RedisHelper,
     FeedLineService,
     DistrictService,
     LoadSiteService,

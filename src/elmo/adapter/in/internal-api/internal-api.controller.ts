@@ -3,17 +3,20 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Logger,
   Param,
   Post,
+  Query,
   UsePipes,
 } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { InternalNegotiationHelper } from './internal-negotiation-helper';
 import { AvailableCapacityNegotiationEntity } from '../../out/entities/available-capacity-negotiation.entity';
 import { InternalApiNegotiationRefreshDto } from '../oscp/dto/internal-api-negotiation-refresh.dto';
+import { RedisHelper } from '../../out/redis/redis-helper';
 
 @Controller('internal-api')
 @UsePipes(ZodValidationPipe)
@@ -23,6 +26,7 @@ export class InternalApiController {
   constructor(
     private readonly internalNegotiationHelper: InternalNegotiationHelper,
     private readonly schedulerRegistry: SchedulerRegistry,
+    private readonly redisHelper: RedisHelper,
   ) {}
 
   /**
@@ -55,5 +59,24 @@ export class InternalApiController {
     }
 
     return `Triggered: ${jobName}`;
+  }
+
+  @Get('redis/json-from-list')
+  @HttpCode(HttpStatus.OK)
+  async getRedisListJson(
+    @Query('key') key: string,
+    @Query('index') index: number,
+  ) {
+    this.logger.log(`[Internal API] redis LIST: key[${key}] index[${index}]`);
+    const data = await this.redisHelper.getJsonDataFromList(key, index);
+    return { data };
+  }
+
+  @Get('redis/json-from-string')
+  @HttpCode(HttpStatus.OK)
+  async getRedisStringJson(@Query('key') key: string) {
+    this.logger.log(`[Internal API] redis STRING: key[${key}]`);
+    const data = await this.redisHelper.getJsonDataFromString(key);
+    return { data };
   }
 }
