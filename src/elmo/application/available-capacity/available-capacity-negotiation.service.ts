@@ -107,7 +107,7 @@ export class AvailableCapacityNegotiationService {
     // Create detail (INITIAL)
     const initialDetail = em.create(AvailableCapacityNegotiationDetailEntity, {
       negotiation,
-      status,
+      status: NegotiationStatus.INITIAL,
       hourCapacities,
     });
     await em.persistAndFlush(initialDetail);
