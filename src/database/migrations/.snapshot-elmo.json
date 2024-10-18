@@ -194,10 +194,30 @@
           "nullable": false,
           "length": 255,
           "mappedType": "string"
+        },
+        "district_id": {
+          "name": "district_id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": null,
+          "mappedType": "integer"
         }
       },
       "name": "feed_lines",
       "indexes": [
+        {
+          "columnNames": [
+            "district_id"
+          ],
+          "composite": false,
+          "keyName": "feed_lines_district_id_index",
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
         {
           "keyName": "PRIMARY",
           "columnNames": [
@@ -210,7 +230,21 @@
         }
       ],
       "checks": [],
-      "foreignKeys": {},
+      "foreignKeys": {
+        "feed_lines_district_id_foreign": {
+          "constraintName": "feed_lines_district_id_foreign",
+          "columnNames": [
+            "district_id"
+          ],
+          "localTableName": "feed_lines",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "districts",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      },
       "nativeEnums": {}
     },
     {
@@ -234,10 +268,30 @@
           "nullable": false,
           "length": 255,
           "mappedType": "string"
+        },
+        "feed_line_id": {
+          "name": "feed_line_id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": null,
+          "mappedType": "integer"
         }
       },
       "name": "load_sites",
       "indexes": [
+        {
+          "columnNames": [
+            "feed_line_id"
+          ],
+          "composite": false,
+          "keyName": "load_sites_feed_line_id_index",
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
         {
           "keyName": "PRIMARY",
           "columnNames": [
@@ -250,7 +304,21 @@
         }
       ],
       "checks": [],
-      "foreignKeys": {},
+      "foreignKeys": {
+        "load_sites_feed_line_id_foreign": {
+          "constraintName": "load_sites_feed_line_id_foreign",
+          "columnNames": [
+            "feed_line_id"
+          ],
+          "localTableName": "load_sites",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "feed_lines",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      },
       "nativeEnums": {}
     },
     {
@@ -891,6 +959,80 @@
             "id"
           ],
           "referencedTableName": "charging_stations",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "length": null,
+          "mappedType": "integer"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "load_site_id": {
+          "name": "load_site_id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": null,
+          "mappedType": "integer"
+        }
+      },
+      "name": "transformers",
+      "indexes": [
+        {
+          "columnNames": [
+            "load_site_id"
+          ],
+          "composite": false,
+          "keyName": "transformers_load_site_id_index",
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "PRIMARY",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "transformers_load_site_id_foreign": {
+          "constraintName": "transformers_load_site_id_foreign",
+          "columnNames": [
+            "load_site_id"
+          ],
+          "localTableName": "transformers",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "load_sites",
+          "deleteRule": "set null",
           "updateRule": "cascade"
         }
       },

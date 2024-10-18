@@ -24,6 +24,10 @@ export class ChargingStationService {
     private readonly mqHelper: MqTopicPublishHelper,
   ) {}
 
+  async getAllChargingStations(): Promise<ChargingStationEntity[]> {
+    return this.chargingStationRepo.findAll();
+  }
+
   async isChargingStationExist(uid: string): Promise<boolean> {
     const chargingStation = await this.chargingStationRepo.findOne({ uid });
     return !!chargingStation;

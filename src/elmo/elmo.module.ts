@@ -28,6 +28,10 @@ import { InternalNegotiationHelper } from './adapter/in/internal-api/internal-ne
 import { DistrictService } from './application/district/district.service';
 import { CsmsService } from './application/csms/csms.service';
 import { CsmsEntity } from './adapter/out/entities/csms.entity';
+import { TransformerEntity } from './adapter/out/entities/transformer.entity';
+import { TransformerService } from './application/transformer/transformer.service';
+import { LoadSiteService } from './application/load-site/load-site.service';
+import { TreeGeneratorService } from './application/tree/tree-generator.service';
 
 @Module({
   imports: [
@@ -43,6 +47,7 @@ import { CsmsEntity } from './adapter/out/entities/csms.entity';
       FeedLineEntity,
       LoadSiteEntity,
       DistrictEntity,
+      TransformerEntity,
       CsmsEntity,
     ]),
   ],
@@ -64,7 +69,10 @@ import { CsmsEntity } from './adapter/out/entities/csms.entity';
     ProxyHelper,
     FeedLineService,
     DistrictService,
+    LoadSiteService,
+    TransformerService,
     CsmsService,
+    TreeGeneratorService,
   ],
 })
 export class ElmoModule {
