@@ -38,6 +38,8 @@ import { TransformerEntity } from './adapter/out/entities/transformer.entity';
 import { TransformerService } from './application/transformer/transformer.service';
 import { LoadSiteService } from './application/load-site/load-site.service';
 import { TreeGeneratorService } from './application/tree/tree-generator.service';
+import { ElasticsearchModule } from '@nestjs/elasticsearch';
+import { ElasticsearchConfig } from '../config/es.config';
 
 @Module({
   imports: [
@@ -56,6 +58,21 @@ import { TreeGeneratorService } from './application/tree/tree-generator.service'
       TransformerEntity,
       CsmsEntity,
     ]),
+    ElasticsearchModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => {
+        const esConfig =
+          configService.get<ElasticsearchConfig>('elasticsearch');
+        return {
+          node: `http://${esConfig.host}:${esConfig.port}`,
+          auth: {
+            username: esConfig.user,
+            password: esConfig.password,
+          },
+        };
+      },
+      inject: [ConfigService],
+    }),
     RedisModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
