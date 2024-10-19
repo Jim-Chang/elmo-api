@@ -9,6 +9,7 @@ import { AvailableCapacityNegotiationCronjobService } from './adapter/in/cronjob
 import { AvailableCapacityNegotiationService } from './application/available-capacity/available-capacity-negotiation.service';
 import { ChargingStationService } from './application/charging-station/charging-station.service';
 import { RealTimeDataService } from './application/real-time-data/real-time-data.service';
+import { AvailableCapacityService } from './application/available-capacity/available-capacity.service';
 import { AvailableCapacityEmergencyEntity } from './adapter/out/entities/available-capacity-emergency.entity';
 import { AvailableCapacityNegotiationEntity } from './adapter/out/entities/available-capacity-negotiation.entity';
 import { AvailableCapacityNegotiationDetailEntity } from './adapter/out/entities/available-capacity-negotiation-detail.entity';
@@ -75,6 +76,7 @@ import { TreeGeneratorService } from './application/tree/tree-generator.service'
     OscpController,
   ],
   providers: [
+    AvailableCapacityService,
     AvailableCapacityEmergencyService,
     AvailableCapacityNegotiationCronjobService,
     AvailableCapacityNegotiationService,

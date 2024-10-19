@@ -69,6 +69,33 @@ export class AvailableCapacityNegotiationService {
     return this.detailRepo.find({ negotiation }, { orderBy: { id: 'asc' } });
   }
 
+  async getNegotiationCapacityByDateTime(
+    chargingStationId: number,
+    dateTime: Date,
+  ): Promise<number | null> {
+    const date = DateTime.fromJSDate(dateTime)
+      .setZone(TAIPEI_TZ)
+      .startOf('day');
+
+    const negotiation = await this.negotiationRepo.findOne(
+      {
+        date: date.toJSDate(),
+        chargingStation: { id: chargingStationId },
+      },
+      { populate: ['applyDetail'] },
+    );
+
+    if (!negotiation || !negotiation.applyDetail) {
+      return null;
+    }
+
+    const applyDetail = negotiation.applyDetail;
+    const hourCapacity = applyDetail.hourCapacities.find(
+      (hc) => hc.hour === date.hour,
+    );
+    return hourCapacity?.capacity ?? null;
+  }
+
   /**
    * 建立初始「日前型協商」
    */
