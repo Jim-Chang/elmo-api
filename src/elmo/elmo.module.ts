@@ -40,6 +40,7 @@ import { LoadSiteService } from './application/load-site/load-site.service';
 import { TreeGeneratorService } from './application/tree/tree-generator.service';
 import { ElasticsearchModule } from '@nestjs/elasticsearch';
 import { ElasticsearchConfig } from '../config/es.config';
+import { TransformerHistoryDataService } from './application/transformer/transformer-history-data-service/transformer-history-data.service';
 
 @Module({
   imports: [
@@ -110,6 +111,7 @@ import { ElasticsearchConfig } from '../config/es.config';
     DistrictService,
     LoadSiteService,
     TransformerService,
+    TransformerHistoryDataService,
     CsmsService,
     TreeGeneratorService,
   ],
