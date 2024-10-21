@@ -1,13 +1,9 @@
 import { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
-import { TransformerEntity } from '../../elmo/adapter/out/entities/transformer.entity';
+import { TransformerSeeder } from './transformer.seeder';
 
 export class DatabaseSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
-    // will get persisted automatically
-    const transformer = em.create(TransformerEntity, {
-      name: 'Test Transformer',
-    });
-    await em.persistAndFlush(transformer);
+    await this.call(em, [TransformerSeeder]);
   }
 }
