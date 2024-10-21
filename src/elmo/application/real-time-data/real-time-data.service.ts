@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { DateTime } from 'luxon';
 import { RedisHelper } from '../../adapter/out/redis/redis-helper';
 import { ChargingStationRealTimeData, TransformerRealTimeData } from './types';
 
@@ -58,5 +59,22 @@ export class RealTimeDataService {
 
   buildTransformerRedisKey(transformerUid: string): string {
     return `elmo:transformer:${transformerUid}`;
+  }
+
+  determineUpdateAt(
+    transformerTimeMark: DateTime | null,
+    chargingStationTimeMark: DateTime | null,
+  ): DateTime | null {
+    if (!transformerTimeMark && !chargingStationTimeMark) {
+      return null;
+    } else if (!transformerTimeMark && chargingStationTimeMark) {
+      return chargingStationTimeMark;
+    } else if (transformerTimeMark && !chargingStationTimeMark) {
+      return transformerTimeMark;
+    } else {
+      return transformerTimeMark > chargingStationTimeMark
+        ? chargingStationTimeMark
+        : transformerTimeMark;
+    }
   }
 }

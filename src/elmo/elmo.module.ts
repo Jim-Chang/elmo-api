@@ -24,6 +24,7 @@ import { RedisHelper } from './adapter/out/redis/redis-helper';
 import { ChargingStationEmergencyController } from './adapter/in/api/charging-station-emergency.controller';
 import { InternalApiController } from './adapter/in/internal-api/internal-api.controller';
 import { ChargingStationNegotiationController } from './adapter/in/api/charging-station-negotiation.controller';
+import { RealTimeDataController } from './adapter/in/api/real-time-data.controller';
 import { FeedLineEntity } from './adapter/out/entities/feed-line.entity';
 import { LoadSiteEntity } from './adapter/out/entities/load-site.entity';
 import { FeedLineService } from './application/feed-line/feed-line.service';
@@ -73,6 +74,7 @@ import { TreeGeneratorService } from './application/tree/tree-generator.service'
     ChargingStationNegotiationController,
     FilterOptionsController,
     InternalApiController,
+    RealTimeDataController,
     OscpController,
   ],
   providers: [
