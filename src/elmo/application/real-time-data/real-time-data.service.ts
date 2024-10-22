@@ -73,14 +73,12 @@ export class RealTimeDataService {
   ): DateTime | null {
     if (!transformerTimeMark && !chargingStationTimeMark) {
       return null;
-    } else if (!transformerTimeMark && chargingStationTimeMark) {
-      return chargingStationTimeMark;
-    } else if (transformerTimeMark && !chargingStationTimeMark) {
-      return transformerTimeMark;
-    } else {
+    } else if (transformerTimeMark && chargingStationTimeMark) {
       return transformerTimeMark > chargingStationTimeMark
         ? chargingStationTimeMark
         : transformerTimeMark;
+    } else {
+      return transformerTimeMark ?? chargingStationTimeMark;
     }
   }
 }
