@@ -14,7 +14,11 @@ import {
   RealTimeDataListQueryDto,
 } from './dto/real-time-data-list.dto';
 import { ChargingStationService } from '../../../application/charging-station/charging-station.service';
-import { ChargingStationRealTimeDataDto } from './dto/real-time-data.dto';
+import { TransformerService } from '../../../application/transformer/transformer.service';
+import {
+  ChargingStationRealTimeDataDto,
+  TransformerRealTimeDataDto,
+} from './dto/real-time-data.dto';
 
 @Controller('/api/real-time-data')
 export class RealTimeDataController {
@@ -23,6 +27,7 @@ export class RealTimeDataController {
     private readonly availableCapacityService: AvailableCapacityService,
     private readonly chargingStationService: ChargingStationService,
     private readonly loadSiteService: LoadSiteService,
+    private readonly transformerService: TransformerService,
   ) {}
 
   @Get()
@@ -146,6 +151,53 @@ export class RealTimeDataController {
       time_mark: timeMark?.setZone('utc').toISO() ?? null,
       kw: data?.kw ?? null,
       available_capacity: availableCapacity,
+    };
+  }
+
+  @Get('transformer/:id')
+  async getTransformerRealTimeData(
+    @Param('id') id: number,
+  ): Promise<TransformerRealTimeDataDto> {
+    const transformer = await this.transformerService.getTransformerById(id);
+
+    if (!transformer) {
+      throw new BadRequestException(`Transformer with id ${id} does not exist`);
+    }
+
+    const data = await this.realTimeDataService.getTransformerRealTimeData(
+      transformer.uid,
+    );
+
+    return {
+      uid: transformer.uid,
+      time_mark: data?.time_mark
+        ? DateTime.fromJSDate(data.time_mark).setZone('utc').toISO()
+        : null,
+
+      ac_power_meter_output_kw: data?.ac_power_meter_output_kw ?? null,
+      ac_power_meter_output_kvar: data?.ac_power_meter_output_kvar ?? null,
+      ac_power_meter_output_kva: data?.ac_power_meter_output_kva ?? null,
+      ac_power_meter_output_pf: data?.ac_power_meter_output_pf ?? null,
+      ac_power_meter_freq: data?.ac_power_meter_freq ?? null,
+
+      ac_power_meter_line_amps_a: data?.ac_power_meter_line_amps_a ?? null,
+      ac_power_meter_line_amps_b: data?.ac_power_meter_line_amps_b ?? null,
+      ac_power_meter_line_amps_c: data?.ac_power_meter_line_amps_c ?? null,
+
+      ac_power_meter_line_volts_a_b:
+        data?.ac_power_meter_line_volts_a_b ?? null,
+      ac_power_meter_line_volts_b_c:
+        data?.ac_power_meter_line_volts_b_c ?? null,
+      ac_power_meter_line_volts_c_a:
+        data?.ac_power_meter_line_volts_c_a ?? null,
+
+      ac_power_meter_output_kwh: data?.ac_power_meter_output_kwh ?? null,
+      ac_power_meter_output_kvarh: data?.ac_power_meter_output_kvarh ?? null,
+      ac_power_meter_output_kvah: data?.ac_power_meter_output_kvah ?? null,
+
+      ac_power_meter_input_kwh: data?.ac_power_meter_input_kwh ?? null,
+      ac_power_meter_input_kvarh: data?.ac_power_meter_input_kvarh ?? null,
+      ac_power_meter_input_kvah: data?.ac_power_meter_input_kvah ?? null,
     };
   }
 }
