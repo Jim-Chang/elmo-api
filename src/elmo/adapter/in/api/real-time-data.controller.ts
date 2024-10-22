@@ -36,7 +36,7 @@ export class RealTimeDataController {
     const itemDataList = await Promise.all(
       loadSites.map(async (loadSite) => {
         // Get transformer real time data
-        const transformer = loadSite.transformers[0];
+        const transformer = loadSite.transformers?.[0] ?? null;
         const transformerData =
           transformer && transformer.uid
             ? await this.realTimeDataService.getTransformerRealTimeData(
@@ -45,7 +45,7 @@ export class RealTimeDataController {
             : null;
 
         // Get charging station real time data
-        const chargingStation = loadSite.chargingStations[0];
+        const chargingStation = loadSite.chargingStations?.[0] ?? null;
         const chargingStationData = chargingStation
           ? await this.realTimeDataService.getChargingStationRealTimeData(
               chargingStation.uid,
@@ -63,21 +63,20 @@ export class RealTimeDataController {
             : null;
 
         // Get available capacity of charging station
-        const availableCapacity =
-          await this.availableCapacityService.getAvailableCapacityByDateTime(
-            chargingStation.id,
-            now.toJSDate(),
-          );
+        const availableCapacity = chargingStation
+          ? await this.availableCapacityService.getAvailableCapacityByDateTime(
+              chargingStation.id,
+              now.toJSDate(),
+            )
+          : null;
 
         // Get update time
-        const transformerTimeMark =
-          transformerData && transformerData.time_mark
-            ? DateTime.fromJSDate(transformerData.time_mark)
-            : null;
-        const chargingStationTimeMark =
-          chargingStationData && chargingStationData.time_mark
-            ? DateTime.fromJSDate(chargingStationData.time_mark)
-            : null;
+        const transformerTimeMark = transformerData?.time_mark
+          ? DateTime.fromJSDate(transformerData.time_mark)
+          : null;
+        const chargingStationTimeMark = chargingStationData?.time_mark
+          ? DateTime.fromJSDate(chargingStationData.time_mark)
+          : null;
 
         const updateAt = this.realTimeDataService.determineUpdateAt(
           transformerTimeMark,

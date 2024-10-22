@@ -25,11 +25,16 @@ export class LoadSiteService {
     let loadSiteFilters: any = {};
 
     if (districtId) {
-      loadSiteFilters.feedLine.district = { id: districtId };
+      loadSiteFilters.feedLine = {
+        district: { id: districtId },
+      };
     }
 
     if (feedLineId) {
-      loadSiteFilters.feedLine = { id: feedLineId };
+      loadSiteFilters.feedLine = {
+        ...loadSiteFilters.feedLine,
+        id: feedLineId,
+      };
     }
 
     if (keyword) {

@@ -12,10 +12,13 @@ export class RealTimeDataService {
   ): Promise<ChargingStationRealTimeData> {
     const redisKey = this.buildChargingStationRedisKey(chargingStationUid);
     const jsonData = await this.redisHelper.getJsonDataFromList(redisKey, 0);
+    const timeMark = jsonData
+      ? DateTime.fromISO(jsonData.time_mark).toJSDate()
+      : null;
 
     return {
       uid: chargingStationUid,
-      time_mark: new Date(jsonData?.time_mark) ?? null,
+      time_mark: timeMark,
       kw: jsonData?.kw ?? null,
     };
   }
@@ -29,10 +32,13 @@ export class RealTimeDataService {
   ): Promise<TransformerRealTimeData> {
     const redisKey = this.buildTransformerRedisKey(transformerUid);
     const jsonData = await this.redisHelper.getJsonDataFromString(redisKey);
+    const timeMark = jsonData
+      ? DateTime.fromISO(jsonData.time_mark).toJSDate()
+      : null;
 
     return {
       uid: transformerUid,
-      time_mark: new Date(jsonData?.time_mark) ?? null,
+      time_mark: timeMark,
       ac_power_meter_output_kw: jsonData?.ac_power_meter_output_kw ?? null,
       ac_power_meter_output_kvar: jsonData?.ac_power_meter_output_kvar ?? null,
       ac_power_meter_output_kva: jsonData?.ac_power_meter_output_kva ?? null,
