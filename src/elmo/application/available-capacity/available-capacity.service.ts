@@ -14,7 +14,7 @@ export class AvailableCapacityService {
   async getAvailableCapacityByDateTime(
     chargingStationId: number,
     dateTime: Date,
-  ): Promise<number | null> {
+  ): Promise<number> {
     // Get contract capacity
     let capacity =
       await this.chargingStationService.getContractCapacityById(

@@ -1,4 +1,10 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  Param,
+  Query,
+} from '@nestjs/common';
 import { DateTime } from 'luxon';
 import { AvailableCapacityService } from '../../../application/available-capacity/available-capacity.service';
 import { LoadSiteService } from '../../../application/load-site/load-site.service';
@@ -7,12 +13,15 @@ import {
   LoadSiteRealTimeDataListDataDto,
   RealTimeDataListQueryDto,
 } from './dto/real-time-data-list.dto';
+import { ChargingStationService } from '../../../application/charging-station/charging-station.service';
+import { ChargingStationRealTimeDataDto } from './dto/real-time-data.dto';
 
 @Controller('/api/real-time-data')
 export class RealTimeDataController {
   constructor(
     private readonly realTimeDataService: RealTimeDataService,
     private readonly availableCapacityService: AvailableCapacityService,
+    private readonly chargingStationService: ChargingStationService,
     private readonly loadSiteService: LoadSiteService,
   ) {}
 
@@ -100,6 +109,43 @@ export class RealTimeDataController {
 
     return {
       items: itemDataList,
+    };
+  }
+
+  @Get('charging-station/:id')
+  async getChargingStationRealTimeData(
+    @Param('id') id: number,
+  ): Promise<ChargingStationRealTimeDataDto> {
+    const chargingStation =
+      await this.chargingStationService.getChargingStationById(id);
+
+    if (!chargingStation) {
+      throw new BadRequestException(
+        `Charging station with id ${id} does not exist`,
+      );
+    }
+
+    const data = await this.realTimeDataService.getChargingStationRealTimeData(
+      chargingStation.uid,
+    );
+
+    const timeMark = data?.time_mark
+      ? DateTime.fromJSDate(data.time_mark)
+      : null;
+
+    // Get available capacity of charging station at the time mark
+    const availableCapacity = timeMark
+      ? await this.availableCapacityService.getAvailableCapacityByDateTime(
+          chargingStation.id,
+          timeMark.toJSDate(),
+        )
+      : null;
+
+    return {
+      uid: chargingStation.uid,
+      time_mark: timeMark?.setZone('utc').toISO() ?? null,
+      kw: data?.kw ?? null,
+      available_capacity: availableCapacity,
     };
   }
 }
