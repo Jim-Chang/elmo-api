@@ -34,7 +34,7 @@ export class DatabaseSeeder extends Seeder {
         .each((transformer) => {
           transformer.loadSite = loadSite;
         })
-        .make(2); // create 2 transformers for each loadSite
+        .make(1);
 
       const chargingStations = new ChargingStationFactory(em)
         .each((chargingStation) => {
@@ -43,7 +43,7 @@ export class DatabaseSeeder extends Seeder {
           chargingStation.loadSite = loadSite;
           chargingStation.csms = null;
         })
-        .make(3); // create 3 charging stations for each loadSite
+        .make(1);
 
       allEntities.push(
         feedLine,
