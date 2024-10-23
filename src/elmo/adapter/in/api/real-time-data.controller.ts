@@ -93,7 +93,7 @@ export class RealTimeDataController {
           charge_load_percentage:
             chargeLoad && totalLoad ? (chargeLoad / totalLoad) * 100 : null,
           available_capacity: availableCapacity,
-          updated_at: updateAt?.toISO() ?? null,
+          updated_at: updateAt?.setZone('utc').toISO() ?? null,
         };
       }),
     );
