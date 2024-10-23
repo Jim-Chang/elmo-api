@@ -11,7 +11,7 @@ export class CsmsFactory extends Factory<CsmsEntity> {
       oscpCsmsToken: faker.string.uuid(),
       oscpElmoToken: faker.string.uuid(),
       isSentHandshake: faker.datatype.boolean(),
-      isConnected: faker.datatype.boolean(),
+      isConnected: false, // NOTE: 若為 true， ELMO API 會自動發送 OSCP request
     };
   }
 }

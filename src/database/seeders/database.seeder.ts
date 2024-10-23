@@ -4,22 +4,24 @@ import { LoadSiteFactory } from '../factories/load-site.factory';
 import { ChargingStationFactory } from '../factories/charging-station.factory';
 import { DistrictFactory } from '../factories/district.factory';
 import { FeedLineFactory } from '../factories/feed-line.factory';
-import { CsmsFactory } from '../factories/csms.factory';
 import { TransformerFactory } from '../factories/transformer.factory';
 
 export class DatabaseSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
-    await this.createChargingStations(em);
+    await this.createDistricts(em);
   }
 
-  private async createChargingStations(em: EntityManager) {
+  /**
+   * NOTE: 除建立 districts 外，
+   * 還會建立 feedLines、loadSites、transformers、chargingStations 等表
+   */
+  private async createDistricts(em: EntityManager) {
     // in-degree 0 entities
     const districts = new DistrictFactory(em).make(3);
-    const csmsSystems = new CsmsFactory(em).make(3);
 
     const allEntities = [];
 
-    districts.forEach((district, index) => {
+    districts.forEach((district) => {
       const feedLine = new FeedLineFactory(em).makeOne({
         district: district,
       });
@@ -39,7 +41,7 @@ export class DatabaseSeeder extends Seeder {
           chargingStation.district = district;
           chargingStation.feedLine = feedLine;
           chargingStation.loadSite = loadSite;
-          chargingStation.csms = csmsSystems[index % csmsSystems.length];
+          chargingStation.csms = null;
         })
         .make(3); // create 3 charging stations for each loadSite
 
