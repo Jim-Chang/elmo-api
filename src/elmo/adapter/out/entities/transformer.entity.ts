@@ -7,6 +7,9 @@ export class TransformerEntity {
   id: number;
 
   @Property()
+  uid: string;
+
+  @Property()
   name: string;
 
   // to parent LoadSiteEntity

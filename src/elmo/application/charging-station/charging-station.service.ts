@@ -45,6 +45,12 @@ export class ChargingStationService {
     });
   }
 
+  async getContractCapacityById(chargingStationId: number): Promise<number> {
+    const chargingStation =
+      await this.chargingStationRepo.findOneOrFail(chargingStationId);
+    return chargingStation.contractCapacity;
+  }
+
   async findChargingStationByNegotiationId(
     negotiationId: number,
   ): Promise<ChargingStationEntity> {
