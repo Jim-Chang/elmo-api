@@ -13,4 +13,9 @@ export class TransformerService {
   async getAllTransformers(): Promise<TransformerEntity[]> {
     return await this.transformerRepository.findAll();
   }
+
+  async getUid(id: number): Promise<string> {
+    const transformer = await this.transformerRepository.findOneOrFail({ id });
+    return transformer.uid;
+  }
 }
