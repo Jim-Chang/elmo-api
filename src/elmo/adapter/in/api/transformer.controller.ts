@@ -6,7 +6,7 @@ import {
   Query,
   UsePipes,
 } from '@nestjs/common';
-import { TransformerHistoryDataService } from '../../../application/transformer/transformer-history-data-service/transformer-history-data.service';
+import { TransformerHistoryDataService } from '../../../application/history-data/transformer-history-data-service/transformer-history-data.service';
 import { API_PREFIX } from '../../../../constants';
 import {
   HistoryDataDto,

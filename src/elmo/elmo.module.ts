@@ -41,7 +41,7 @@ import { TreeGeneratorService } from './application/tree/tree-generator.service'
 import { ElasticsearchModule } from '@nestjs/elasticsearch';
 import { ElasticsearchConfig } from '../config/es.config';
 import { TransformerController } from './adapter/in/api/transformer.controller';
-import { TransformerHistoryDataService } from './application/transformer/transformer-history-data-service/transformer-history-data.service';
+import { TransformerHistoryDataService } from './application/history-data/transformer-history-data-service/transformer-history-data.service';
 
 @Module({
   imports: [

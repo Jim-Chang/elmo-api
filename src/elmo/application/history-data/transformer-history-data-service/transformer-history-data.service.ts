@@ -5,7 +5,12 @@ import {
   TransformerOneDayESRawData,
   TransformerOneHourESRawData,
 } from './types';
-import { DateTime, Interval } from 'luxon';
+import {
+  buildFifteenMinuteIntervalIndexNameList,
+  ensureTimeMarkIsISOFormat,
+  getDataSizeOfFifteenMinuteInterval,
+  getDataSizeOfOneDayInterval,
+} from '../utils';
 
 // log-elmo-transformer-concentrated-{YYYY}-{mm}
 const FIFTEEN_MINUTE_INTERVAL_BASE_INDEX_NAME =
@@ -24,6 +29,7 @@ export class TransformerHistoryDataService {
     endDate: Date,
   ): Promise<TransformerFifteenMinuteESRawData[]> {
     const indexNameList = buildFifteenMinuteIntervalIndexNameList(
+      FIFTEEN_MINUTE_INTERVAL_BASE_INDEX_NAME,
       startDate,
       endDate,
     );
@@ -67,6 +73,7 @@ export class TransformerHistoryDataService {
     endDate: Date,
   ): Promise<TransformerOneHourESRawData[]> {
     const indexNameList = buildFifteenMinuteIntervalIndexNameList(
+      FIFTEEN_MINUTE_INTERVAL_BASE_INDEX_NAME,
       startDate,
       endDate,
     );
@@ -207,43 +214,4 @@ export class TransformerHistoryDataService {
         time_mark: ensureTimeMarkIsISOFormat(source.time_mark),
       }));
   }
-}
-
-function getDataSizeOfFifteenMinuteInterval(startDate: Date, endDate: Date) {
-  const start = DateTime.fromJSDate(startDate);
-  const end = DateTime.fromJSDate(endDate);
-  const interval = Interval.fromDateTimes(start, end);
-  return Math.ceil(interval.length('minutes') / 15);
-}
-
-function getDataSizeOfOneDayInterval(startDate: Date, endDate: Date) {
-  const start = DateTime.fromJSDate(startDate);
-  const end = DateTime.fromJSDate(endDate);
-  const interval = Interval.fromDateTimes(start, end);
-  return Math.ceil(interval.length('days'));
-}
-
-function eachMonthOfInterval(startDate: Date, endDate: Date) {
-  const start = DateTime.fromJSDate(startDate);
-  const end = DateTime.fromJSDate(endDate);
-  const interval = Interval.fromDateTimes(start, end);
-  return interval.splitBy({ months: 1 }).map((i) => i.start);
-}
-
-function buildFifteenMinuteIntervalIndexNameList(
-  startDate: Date,
-  endDate: Date,
-) {
-  const dates = eachMonthOfInterval(startDate, endDate);
-  return dates.map(
-    (date) =>
-      `${FIFTEEN_MINUTE_INTERVAL_BASE_INDEX_NAME}${date.toFormat('yyyy-MM')}`,
-  );
-}
-
-function ensureTimeMarkIsISOFormat(timeMark: string) {
-  // To ensure time_mark is in ISO format (+0) because time_mark may be another time zone, e.g., +08:00
-  return DateTime.fromISO(timeMark, {
-    zone: 'utc',
-  }).toISO();
 }
