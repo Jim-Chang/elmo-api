@@ -1,11 +1,15 @@
+import { ZodValidationPipe } from '@anatine/zod-nestjs';
 import {
   BadRequestException,
   Controller,
   Get,
   Param,
+  ParseIntPipe,
   Query,
+  UsePipes,
 } from '@nestjs/common';
 import { DateTime } from 'luxon';
+import { API_PREFIX } from '../../../../constants';
 import { AvailableCapacityService } from '../../../application/available-capacity/available-capacity.service';
 import { LoadSiteService } from '../../../application/load-site/load-site.service';
 import { RealTimeDataService } from '../../../application/real-time-data/real-time-data.service';
@@ -20,7 +24,8 @@ import {
   TransformerRealTimeDataDto,
 } from './dto/real-time-data.dto';
 
-@Controller('/api/real-time-data')
+@Controller(`${API_PREFIX}/real-time-data`)
+@UsePipes(ZodValidationPipe)
 export class RealTimeDataController {
   constructor(
     private readonly realTimeDataService: RealTimeDataService,
@@ -119,7 +124,7 @@ export class RealTimeDataController {
 
   @Get('charging-station/:id')
   async getChargingStationRealTimeData(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
   ): Promise<ChargingStationRealTimeDataDto> {
     const chargingStation =
       await this.chargingStationService.getChargingStationById(id);
@@ -156,7 +161,7 @@ export class RealTimeDataController {
 
   @Get('transformer/:id')
   async getTransformerRealTimeData(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
   ): Promise<TransformerRealTimeDataDto> {
     const transformer = await this.transformerService.getTransformerById(id);
 

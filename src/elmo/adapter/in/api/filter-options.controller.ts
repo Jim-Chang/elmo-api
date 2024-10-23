@@ -1,4 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
+import { API_PREFIX } from '../../../../constants';
 import { FeedLineService } from '../../../application/feed-line/feed-line.service';
 import {
   OptionsResponseDto,
@@ -7,7 +8,7 @@ import {
 import { DistrictService } from '../../../application/district/district.service';
 import { TreeGeneratorService } from '../../../application/tree/tree-generator.service';
 
-@Controller('/api/filter-options')
+@Controller(`${API_PREFIX}/filter-options`)
 export class FilterOptionsController {
   constructor(
     private readonly feedLineService: FeedLineService,
