@@ -9,12 +9,18 @@ import {
 } from '@nestjs/common';
 import { API_PREFIX } from '../../../../constants';
 import { LoadSiteDetailDataDto } from './dto/load-site-detail-data.dto';
+import { LoadSiteUidMappingDto } from './dto/load-site-uid-mapping.dto';
 import { LoadSiteService } from '../../../application/load-site/load-site.service';
 
 @Controller(`${API_PREFIX}/load-site`)
 @UsePipes(ZodValidationPipe)
 export class LoadSiteController {
   constructor(private readonly loadSiteService: LoadSiteService) {}
+
+  @Get('uid-mapping')
+  async getUidMapping(): Promise<LoadSiteUidMappingDto> {
+    return await this.loadSiteService.listLoadSiteUidMapping();
+  }
 
   @Get(':id')
   async getLoadSiteDetail(
