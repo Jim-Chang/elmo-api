@@ -39,3 +39,31 @@ export function buildFifteenMinuteIntervalIndexNameList(
   const dates = eachMonthOfInterval(startDate, endDate);
   return dates.map((date) => `${baseIndexName}${date.toFormat('yyyy-MM')}`);
 }
+
+export function fillMissingDataPoints<T>(
+  data: T[],
+  startDate: Date,
+  endDate: Date,
+  intervalMinutes: number,
+  createEmptyDataPoint: (timeMark: string) => T,
+): T[] {
+  const dataMap = new Map(data.map((item) => [item['time_mark'], item]));
+
+  const filledData: T[] = [];
+  let currentTime = DateTime.fromJSDate(startDate).toUTC();
+
+  while (currentTime <= DateTime.fromJSDate(endDate).toUTC()) {
+    const timeMark = currentTime.toISO();
+    const existingData = dataMap.get(timeMark);
+
+    if (existingData) {
+      filledData.push(existingData);
+    } else {
+      filledData.push(createEmptyDataPoint(timeMark));
+    }
+
+    currentTime = currentTime.plus({ minutes: intervalMinutes });
+  }
+
+  return filledData;
+}
