@@ -3,7 +3,7 @@ import { createZodDto } from '@anatine/zod-nestjs';
 import { DateTime } from 'luxon';
 
 const HistoryDataQuerySchema = z.object({
-  startDate: z
+  start_date: z
     .string()
     .refine((date) => DateTime.fromISO(date, { zone: 'utc' }).isValid, {
       message: 'Invalid date format, expected ISO 8601',
@@ -11,7 +11,7 @@ const HistoryDataQuerySchema = z.object({
     .transform((dateString) =>
       DateTime.fromISO(dateString, { zone: 'utc' }).toJSDate(),
     ),
-  endDate: z
+  end_date: z
     .string()
     .refine((date) => DateTime.fromISO(date, { zone: 'utc' }).isValid, {
       message: 'Invalid date format, expected ISO 8601',
@@ -23,8 +23,7 @@ const HistoryDataQuerySchema = z.object({
 
 export class HistoryDataQueryDto extends createZodDto(HistoryDataQuerySchema) {}
 
-const TransformerFifteenMinuteESRawDataSchema = z.object({
-  transformer_id: z.string(),
+const TransformerFifteenMinuteHistoryDataSchema = z.object({
   time_mark: z.string(),
   ac_power_meter_output_kw: z.number(),
   ac_power_meter_output_kvar: z.number(),
@@ -39,11 +38,10 @@ const TransformerFifteenMinuteESRawDataSchema = z.object({
   ac_power_meter_line_volts_c_a: z.number(),
 });
 
-const TransformerOneHourESRawDataSchema =
-  TransformerFifteenMinuteESRawDataSchema;
+const TransformerOneHourHistoryDataSchema =
+  TransformerFifteenMinuteHistoryDataSchema;
 
-const TransformerOneDayESRawDataSchema = z.object({
-  transformer_id: z.string(),
+const TransformerOneDayHistoryDataSchema = z.object({
   time_mark: z.string(),
   ac_power_meter_kwh: z.number(),
   ac_power_meter_kvarh: z.number(),
@@ -58,9 +56,9 @@ const TransformerOneDayESRawDataSchema = z.object({
 
 const HistoryDateSchema = z.object({
   data: z.union([
-    z.array(TransformerFifteenMinuteESRawDataSchema),
-    z.array(TransformerOneHourESRawDataSchema),
-    z.array(TransformerOneDayESRawDataSchema),
+    z.array(TransformerFifteenMinuteHistoryDataSchema),
+    z.array(TransformerOneHourHistoryDataSchema),
+    z.array(TransformerOneDayHistoryDataSchema),
   ]),
 });
 

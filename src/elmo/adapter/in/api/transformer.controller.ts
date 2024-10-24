@@ -33,8 +33,8 @@ export class TransformerController {
     const data =
       await this.transformerHistoryDataService.queryInFifteenMinuteDataInterval(
         uid,
-        query.startDate,
-        query.endDate,
+        query.start_date,
+        query.end_date,
       );
 
     return { data };
@@ -50,8 +50,8 @@ export class TransformerController {
     const data =
       await this.transformerHistoryDataService.queryInOneHourDataInterval(
         uid,
-        query.startDate,
-        query.endDate,
+        query.start_date,
+        query.end_date,
       );
 
     return { data };
@@ -67,8 +67,8 @@ export class TransformerController {
     const data =
       await this.transformerHistoryDataService.queryInOneDayDataInterval(
         uid,
-        query.startDate,
-        query.endDate,
+        query.start_date,
+        query.end_date,
       );
 
     return { data };
