@@ -6,6 +6,7 @@ export class TransformerFactory extends Factory<TransformerEntity> {
   model = TransformerEntity;
   definition() {
     return {
+      uid: faker.string.uuid(),
       name: faker.lorem.word(),
     };
   }
