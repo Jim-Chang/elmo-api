@@ -6,7 +6,7 @@ export class FeedLineFactory extends Factory<FeedLineEntity> {
   model = FeedLineEntity;
   definition() {
     return {
-      name: faker.lorem.word(),
+      name: faker.helpers.arrayElement(['SV61', 'UL15', 'WF37', 'B526']),
     };
   }
 }
