@@ -17,6 +17,9 @@ export class LoadSiteEntity {
   id: number;
 
   @Property()
+  uid: string;
+
+  @Property()
   name: string;
 
   @Property({ nullable: true })
