@@ -1,6 +1,5 @@
 export type TransformerFifteenMinuteESRawData = {
   // 基本資料
-  transformer_id: string; // 變壓器 ID
   time_mark: string; // 使用 ISO time_mark
 
   // 即時輸出電功率 (平均值，每 15 分鐘計算一次)
@@ -27,7 +26,6 @@ export type TransformerOneHourESRawData = TransformerFifteenMinuteESRawData;
 
 export type TransformerOneDayESRawData = {
   // 基本資料
-  transformer_id: string; // 變壓器 ID
   time_mark: string; // 使用 ISO time_mark
 
   // 當日最後一筆 扣掉 當日第一筆 (輸入電量)

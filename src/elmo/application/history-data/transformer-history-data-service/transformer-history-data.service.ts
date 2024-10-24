@@ -19,6 +19,34 @@ const FIFTEEN_MINUTE_INTERVAL_BASE_INDEX_NAME =
 // log-elmo-transformer-statistics
 const ONE_DAY_INTERVAL_INDEX_NAME = 'log-elmo-transformer-statistics';
 
+const FIFTEEN_MINUTE_FIELDS = [
+  'time_mark',
+  'ac_power_meter_output_kw',
+  'ac_power_meter_output_kvar',
+  'ac_power_meter_output_kva',
+  'ac_power_meter_output_pf',
+  'ac_power_meter_freq',
+  'ac_power_meter_line_amps_a',
+  'ac_power_meter_line_amps_b',
+  'ac_power_meter_line_amps_c',
+  'ac_power_meter_line_volts_a_b',
+  'ac_power_meter_line_volts_b_c',
+  'ac_power_meter_line_volts_c_a',
+];
+
+const ONE_DAY_FIELDS = [
+  'time_mark',
+  'ac_power_meter_kwh',
+  'ac_power_meter_kvarh',
+  'ac_power_meter_kvah',
+  'ac_power_meter_output_kwh',
+  'ac_power_meter_output_kvarh',
+  'ac_power_meter_output_kvah',
+  'ac_power_meter_input_kwh',
+  'ac_power_meter_input_kvarh',
+  'ac_power_meter_input_kvah',
+];
+
 @Injectable()
 export class TransformerHistoryDataService {
   constructor(private readonly es: ElasticsearchService) {}
@@ -57,6 +85,7 @@ export class TransformerHistoryDataService {
       query,
       size,
       sort: [{ time_mark: { order: 'asc' } }],
+      _source: FIFTEEN_MINUTE_FIELDS,
     });
 
     return result.hits.hits
@@ -150,29 +179,28 @@ export class TransformerHistoryDataService {
     const buckets = result.aggregations.hourly_data.buckets;
     return buckets.map((bucket: any) => {
       return {
-        transformer_id: uid,
-        time_mark: bucket.key_as_string,
+        time_mark: ensureTimeMarkIsISOFormat(bucket.key_as_string),
         ac_power_meter_output_kw:
-          bucket.avg_ac_power_meter_output_kw.value ?? 0,
+          bucket.avg_ac_power_meter_output_kw.value ?? null,
         ac_power_meter_output_kvar:
-          bucket.avg_ac_power_meter_output_kvar.value ?? 0,
+          bucket.avg_ac_power_meter_output_kvar.value ?? null,
         ac_power_meter_output_kva:
-          bucket.avg_ac_power_meter_output_kva.value ?? 0,
+          bucket.avg_ac_power_meter_output_kva.value ?? null,
         ac_power_meter_output_pf:
-          bucket.avg_ac_power_meter_output_pf.value ?? 0,
-        ac_power_meter_freq: bucket.avg_ac_power_meter_freq.value ?? 0,
+          bucket.avg_ac_power_meter_output_pf.value ?? null,
+        ac_power_meter_freq: bucket.avg_ac_power_meter_freq.value ?? null,
         ac_power_meter_line_amps_a:
-          bucket.avg_ac_power_meter_line_amps_a.value ?? 0,
+          bucket.avg_ac_power_meter_line_amps_a.value ?? null,
         ac_power_meter_line_amps_b:
-          bucket.avg_ac_power_meter_line_amps_b.value ?? 0,
+          bucket.avg_ac_power_meter_line_amps_b.value ?? null,
         ac_power_meter_line_amps_c:
-          bucket.avg_ac_power_meter_line_amps_c.value ?? 0,
+          bucket.avg_ac_power_meter_line_amps_c.value ?? null,
         ac_power_meter_line_volts_a_b:
-          bucket.avg_ac_power_meter_line_volts_a_b.value ?? 0,
+          bucket.avg_ac_power_meter_line_volts_a_b.value ?? null,
         ac_power_meter_line_volts_b_c:
-          bucket.avg_ac_power_meter_line_volts_b_c.value ?? 0,
+          bucket.avg_ac_power_meter_line_volts_b_c.value ?? null,
         ac_power_meter_line_volts_c_a:
-          bucket.avg_ac_power_meter_line_volts_c_a.value ?? 0,
+          bucket.avg_ac_power_meter_line_volts_c_a.value ?? null,
       };
     });
   }
@@ -205,6 +233,7 @@ export class TransformerHistoryDataService {
       query,
       size,
       sort: [{ time_mark: { order: 'asc' } }],
+      _source: ONE_DAY_FIELDS,
     });
 
     return result.hits.hits
