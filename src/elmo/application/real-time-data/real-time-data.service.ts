@@ -81,4 +81,18 @@ export class RealTimeDataService {
       return transformerTimeMark ?? chargingStationTimeMark;
     }
   }
+
+  calculateChargeLoadPercentage(
+    chargeLoad: number | null,
+    totalLoad: number | null,
+  ): number | null {
+    if (
+      chargeLoad === null ||
+      !totalLoad // totalLoad is null or 0
+    ) {
+      return null;
+    }
+
+    return (chargeLoad / totalLoad) * 100;
+  }
 }
