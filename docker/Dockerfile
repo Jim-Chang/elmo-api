@@ -20,4 +20,7 @@ ENV NODE_ENV=production
 RUN pnpm install --prod --frozen-lockfile --prefer-offline
 
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+
+EXPOSE 3000
+
 CMD [ "node", "dist/main.js" ]
