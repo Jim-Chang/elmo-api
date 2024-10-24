@@ -3,7 +3,7 @@ import { Seeder } from '@mikro-orm/seeder';
 import { LoadSiteFactory } from '../factories/load-site.factory';
 import { ChargingStationFactory } from '../factories/charging-station.factory';
 import { DistrictFactory } from '../factories/district.factory';
-import { FeedLineFactory } from '../factories/feed-line.factory';
+import { FEED_LINES, FeedLineFactory } from '../factories/feed-line.factory';
 import { TransformerFactory } from '../factories/transformer.factory';
 
 export class DatabaseSeeder extends Seeder {
@@ -17,12 +17,13 @@ export class DatabaseSeeder extends Seeder {
    */
   private async createDistricts(em: EntityManager) {
     // in-degree 0 entities
-    const districts = new DistrictFactory(em).make(3);
+    const districts = new DistrictFactory(em).make(4);
 
     const allEntities = [];
 
-    districts.forEach((district) => {
+    districts.forEach((district, index) => {
       const feedLine = new FeedLineFactory(em).makeOne({
+        name: FEED_LINES[index],
         district: district,
       });
 
