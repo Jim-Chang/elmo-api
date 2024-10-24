@@ -14,6 +14,15 @@ export class LoadSiteService {
     return await this.loadSiteRepository.findAll();
   }
 
+  async getLoadSiteById(id: number): Promise<LoadSiteEntity> {
+    return await this.loadSiteRepository.findOne(
+      { id },
+      {
+        populate: ['chargingStations', 'feedLine', 'transformers'],
+      },
+    );
+  }
+
   async findLoadSiteWithChargeStationAndTransformer(filterBy: {
     districtId?: number;
     feedLineId?: number;

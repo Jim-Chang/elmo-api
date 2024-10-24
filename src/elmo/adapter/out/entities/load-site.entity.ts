@@ -19,6 +19,9 @@ export class LoadSiteEntity {
   @Property()
   name: string;
 
+  @Property({ nullable: true })
+  address?: string;
+
   // to parent FeedLineEntity
   @ManyToOne(() => FeedLineEntity, {
     nullable: true,
