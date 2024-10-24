@@ -15,6 +15,11 @@ export class LoadSiteService {
     return await this.loadSiteRepository.findAll();
   }
 
+  async getUid(id: number): Promise<string> {
+    const loadSite = await this.loadSiteRepository.findOneOrFail({ id });
+    return loadSite.uid;
+  }
+
   async getLoadSiteById(id: number): Promise<LoadSiteEntity> {
     return await this.loadSiteRepository.findOne(
       { id },

@@ -1,13 +1,19 @@
-import { ZodValidationPipe } from '@anatine/zod-nestjs';
 import {
   BadRequestException,
   Controller,
   Get,
   Param,
   ParseIntPipe,
+  Query,
   UsePipes,
 } from '@nestjs/common';
+import { LoadSiteHistoryDataService } from '../../../application/history-data/load-site-history-data-service/load-site-history-data.service';
 import { API_PREFIX } from '../../../../constants';
+import {
+  HistoryDataDto,
+  HistoryDataQueryDto,
+} from './dto/history-data-query.dto';
+import { ZodValidationPipe } from '@anatine/zod-nestjs';
 import { LoadSiteDetailDataDto } from './dto/load-site-detail-data.dto';
 import { LoadSiteUidMappingDto } from './dto/load-site-uid-mapping.dto';
 import { LoadSiteService } from '../../../application/load-site/load-site.service';
@@ -15,7 +21,10 @@ import { LoadSiteService } from '../../../application/load-site/load-site.servic
 @Controller(`${API_PREFIX}/load-site`)
 @UsePipes(ZodValidationPipe)
 export class LoadSiteController {
-  constructor(private readonly loadSiteService: LoadSiteService) {}
+  constructor(
+    private readonly loadSiteService: LoadSiteService,
+    private readonly loadSiteHistoryDataService: LoadSiteHistoryDataService,
+  ) {}
 
   @Get('uid-mapping')
   async getUidMapping(): Promise<LoadSiteUidMappingDto> {
@@ -56,5 +65,56 @@ export class LoadSiteController {
         voltage_level: t.voltageLevel,
       })),
     };
+  }
+
+  @Get('history/:id/fifteen-minute')
+  async getLoadSiteFifteenMinuteHistoryData(
+    @Param('id', ParseIntPipe) id: number,
+    @Query() query: HistoryDataQueryDto,
+  ): Promise<HistoryDataDto> {
+    const uid = await this.loadSiteService.getUid(id);
+
+    const data =
+      await this.loadSiteHistoryDataService.queryInFifteenMinuteDataInterval(
+        uid,
+        query.start_date,
+        query.end_date,
+      );
+
+    return { data };
+  }
+
+  @Get('history/:id/one-hour')
+  async getLoadSiteOneHourHistoryData(
+    @Param('id', ParseIntPipe) id: number,
+    @Query() query: HistoryDataQueryDto,
+  ): Promise<HistoryDataDto> {
+    const uid = await this.loadSiteService.getUid(id);
+
+    const data =
+      await this.loadSiteHistoryDataService.queryInOneHourDataInterval(
+        uid,
+        query.start_date,
+        query.end_date,
+      );
+
+    return { data };
+  }
+
+  @Get('history/:id/one-day')
+  async getLoadSiteOneDayHistoryData(
+    @Param('id', ParseIntPipe) id: number,
+    @Query() query: HistoryDataQueryDto,
+  ): Promise<HistoryDataDto> {
+    const uid = await this.loadSiteService.getUid(id);
+
+    const data =
+      await this.loadSiteHistoryDataService.queryInOneDayDataInterval(
+        uid,
+        query.start_date,
+        query.end_date,
+      );
+
+    return { data };
   }
 }
