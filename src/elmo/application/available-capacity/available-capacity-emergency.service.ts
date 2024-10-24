@@ -33,6 +33,27 @@ export class AvailableCapacityEmergencyService {
     return this.emergencyRepo.findOne({ id });
   }
 
+  async getEmergencyCapacityByDateTime(
+    chargingStationId: number,
+    dateTime: Date,
+  ): Promise<number | null> {
+    const emergencies = await this.emergencyRepo.find({
+      chargingStation: { id: chargingStationId },
+      periodStartAt: { $lte: dateTime },
+      periodEndAt: { $gt: dateTime },
+      isSuccessSent: true,
+    });
+
+    if (emergencies.length === 0) {
+      return null;
+    }
+
+    return emergencies.reduce(
+      (min, emergency) => (emergency.capacity < min ? emergency.capacity : min),
+      Infinity,
+    );
+  }
+
   async createAndSendEmergency(
     negotiationId: number,
     periodStartAt: Date,
