@@ -20,7 +20,7 @@ import {
   ChargingStationNegotiationListQueryDto,
 } from './dto/charging-station-negotiation-list.dto';
 import { DateTime } from 'luxon';
-import { TAIPEI_TZ } from '../../../../constants';
+import { API_PREFIX, TAIPEI_TZ } from '../../../../constants';
 import {
   ChargingStationNegotiationConfirmPostDataDto,
   ChargingStationNegotiationDetailDto,
@@ -38,7 +38,7 @@ import {
 } from '../../../application/available-capacity/types';
 import { AvailableCapacityEmergencyService } from '../../../application/available-capacity/available-capacity-emergency.service';
 
-@Controller('/api/charging-station-negotiation')
+@Controller(`${API_PREFIX}/charging-station-negotiation`)
 @UsePipes(ZodValidationPipe)
 export class ChargingStationNegotiationController {
   private logger = new Logger(ChargingStationNegotiationController.name);

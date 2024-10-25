@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { API_PREFIX } from '../../../../constants';
 import { AvailableCapacityEmergencyService } from '../../../application/available-capacity/available-capacity-emergency.service';
-import { ChargingStationService } from '../../../application/charging-station/charging-station.service';
 import { CreateAndSendEmergencyDto } from '../oscp/dto/create-and-send-emergency.dto';
 import { AvailableCapacityNegotiationService } from '../../../application/available-capacity/available-capacity-negotiation.service';
 
@@ -19,7 +18,6 @@ import { AvailableCapacityNegotiationService } from '../../../application/availa
 @UsePipes(ZodValidationPipe)
 export class ChargingStationEmergencyController {
   constructor(
-    private readonly chargingStationService: ChargingStationService,
     private readonly emergencyService: AvailableCapacityEmergencyService,
     private readonly negotiationService: AvailableCapacityNegotiationService,
   ) {}

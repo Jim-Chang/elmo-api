@@ -42,6 +42,7 @@ import { ElasticsearchModule } from '@nestjs/elasticsearch';
 import { ElasticsearchConfig } from '../config/es.config';
 import { TransformerController } from './adapter/in/api/transformer.controller';
 import { TransformerHistoryDataService } from './application/history-data/transformer-history-data-service/transformer-history-data.service';
+import { LoadSiteController } from './adapter/in/api/load-site.controller';
 
 @Module({
   imports: [
@@ -93,6 +94,7 @@ import { TransformerHistoryDataService } from './application/history-data/transf
     ChargingStationNegotiationController,
     FilterOptionsController,
     InternalApiController,
+    LoadSiteController,
     RealTimeDataController,
     OscpController,
     TransformerController,
