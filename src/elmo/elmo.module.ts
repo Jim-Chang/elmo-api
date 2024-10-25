@@ -38,6 +38,7 @@ import { TransformerEntity } from './adapter/out/entities/transformer.entity';
 import { TransformerService } from './application/transformer/transformer.service';
 import { LoadSiteService } from './application/load-site/load-site.service';
 import { TreeGeneratorService } from './application/tree/tree-generator.service';
+import { LoadSiteController } from './adapter/in/api/load-site.controller';
 
 @Module({
   imports: [
@@ -74,6 +75,7 @@ import { TreeGeneratorService } from './application/tree/tree-generator.service'
     ChargingStationNegotiationController,
     FilterOptionsController,
     InternalApiController,
+    LoadSiteController,
     RealTimeDataController,
     OscpController,
   ],

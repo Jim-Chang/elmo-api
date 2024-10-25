@@ -33,6 +33,10 @@ export class ChargingStationService {
     return !!chargingStation;
   }
 
+  async getChargingStationById(id: number): Promise<ChargingStationEntity> {
+    return this.chargingStationRepo.findOne({ id });
+  }
+
   async getChargingStationByUid(uid: string): Promise<ChargingStationEntity> {
     return this.chargingStationRepo.findOne({ uid });
   }
