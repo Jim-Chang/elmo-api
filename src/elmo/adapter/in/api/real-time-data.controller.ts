@@ -110,7 +110,10 @@ export class RealTimeDataController {
           demand_load: demandLoad,
           charge_load: chargeLoad,
           charge_load_percentage:
-            chargeLoad && totalLoad ? (chargeLoad / totalLoad) * 100 : null,
+            this.realTimeDataService.calculateChargeLoadPercentage(
+              chargeLoad,
+              totalLoad,
+            ),
           available_capacity: availableCapacity,
           updated_at: updateAt?.setZone('utc').toISO() ?? null,
         };
