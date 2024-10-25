@@ -38,6 +38,10 @@ import { TransformerEntity } from './adapter/out/entities/transformer.entity';
 import { TransformerService } from './application/transformer/transformer.service';
 import { LoadSiteService } from './application/load-site/load-site.service';
 import { TreeGeneratorService } from './application/tree/tree-generator.service';
+import { ElasticsearchModule } from '@nestjs/elasticsearch';
+import { ElasticsearchConfig } from '../config/es.config';
+import { TransformerController } from './adapter/in/api/transformer.controller';
+import { TransformerHistoryDataService } from './application/history-data/transformer-history-data-service/transformer-history-data.service';
 import { LoadSiteController } from './adapter/in/api/load-site.controller';
 
 @Module({
@@ -57,6 +61,21 @@ import { LoadSiteController } from './adapter/in/api/load-site.controller';
       TransformerEntity,
       CsmsEntity,
     ]),
+    ElasticsearchModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => {
+        const esConfig =
+          configService.get<ElasticsearchConfig>('elasticsearch');
+        return {
+          node: `http://${esConfig.host}:${esConfig.port}`,
+          auth: {
+            username: esConfig.user,
+            password: esConfig.password,
+          },
+        };
+      },
+      inject: [ConfigService],
+    }),
     RedisModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -78,6 +97,7 @@ import { LoadSiteController } from './adapter/in/api/load-site.controller';
     LoadSiteController,
     RealTimeDataController,
     OscpController,
+    TransformerController,
   ],
   providers: [
     AvailableCapacityService,
@@ -95,6 +115,7 @@ import { LoadSiteController } from './adapter/in/api/load-site.controller';
     DistrictService,
     LoadSiteService,
     TransformerService,
+    TransformerHistoryDataService,
     CsmsService,
     TreeGeneratorService,
   ],
