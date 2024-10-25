@@ -20,6 +20,13 @@ export class LoadSiteService {
     return loadSite.uid;
   }
 
+  async getUidsByFeedLineId(feedLineId: number): Promise<string[]> {
+    const loadSites = await this.loadSiteRepository.find({
+      feedLine: { id: feedLineId },
+    });
+    return loadSites.map((loadSite) => loadSite.uid);
+  }
+
   async getLoadSiteById(id: number): Promise<LoadSiteEntity> {
     return await this.loadSiteRepository.findOne(
       { id },
