@@ -14,6 +14,11 @@ export class TransformerService {
     return await this.transformerRepository.findAll();
   }
 
+  async getUid(id: number): Promise<string> {
+    const transformer = await this.transformerRepository.findOneOrFail({ id });
+    return transformer.uid;
+  }
+
   async getTransformerById(id: number): Promise<TransformerEntity> {
     return await this.transformerRepository.findOne({ id });
   }
