@@ -56,11 +56,18 @@ const TransformerOneDayHistoryDataSchema = z.object({
 
 const ChargingStationFifteenMinuteHistoryDataSchema = z.object({
   time_mark: z.string(),
-  kw: z.number(),
+  kw: z.number().nullable(),
+  available_capacity: z.number(),
+  contract_capacity: z.number(),
+  is_in_emergency: z.number().nullable(),
 });
 
-const ChargingStationOneHourHistoryDataSchema =
-  ChargingStationFifteenMinuteHistoryDataSchema;
+const ChargingStationOneHourHistoryDataSchema = z.object({
+  time_mark: z.string(),
+  kw: z.number().nullable(),
+  available_capacity: z.number(),
+  contract_capacity: z.number(),
+});
 
 const ChargingStationOneDayHistoryDataSchema = z.object({
   time_mark: z.string(),
