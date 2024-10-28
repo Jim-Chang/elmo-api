@@ -35,6 +35,7 @@ import { DistrictService } from './application/district/district.service';
 import { CsmsService } from './application/csms/csms.service';
 import { CsmsEntity } from './adapter/out/entities/csms.entity';
 import { TransformerEntity } from './adapter/out/entities/transformer.entity';
+import { UserEntity } from './adapter/out/entities/user.entity';
 import { TransformerService } from './application/transformer/transformer.service';
 import { LoadSiteService } from './application/load-site/load-site.service';
 import { TreeGeneratorService } from './application/tree/tree-generator.service';
@@ -45,6 +46,8 @@ import { TransformerHistoryDataService } from './application/history-data/transf
 import { ChargingStationController } from './adapter/in/api/charging-station.controller';
 import { ChargingStationHistoryDataService } from './application/history-data/charging-station-history-data-service/charging-station-history-data.service';
 import { LoadSiteController } from './adapter/in/api/load-site.controller';
+import { UserController } from './adapter/in/api/user.controller';
+import { UserService } from './application/user/user.service';
 
 @Module({
   imports: [
@@ -62,6 +65,7 @@ import { LoadSiteController } from './adapter/in/api/load-site.controller';
       DistrictEntity,
       TransformerEntity,
       CsmsEntity,
+      UserEntity,
     ]),
     ElasticsearchModule.registerAsync({
       imports: [ConfigModule],
@@ -101,6 +105,7 @@ import { LoadSiteController } from './adapter/in/api/load-site.controller';
     OscpController,
     TransformerController,
     ChargingStationController,
+    UserController,
   ],
   providers: [
     AvailableCapacityService,
@@ -122,6 +127,7 @@ import { LoadSiteController } from './adapter/in/api/load-site.controller';
     ChargingStationHistoryDataService,
     CsmsService,
     TreeGeneratorService,
+    UserService,
   ],
 })
 export class ElmoModule {
