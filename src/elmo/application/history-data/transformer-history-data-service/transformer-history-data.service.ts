@@ -8,10 +8,10 @@ import {
 import {
   buildFifteenMinuteIntervalIndexNameList,
   ensureTimeMarkIsISOFormat,
+  fillMissingDataPoints,
   getDataSizeOfFifteenMinuteInterval,
   getDataSizeOfOneDayInterval,
 } from '../utils';
-import { DateTime } from 'luxon';
 
 // log-elmo-transformer-concentrated-{YYYY}-{mm}
 const FIFTEEN_MINUTE_INTERVAL_BASE_INDEX_NAME =
@@ -96,40 +96,22 @@ export class TransformerHistoryDataService {
         time_mark: ensureTimeMarkIsISOFormat(source.time_mark),
       }));
 
-    // Create a mapping of time_mark to data
-    const dataMap = new Map(data.map((item) => [item.time_mark, item]));
-
-    const filledData: TransformerFifteenMinuteESRawData[] = [];
-    let currentTime = DateTime.fromJSDate(startDate).toUTC();
-
-    // Fill in missing data with null values
-    while (currentTime <= DateTime.fromJSDate(endDate).toUTC()) {
-      const timeMark = currentTime.toISO();
-      const existingData = dataMap.get(timeMark);
-
-      if (existingData) {
-        filledData.push(existingData);
-      } else {
-        filledData.push({
-          time_mark: timeMark,
-          ac_power_meter_output_kw: null,
-          ac_power_meter_output_kvar: null,
-          ac_power_meter_output_kva: null,
-          ac_power_meter_output_pf: null,
-          ac_power_meter_freq: null,
-          ac_power_meter_line_amps_a: null,
-          ac_power_meter_line_amps_b: null,
-          ac_power_meter_line_amps_c: null,
-          ac_power_meter_line_volts_a_b: null,
-          ac_power_meter_line_volts_b_c: null,
-          ac_power_meter_line_volts_c_a: null,
-        });
-      }
-
-      currentTime = currentTime.plus({ minutes: 15 });
-    }
-
-    return filledData;
+    return fillMissingDataPoints(data, startDate, endDate, 15, (timeMark) => {
+      return {
+        time_mark: timeMark,
+        ac_power_meter_output_kw: null,
+        ac_power_meter_output_kvar: null,
+        ac_power_meter_output_kva: null,
+        ac_power_meter_output_pf: null,
+        ac_power_meter_freq: null,
+        ac_power_meter_line_amps_a: null,
+        ac_power_meter_line_amps_b: null,
+        ac_power_meter_line_amps_c: null,
+        ac_power_meter_line_volts_a_b: null,
+        ac_power_meter_line_volts_b_c: null,
+        ac_power_meter_line_volts_c_a: null,
+      };
+    });
   }
 
   async queryInOneHourDataInterval(

@@ -42,6 +42,8 @@ import { ElasticsearchModule } from '@nestjs/elasticsearch';
 import { ElasticsearchConfig } from '../config/es.config';
 import { TransformerController } from './adapter/in/api/transformer.controller';
 import { TransformerHistoryDataService } from './application/history-data/transformer-history-data-service/transformer-history-data.service';
+import { ChargingStationController } from './adapter/in/api/charging-station.controller';
+import { ChargingStationHistoryDataService } from './application/history-data/charging-station-history-data-service/charging-station-history-data.service';
 import { LoadSiteController } from './adapter/in/api/load-site.controller';
 
 @Module({
@@ -98,6 +100,7 @@ import { LoadSiteController } from './adapter/in/api/load-site.controller';
     RealTimeDataController,
     OscpController,
     TransformerController,
+    ChargingStationController,
   ],
   providers: [
     AvailableCapacityService,
@@ -116,6 +119,7 @@ import { LoadSiteController } from './adapter/in/api/load-site.controller';
     LoadSiteService,
     TransformerService,
     TransformerHistoryDataService,
+    ChargingStationHistoryDataService,
     CsmsService,
     TreeGeneratorService,
   ],

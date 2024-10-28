@@ -54,11 +54,28 @@ const TransformerOneDayHistoryDataSchema = z.object({
   ac_power_meter_input_kvah: z.number(),
 });
 
+const ChargingStationFifteenMinuteHistoryDataSchema = z.object({
+  time_mark: z.string(),
+  kw: z.number(),
+});
+
+const ChargingStationOneHourHistoryDataSchema =
+  ChargingStationFifteenMinuteHistoryDataSchema;
+
+const ChargingStationOneDayHistoryDataSchema = z.object({
+  time_mark: z.string(),
+  kwh: z.number(),
+  life_kwh_total: z.number(),
+});
+
 const HistoryDateSchema = z.object({
   data: z.union([
     z.array(TransformerFifteenMinuteHistoryDataSchema),
     z.array(TransformerOneHourHistoryDataSchema),
     z.array(TransformerOneDayHistoryDataSchema),
+    z.array(ChargingStationFifteenMinuteHistoryDataSchema),
+    z.array(ChargingStationOneHourHistoryDataSchema),
+    z.array(ChargingStationOneDayHistoryDataSchema),
   ]),
 });
 
