@@ -28,6 +28,13 @@ export class ChargingStationService {
     return this.chargingStationRepo.findAll();
   }
 
+  async getUid(id: number): Promise<string> {
+    const chargingStation = await this.chargingStationRepo.findOneOrFail({
+      id,
+    });
+    return chargingStation.uid;
+  }
+
   async isChargingStationExist(uid: string): Promise<boolean> {
     const chargingStation = await this.chargingStationRepo.findOne({ uid });
     return !!chargingStation;
