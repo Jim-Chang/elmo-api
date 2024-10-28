@@ -25,17 +25,17 @@ export class HistoryDataQueryDto extends createZodDto(HistoryDataQuerySchema) {}
 
 const TransformerFifteenMinuteHistoryDataSchema = z.object({
   time_mark: z.string(),
-  ac_power_meter_output_kw: z.number(),
-  ac_power_meter_output_kvar: z.number(),
-  ac_power_meter_output_kva: z.number(),
-  ac_power_meter_output_pf: z.number(),
-  ac_power_meter_freq: z.number(),
-  ac_power_meter_line_amps_a: z.number(),
-  ac_power_meter_line_amps_b: z.number(),
-  ac_power_meter_line_amps_c: z.number(),
-  ac_power_meter_line_volts_a_b: z.number(),
-  ac_power_meter_line_volts_b_c: z.number(),
-  ac_power_meter_line_volts_c_a: z.number(),
+  ac_power_meter_output_kw: z.number().nullable(),
+  ac_power_meter_output_kvar: z.number().nullable(),
+  ac_power_meter_output_kva: z.number().nullable(),
+  ac_power_meter_output_pf: z.number().nullable(),
+  ac_power_meter_freq: z.number().nullable(),
+  ac_power_meter_line_amps_a: z.number().nullable(),
+  ac_power_meter_line_amps_b: z.number().nullable(),
+  ac_power_meter_line_amps_c: z.number().nullable(),
+  ac_power_meter_line_volts_a_b: z.number().nullable(),
+  ac_power_meter_line_volts_b_c: z.number().nullable(),
+  ac_power_meter_line_volts_c_a: z.number().nullable(),
 });
 
 const TransformerOneHourHistoryDataSchema =
@@ -43,15 +43,15 @@ const TransformerOneHourHistoryDataSchema =
 
 const TransformerOneDayHistoryDataSchema = z.object({
   time_mark: z.string(),
-  ac_power_meter_kwh: z.number(),
-  ac_power_meter_kvarh: z.number(),
-  ac_power_meter_kvah: z.number(),
-  ac_power_meter_output_kwh: z.number(),
-  ac_power_meter_output_kvarh: z.number(),
-  ac_power_meter_output_kvah: z.number(),
-  ac_power_meter_input_kwh: z.number(),
-  ac_power_meter_input_kvarh: z.number(),
-  ac_power_meter_input_kvah: z.number(),
+  ac_power_meter_kwh: z.number().nullable(),
+  ac_power_meter_kvarh: z.number().nullable(),
+  ac_power_meter_kvah: z.number().nullable(),
+  ac_power_meter_output_kwh: z.number().nullable(),
+  ac_power_meter_output_kvarh: z.number().nullable(),
+  ac_power_meter_output_kvah: z.number().nullable(),
+  ac_power_meter_input_kwh: z.number().nullable(),
+  ac_power_meter_input_kvarh: z.number().nullable(),
+  ac_power_meter_input_kvah: z.number().nullable(),
 });
 
 const ChargingStationFifteenMinuteHistoryDataSchema = z.object({
@@ -71,8 +71,8 @@ const ChargingStationOneHourHistoryDataSchema = z.object({
 
 const ChargingStationOneDayHistoryDataSchema = z.object({
   time_mark: z.string(),
-  kwh: z.number(),
-  life_kwh_total: z.number(),
+  kwh: z.number().nullable(),
+  life_kwh_total: z.number().nullable(),
 });
 
 const LoadSiteFifteenMinuteHistoryDataSchema = z.object({
@@ -86,9 +86,9 @@ const LoadSiteOneHourHistoryDataSchema = LoadSiteFifteenMinuteHistoryDataSchema;
 
 const LoadSiteOneDayHistoryDataSchema = z.object({
   time_mark: z.string(),
-  total_load_kwh: z.number(),
-  charge_load_kwh: z.number(),
-  demand_load_kwh: z.number(),
+  total_load_kwh: z.number().nullable(),
+  charge_load_kwh: z.number().nullable(),
+  demand_load_kwh: z.number().nullable(),
 });
 
 const FeedLineFifteenMinuteHistoryDataSchema = z.object({
@@ -102,9 +102,9 @@ const FeedLineOneHourHistoryDataSchema = FeedLineFifteenMinuteHistoryDataSchema;
 
 const FeedLineOneDayHistoryDataSchema = z.object({
   time_mark: z.string(),
-  total_load_kwh: z.number(),
-  charge_load_kwh: z.number(),
-  demand_load_kwh: z.number(),
+  total_load_kwh: z.number().nullable(),
+  charge_load_kwh: z.number().nullable(),
+  demand_load_kwh: z.number().nullable(),
 });
 
 const HistoryDataSchema = z.object({
