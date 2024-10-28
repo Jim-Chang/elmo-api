@@ -35,6 +35,7 @@ import { DistrictService } from './application/district/district.service';
 import { CsmsService } from './application/csms/csms.service';
 import { CsmsEntity } from './adapter/out/entities/csms.entity';
 import { TransformerEntity } from './adapter/out/entities/transformer.entity';
+import { UserEntity } from './adapter/out/entities/user.entity';
 import { TransformerService } from './application/transformer/transformer.service';
 import { LoadSiteService } from './application/load-site/load-site.service';
 import { TreeGeneratorService } from './application/tree/tree-generator.service';
@@ -62,6 +63,7 @@ import { LoadSiteController } from './adapter/in/api/load-site.controller';
       DistrictEntity,
       TransformerEntity,
       CsmsEntity,
+      UserEntity,
     ]),
     ElasticsearchModule.registerAsync({
       imports: [ConfigModule],
