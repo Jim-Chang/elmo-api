@@ -100,7 +100,7 @@ const FeedLineOneDayHistoryDataSchema = z.object({
   demand_load_kwh: z.number(),
 });
 
-const HistoryDateSchema = z.object({
+const HistoryDataSchema = z.object({
   data: z.union([
     z.array(TransformerFifteenMinuteHistoryDataSchema),
     z.array(TransformerOneHourHistoryDataSchema),
@@ -117,4 +117,4 @@ const HistoryDateSchema = z.object({
   ]),
 });
 
-export class HistoryDataDto extends createZodDto(HistoryDateSchema) {}
+export class HistoryDataDto extends createZodDto(HistoryDataSchema) {}
