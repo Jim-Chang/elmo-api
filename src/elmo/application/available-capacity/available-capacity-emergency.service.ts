@@ -54,6 +54,65 @@ export class AvailableCapacityEmergencyService {
     );
   }
 
+  async getEmergencyCapacitiesByDateRange(
+    chargingStationId: number,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<{ dateTime: Date; capacity: number | null }[]> {
+    const intervalMinutes = 15;
+    const dateCapacityMap = new Map<string, number>();
+
+    // Generate the date-capacity map with 15-minute intervals
+    for (
+      let current = DateTime.fromJSDate(startDate);
+      current < DateTime.fromJSDate(endDate);
+      current = current.plus({ minutes: intervalMinutes })
+    ) {
+      dateCapacityMap.set(current.toISO(), Infinity);
+    }
+
+    // Query emergencies within the date range
+    const emergencies = await this.emergencyRepo.find(
+      {
+        chargingStation: { id: chargingStationId },
+        periodStartAt: { $gte: startDate },
+        periodEndAt: { $lt: endDate },
+        isSuccessSent: true,
+      },
+      {
+        orderBy: { periodStartAt: 'asc' },
+      },
+    );
+
+    // Update the map with the lowest capacity for each interval
+    for (const emergency of emergencies) {
+      const emergencyStart = DateTime.fromJSDate(emergency.periodStartAt);
+      const emergencyEnd = DateTime.fromJSDate(emergency.periodEndAt);
+
+      for (
+        let current = emergencyStart;
+        current < emergencyEnd;
+        current = current.plus({ minutes: intervalMinutes })
+      ) {
+        const key = current.toISO();
+        if (dateCapacityMap.has(key)) {
+          const currentCapacity = dateCapacityMap.get(key);
+          if (emergency.capacity < currentCapacity) {
+            dateCapacityMap.set(key, emergency.capacity);
+          }
+        }
+      }
+    }
+
+    // Convert the map to an array of objects
+    return Array.from(dateCapacityMap.entries()).map(
+      ([dateTime, capacity]) => ({
+        dateTime: new Date(dateTime),
+        capacity: capacity === Infinity ? null : capacity,
+      }),
+    );
+  }
+
   async createAndSendEmergency(
     negotiationId: number,
     periodStartAt: Date,

@@ -96,6 +96,35 @@ export class AvailableCapacityNegotiationService {
     return hourCapacity?.capacity ?? null;
   }
 
+  async getNegotiationCapacitiesByDateRange(
+    chargingStationId: number,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<{ dateTime: Date; capacity: number }[]> {
+    const negotiations = await this.negotiationRepo.find(
+      {
+        chargingStation: { id: chargingStationId },
+        date: { $gte: startDate, $lte: endDate },
+      },
+      { populate: ['applyDetail'], orderBy: { date: 'asc' } },
+    );
+
+    const capacities = [];
+    for (const negotiation of negotiations) {
+      if (negotiation.applyDetail) {
+        for (const hourCapacity of negotiation.applyDetail.hourCapacities) {
+          const dateTime = DateTime.fromJSDate(negotiation.date)
+            .setZone(TAIPEI_TZ)
+            .set({ hour: hourCapacity.hour })
+            .toJSDate();
+          capacities.push({ dateTime, capacity: hourCapacity.capacity });
+        }
+      }
+    }
+
+    return capacities;
+  }
+
   /**
    * 建立初始「日前型協商」
    */
