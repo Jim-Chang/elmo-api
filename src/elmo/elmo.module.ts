@@ -46,6 +46,8 @@ import { TransformerHistoryDataService } from './application/history-data/transf
 import { ChargingStationController } from './adapter/in/api/charging-station.controller';
 import { ChargingStationHistoryDataService } from './application/history-data/charging-station-history-data-service/charging-station-history-data.service';
 import { LoadSiteController } from './adapter/in/api/load-site.controller';
+import { UserController } from './adapter/in/api/user.controller';
+import { UserService } from './application/user/user.service';
 
 @Module({
   imports: [
@@ -103,6 +105,7 @@ import { LoadSiteController } from './adapter/in/api/load-site.controller';
     OscpController,
     TransformerController,
     ChargingStationController,
+    UserController,
   ],
   providers: [
     AvailableCapacityService,
@@ -124,6 +127,7 @@ import { LoadSiteController } from './adapter/in/api/load-site.controller';
     ChargingStationHistoryDataService,
     CsmsService,
     TreeGeneratorService,
+    UserService,
   ],
 })
 export class ElmoModule {
