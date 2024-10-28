@@ -137,7 +137,7 @@ export class LoadSiteHistoryDataService {
 
     // @ts-ignore
     const buckets = result.aggregations.hourly_data.buckets;
-    return buckets.map((bucket: any) => {
+    const data = buckets.map((bucket: any) => {
       return {
         time_mark: ensureTimeMarkIsISOFormat(bucket.key_as_string),
         total_load_kw: bucket.avg_total_load_kw.value ?? null,
@@ -147,6 +147,15 @@ export class LoadSiteHistoryDataService {
           bucket.avg_charge_load_kw.value !== null
             ? bucket.avg_total_load_kw.value - bucket.avg_charge_load_kw.value
             : null,
+      };
+    });
+
+    return fillMissingDataPoints(data, startDate, endDate, 60, (timeMark) => {
+      return {
+        time_mark: timeMark,
+        total_load_kw: null,
+        charge_load_kw: null,
+        demand_load_kw: null,
       };
     });
   }

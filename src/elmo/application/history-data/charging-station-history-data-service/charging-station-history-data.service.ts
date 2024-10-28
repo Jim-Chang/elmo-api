@@ -130,10 +130,17 @@ export class ChargingStationHistoryDataService {
 
     // @ts-ignore
     const buckets = result.aggregations.hourly_data.buckets;
-    return buckets.map((bucket: any) => {
+    const data = buckets.map((bucket: any) => {
       return {
         time_mark: ensureTimeMarkIsISOFormat(bucket.key_as_string),
         kw: bucket.avg_kw.value ?? null,
+      };
+    });
+
+    return fillMissingDataPoints(data, startDate, endDate, 60, (timeMark) => {
+      return {
+        time_mark: timeMark,
+        kw: null,
       };
     });
   }
