@@ -21,7 +21,7 @@ export class UserController {
 
     return {
       items: users.map((u) => ({
-        uuid: u.uuid,
+        id: u.id,
         email: u.email,
         full_name: u.fullName,
         role: u.role,

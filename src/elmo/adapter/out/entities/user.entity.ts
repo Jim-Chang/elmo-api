@@ -6,8 +6,6 @@ import {
   Index,
   ManyToOne,
 } from '@mikro-orm/core';
-import { customAlphabet } from 'nanoid';
-import { API_USER_UUID_ALPHABET } from '../../../../constants';
 import { DistrictEntity } from './district.entity';
 import { TimestampBaseEntity } from './timestamp-base.entity';
 import { ROLE_TYPES, RoleType } from '../../../application/user/types';
@@ -16,14 +14,6 @@ import { ROLE_TYPES, RoleType } from '../../../application/user/types';
 export class UserEntity extends TimestampBaseEntity {
   @PrimaryKey()
   id: number;
-
-  @Property({
-    onCreate: () => customAlphabet(API_USER_UUID_ALPHABET)(36),
-    unique: true,
-    length: 36,
-  })
-  @Index()
-  uuid: string;
 
   @Property({ unique: true })
   @Index()
