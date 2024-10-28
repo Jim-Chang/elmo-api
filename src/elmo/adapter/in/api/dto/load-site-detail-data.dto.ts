@@ -1,5 +1,6 @@
 import { createZodDto } from '@anatine/zod-nestjs';
 import { z } from 'zod';
+import { LoadSiteCategory } from '../../../../application/load-site/types';
 
 const FeedLineDataSchema = z.object({
   id: z.number(),
@@ -25,6 +26,7 @@ const TransformerDataSchema = z.object({
 const LoadSiteDetailDataSchema = z.object({
   load_site_id: z.number(),
   load_site_name: z.string(),
+  load_site_category: z.nativeEnum(LoadSiteCategory),
   load_site_address: z.string().nullable(),
   feed_line: FeedLineDataSchema.nullable(),
   charging_stations: z.array(ChargingStationDataSchema),

@@ -34,6 +34,7 @@ export class LoadSiteController {
     return {
       load_site_id: loadSite.id,
       load_site_name: loadSite.name,
+      load_site_category: loadSite.category,
       load_site_address: loadSite.address ?? null,
       feed_line: loadSite.feedLine
         ? {

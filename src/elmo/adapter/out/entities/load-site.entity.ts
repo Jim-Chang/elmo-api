@@ -2,11 +2,13 @@ import {
   Cascade,
   Collection,
   Entity,
+  Enum,
   ManyToOne,
   OneToMany,
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
+import { LoadSiteCategory } from '../../../application/load-site/types';
 import { ChargingStationEntity } from './charging-station.entity';
 import { TransformerEntity } from './transformer.entity';
 import { FeedLineEntity } from './feed-line.entity';
@@ -21,6 +23,9 @@ export class LoadSiteEntity {
 
   @Property()
   name: string;
+
+  @Enum(() => LoadSiteCategory)
+  category: LoadSiteCategory;
 
   @Property({ nullable: true })
   address?: string;

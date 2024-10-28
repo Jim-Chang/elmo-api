@@ -279,6 +279,19 @@
           "length": 255,
           "mappedType": "string"
         },
+        "category": {
+          "name": "category",
+          "type": "enum('HICUSTOMER','LOCUSTOMER')",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "enumItems": [
+            "HICUSTOMER",
+            "LOCUSTOMER"
+          ],
+          "mappedType": "enum"
+        },
         "address": {
           "name": "address",
           "type": "varchar(255)",
