@@ -1,6 +1,14 @@
-import { Entity, PrimaryKey, Property, Enum, Index } from '@mikro-orm/core';
+import {
+  Entity,
+  PrimaryKey,
+  Property,
+  Enum,
+  Index,
+  ManyToOne,
+} from '@mikro-orm/core';
 import { customAlphabet } from 'nanoid';
 import { API_USER_UUID_ALPHABET } from '../../../../constants';
+import { DistrictEntity } from './district.entity';
 import { TimestampBaseEntity } from './timestamp-base.entity';
 import { ROLE_TYPES, RoleType } from '../../../application/user/types';
 
@@ -32,4 +40,10 @@ export class UserEntity extends TimestampBaseEntity {
 
   @Property({ nullable: true })
   remark?: string;
+
+  @ManyToOne(() => DistrictEntity, {
+    nullable: true,
+    deleteRule: 'set null',
+  })
+  district?: DistrictEntity;
 }
