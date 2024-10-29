@@ -6,14 +6,19 @@ import {
   HttpCode,
   HttpStatus,
   Logger,
+  Param,
+  ParseIntPipe,
   Post,
+  Put,
   Query,
   UsePipes,
 } from '@nestjs/common';
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
 import { API_PREFIX } from '../../../../constants';
+import { DistrictService } from '../../../application/district/district.service';
 import { UserService } from '../../../application/user/user.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDataDto } from './dto/user-data.dto';
 import { UserListDataDto, UserListQueryDto } from './dto/user-list.dto';
 
@@ -22,7 +27,10 @@ import { UserListDataDto, UserListQueryDto } from './dto/user-list.dto';
 export class UserController {
   private readonly logger = new Logger(UserController.name);
 
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly districtService: DistrictService,
+  ) {}
 
   @Get()
   async getListItems(
@@ -74,5 +82,47 @@ export class UserController {
       district_id: user.district?.id ?? null,
       created_at: user.createdAt,
     };
+  }
+
+  @Put(':id')
+  @HttpCode(HttpStatus.OK)
+  async updateUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateUserDto,
+  ): Promise<UserDataDto> {
+    // Check if district is exist
+    if (dto.district_id) {
+      const isDistrictExist = await this.districtService.isDistrictExist(
+        dto.district_id,
+      );
+      if (!isDistrictExist) {
+        throw new BadRequestException(
+          `District with id ${dto.district_id} is not exist`,
+        );
+      }
+    }
+
+    try {
+      const user = await this.userService.updateUser(id, {
+        password: dto.password,
+        fullName: dto.full_name,
+        role: dto.role,
+        district: dto.district_id,
+        remark: dto.remark,
+      });
+
+      return {
+        id: user.id,
+        email: user.email,
+        full_name: user.fullName,
+        role: user.role,
+        remark: user.remark,
+        district_id: user.district?.id ?? null,
+        created_at: user.createdAt,
+      };
+    } catch (error) {
+      this.logger.error(`[updateUser] error: ${error.message}`);
+      throw new BadRequestException(error.message);
+    }
   }
 }
