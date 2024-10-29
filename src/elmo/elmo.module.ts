@@ -46,6 +46,9 @@ import { TransformerHistoryDataService } from './application/history-data/transf
 import { ChargingStationController } from './adapter/in/api/charging-station.controller';
 import { ChargingStationHistoryDataService } from './application/history-data/charging-station-history-data-service/charging-station-history-data.service';
 import { LoadSiteController } from './adapter/in/api/load-site.controller';
+import { LoadSiteHistoryDataService } from './application/history-data/load-site-history-data-service/load-site-history-data.service';
+import { FeedLineController } from './adapter/in/api/feed-line.controller';
+import { FeedLineHistoryDataService } from './application/history-data/feed-line-history-data-service/feed-line-history-data.service';
 import { UserController } from './adapter/in/api/user.controller';
 import { UserService } from './application/user/user.service';
 
@@ -100,11 +103,12 @@ import { UserService } from './application/user/user.service';
     ChargingStationNegotiationController,
     FilterOptionsController,
     InternalApiController,
-    LoadSiteController,
     RealTimeDataController,
     OscpController,
     TransformerController,
     ChargingStationController,
+    LoadSiteController,
+    FeedLineController,
     UserController,
   ],
   providers: [
@@ -125,6 +129,8 @@ import { UserService } from './application/user/user.service';
     TransformerService,
     TransformerHistoryDataService,
     ChargingStationHistoryDataService,
+    LoadSiteHistoryDataService,
+    FeedLineHistoryDataService,
     CsmsService,
     TreeGeneratorService,
     UserService,

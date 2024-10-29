@@ -68,7 +68,39 @@ const ChargingStationOneDayHistoryDataSchema = z.object({
   life_kwh_total: z.number(),
 });
 
-const HistoryDateSchema = z.object({
+const LoadSiteFifteenMinuteHistoryDataSchema = z.object({
+  time_mark: z.string(),
+  total_load_kw: z.number().nullable(),
+  charge_load_kw: z.number().nullable(),
+  demand_load_kw: z.number().nullable(),
+});
+
+const LoadSiteOneHourHistoryDataSchema = LoadSiteFifteenMinuteHistoryDataSchema;
+
+const LoadSiteOneDayHistoryDataSchema = z.object({
+  time_mark: z.string(),
+  total_load_kwh: z.number(),
+  charge_load_kwh: z.number(),
+  demand_load_kwh: z.number(),
+});
+
+const FeedLineFifteenMinuteHistoryDataSchema = z.object({
+  time_mark: z.string(),
+  total_load_kw: z.number().nullable(),
+  charge_load_kw: z.number().nullable(),
+  demand_load_kw: z.number().nullable(),
+});
+
+const FeedLineOneHourHistoryDataSchema = FeedLineFifteenMinuteHistoryDataSchema;
+
+const FeedLineOneDayHistoryDataSchema = z.object({
+  time_mark: z.string(),
+  total_load_kwh: z.number(),
+  charge_load_kwh: z.number(),
+  demand_load_kwh: z.number(),
+});
+
+const HistoryDataSchema = z.object({
   data: z.union([
     z.array(TransformerFifteenMinuteHistoryDataSchema),
     z.array(TransformerOneHourHistoryDataSchema),
@@ -76,7 +108,13 @@ const HistoryDateSchema = z.object({
     z.array(ChargingStationFifteenMinuteHistoryDataSchema),
     z.array(ChargingStationOneHourHistoryDataSchema),
     z.array(ChargingStationOneDayHistoryDataSchema),
+    z.array(LoadSiteFifteenMinuteHistoryDataSchema),
+    z.array(LoadSiteOneHourHistoryDataSchema),
+    z.array(LoadSiteOneDayHistoryDataSchema),
+    z.array(FeedLineFifteenMinuteHistoryDataSchema),
+    z.array(FeedLineOneHourHistoryDataSchema),
+    z.array(FeedLineOneDayHistoryDataSchema),
   ]),
 });
 
-export class HistoryDataDto extends createZodDto(HistoryDateSchema) {}
+export class HistoryDataDto extends createZodDto(HistoryDataSchema) {}
