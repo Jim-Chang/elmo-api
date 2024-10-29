@@ -80,9 +80,19 @@ const LoadSiteFifteenMinuteHistoryDataSchema = z.object({
   total_load_kw: z.number().nullable(),
   charge_load_kw: z.number().nullable(),
   demand_load_kw: z.number().nullable(),
+  available_capacity: z.number(),
+  contract_capacity: z.number(),
+  is_in_emergency: z.number().nullable(),
 });
 
-const LoadSiteOneHourHistoryDataSchema = LoadSiteFifteenMinuteHistoryDataSchema;
+const LoadSiteOneHourHistoryDataSchema = z.object({
+  time_mark: z.string(),
+  total_load_kw: z.number().nullable(),
+  charge_load_kw: z.number().nullable(),
+  demand_load_kw: z.number().nullable(),
+  available_capacity: z.number(),
+  contract_capacity: z.number(),
+});
 
 const LoadSiteOneDayHistoryDataSchema = z.object({
   time_mark: z.string(),
