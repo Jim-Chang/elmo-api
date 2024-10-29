@@ -131,34 +131,26 @@ export class AvailableCapacityService {
     let isInEmergency = false;
 
     // Compare with negotiation capacities
-    for (let i = 0; i < negotiationCapacities.length; i++) {
-      const negotiation = negotiationCapacities[i];
-      const nextNegotiation = negotiationCapacities[i + 1];
-
-      if (
-        negotiation.dateTime <= dateTime &&
-        (!nextNegotiation || dateTime < nextNegotiation.dateTime) &&
-        negotiation.capacity < availableCapacity
-      ) {
-        availableCapacity = negotiation.capacity;
-        break;
-      }
+    const negotiationCapacity = findCapacity(
+      dateTime,
+      negotiationCapacities,
+      (current, next) =>
+        current.dateTime <= dateTime && (!next || dateTime < next.dateTime),
+    );
+    if (negotiationCapacity && negotiationCapacity < availableCapacity) {
+      availableCapacity = negotiationCapacity;
     }
-    // Compare with emergency capacities
-    for (let i = 0; i < emergencyCapacities.length; i++) {
-      const emergency = emergencyCapacities[i];
-      const nextEmergency = emergencyCapacities[i + 1];
 
-      if (
-        emergency.dateTime <= dateTime &&
-        (!nextEmergency || dateTime < nextEmergency.dateTime) &&
-        emergency.capacity !== null &&
-        emergency.capacity < availableCapacity
-      ) {
-        availableCapacity = emergency.capacity;
-        isInEmergency = true;
-        break;
-      }
+    // Compare with emergency capacities
+    const emergencyCapacity = findCapacity(
+      dateTime,
+      emergencyCapacities,
+      (current, next) =>
+        current.dateTime <= dateTime && (!next || dateTime < next.dateTime),
+    );
+    if (emergencyCapacity && emergencyCapacity < availableCapacity) {
+      availableCapacity = emergencyCapacity;
+      isInEmergency = true;
     }
 
     if (availableCapacity === Infinity) {
@@ -167,4 +159,34 @@ export class AvailableCapacityService {
 
     return { availableCapacity, isInEmergency };
   }
+}
+
+function findCapacity(
+  targetDatetime: Date,
+  capacities: { dateTime: Date; capacity: number }[],
+  conditionCallback: (
+    current: { dateTime: Date; capacity: number },
+    next: { dateTime: Date; capacity: number } | undefined,
+  ) => boolean,
+): number | null {
+  let left = 0;
+  let right = capacities.length - 1;
+
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2);
+    const current = capacities[mid];
+    const next = capacities[mid + 1];
+
+    if (conditionCallback(current, next)) {
+      return current.capacity;
+    }
+
+    if (current.dateTime > targetDatetime) {
+      right = mid - 1;
+    } else {
+      left = mid + 1;
+    }
+  }
+
+  return null;
 }
