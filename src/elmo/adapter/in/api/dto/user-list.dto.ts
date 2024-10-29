@@ -9,7 +9,7 @@ const UserListQuerySchema = z.object({
 export class UserListQueryDto extends createZodDto(UserListQuerySchema) {}
 
 export const UserListItemDataSchema = z.object({
-  uuid: z.string(),
+  id: z.number(),
   full_name: z.string(),
   email: z.string().email(),
   role: z.enum(ROLE_TYPES),

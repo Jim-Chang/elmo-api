@@ -8,6 +8,7 @@ import {
 } from '@mikro-orm/core';
 import { ChargingStationEntity } from './charging-station.entity';
 import { FeedLineEntity } from './feed-line.entity';
+import { UserEntity } from './user.entity';
 
 @Entity({ tableName: 'districts' })
 export class DistrictEntity {
@@ -32,4 +33,12 @@ export class DistrictEntity {
     cascade: [Cascade.ALL],
   })
   chargingStations = new Collection<ChargingStationEntity>(this);
+
+  // to child UserEntity
+  @OneToMany({
+    entity: () => UserEntity,
+    mappedBy: 'district',
+    cascade: [Cascade.ALL],
+  })
+  users = new Collection<UserEntity>(this);
 }

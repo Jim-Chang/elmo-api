@@ -1153,16 +1153,6 @@
           "length": null,
           "mappedType": "datetime"
         },
-        "uuid": {
-          "name": "uuid",
-          "type": "varchar(36)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "length": 36,
-          "mappedType": "string"
-        },
         "email": {
           "name": "email",
           "type": "varchar(255)",
@@ -1215,30 +1205,20 @@
           "nullable": true,
           "length": 255,
           "mappedType": "string"
+        },
+        "district_id": {
+          "name": "district_id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": null,
+          "mappedType": "integer"
         }
       },
       "name": "users",
       "indexes": [
-        {
-          "columnNames": [
-            "uuid"
-          ],
-          "composite": false,
-          "keyName": "users_uuid_index",
-          "constraint": false,
-          "primary": false,
-          "unique": false
-        },
-        {
-          "columnNames": [
-            "uuid"
-          ],
-          "composite": false,
-          "keyName": "users_uuid_unique",
-          "constraint": true,
-          "primary": false,
-          "unique": true
-        },
         {
           "columnNames": [
             "email"
@@ -1260,6 +1240,16 @@
           "unique": true
         },
         {
+          "columnNames": [
+            "district_id"
+          ],
+          "composite": false,
+          "keyName": "users_district_id_index",
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
+        {
           "keyName": "PRIMARY",
           "columnNames": [
             "id"
@@ -1271,7 +1261,21 @@
         }
       ],
       "checks": [],
-      "foreignKeys": {},
+      "foreignKeys": {
+        "users_district_id_foreign": {
+          "constraintName": "users_district_id_foreign",
+          "columnNames": [
+            "district_id"
+          ],
+          "localTableName": "users",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "districts",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      },
       "nativeEnums": {}
     }
   ],
