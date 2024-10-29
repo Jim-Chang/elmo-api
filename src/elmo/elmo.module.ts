@@ -51,6 +51,7 @@ import { FeedLineController } from './adapter/in/api/feed-line.controller';
 import { FeedLineHistoryDataService } from './application/history-data/feed-line-history-data-service/feed-line-history-data.service';
 import { UserController } from './adapter/in/api/user.controller';
 import { UserService } from './application/user/user.service';
+import { UserPasswordService } from './application/user/user-password.service';
 
 @Module({
   imports: [
@@ -134,6 +135,7 @@ import { UserService } from './application/user/user.service';
     CsmsService,
     TreeGeneratorService,
     UserService,
+    UserPasswordService,
   ],
 })
 export class ElmoModule {
