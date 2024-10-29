@@ -1,6 +1,6 @@
 import { createZodDto } from '@anatine/zod-nestjs';
 import { z } from 'zod';
-import { ROLE_TYPES } from '../../../../application/user/types';
+import { UserDataSchema } from './user-data.dto';
 
 const UserListQuerySchema = z.object({
   keyword: z.string().optional(),
@@ -8,17 +8,8 @@ const UserListQuerySchema = z.object({
 
 export class UserListQueryDto extends createZodDto(UserListQuerySchema) {}
 
-export const UserListItemDataSchema = z.object({
-  id: z.number(),
-  full_name: z.string(),
-  email: z.string().email(),
-  role: z.enum(ROLE_TYPES),
-  remark: z.string().nullable(),
-  created_at: z.date(),
-});
-
 const UserListDataSchema = z.object({
-  items: z.array(UserListItemDataSchema),
+  items: z.array(UserDataSchema),
 });
 
 export class UserListDataDto extends createZodDto(UserListDataSchema) {}
