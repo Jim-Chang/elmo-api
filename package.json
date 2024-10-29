@@ -40,6 +40,7 @@
     "@nestjs/schedule": "^4.1.1",
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.4",
+    "bcryptjs": "^2.4.3",
     "https-proxy-agent": "^7.0.5",
     "ioredis": "^5.4.1",
     "lodash": "^4.17.21",
