@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -124,5 +125,11 @@ export class UserController {
       this.logger.error(`[updateUser] error: ${error.message}`);
       throw new BadRequestException(error.message);
     }
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    await this.userService.deleteUser(id);
   }
 }

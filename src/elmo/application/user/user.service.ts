@@ -119,4 +119,10 @@ export class UserService {
 
     return updateData;
   }
+
+  async deleteUser(userId: number): Promise<void> {
+    const user = await this.userRepository.findOneOrFail(userId);
+    const em = this.userRepository.getEntityManager();
+    await em.removeAndFlush(user);
+  }
 }
