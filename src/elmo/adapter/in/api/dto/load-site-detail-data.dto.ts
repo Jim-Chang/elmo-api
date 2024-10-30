@@ -25,6 +25,7 @@ const TransformerDataSchema = z.object({
 
 const LoadSiteDetailDataSchema = z.object({
   load_site_id: z.number(),
+  load_site_uid: z.string(),
   load_site_name: z.string(),
   load_site_category: z.nativeEnum(LoadSiteCategory),
   load_site_address: z.string().nullable(),
