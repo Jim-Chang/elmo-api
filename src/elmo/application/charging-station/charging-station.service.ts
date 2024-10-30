@@ -48,6 +48,18 @@ export class ChargingStationService {
     return this.chargingStationRepo.findOne({ uid });
   }
 
+  async findChargingStationByLoadSiteId(
+    loadSiteId: number,
+  ): Promise<ChargingStationEntity[]> {
+    return this.chargingStationRepo.find({ loadSite: { id: loadSiteId } });
+  }
+
+  async findChargingStationByFeedLineId(
+    feedLineId: number,
+  ): Promise<ChargingStationEntity[]> {
+    return this.chargingStationRepo.find({ feedLine: { id: feedLineId } });
+  }
+
   async getConnectedChargingStations(): Promise<ChargingStationEntity[]> {
     return this.chargingStationRepo.find({
       csms: {
