@@ -3,7 +3,10 @@ import { Seeder } from '@mikro-orm/seeder';
 import { LoadSiteFactory } from '../factories/load-site.factory';
 import { ChargingStationFactory } from '../factories/charging-station.factory';
 import { DistrictFactory } from '../factories/district.factory';
-import { FEED_LINES, FeedLineFactory } from '../factories/feed-line.factory';
+import {
+  FEED_LINE_TREE,
+  FeedLineFactory,
+} from '../factories/feed-line.factory';
 import { TransformerFactory } from '../factories/transformer.factory';
 
 export class DatabaseSeeder extends Seeder {
@@ -16,43 +19,43 @@ export class DatabaseSeeder extends Seeder {
    * 還會建立 feedLines、loadSites、transformers、chargingStations 等表
    */
   private async createDistricts(em: EntityManager) {
-    // in-degree 0 entities
-    const districts = new DistrictFactory(em).make(4);
-
     const allEntities = [];
 
-    districts.forEach((district, index) => {
+    for (const feedLineData of FEED_LINE_TREE) {
+      const district = new DistrictFactory(em).makeOne();
+
       const feedLine = new FeedLineFactory(em).makeOne({
-        name: FEED_LINES[index],
+        name: feedLineData.name,
         district: district,
       });
 
-      const loadSite = new LoadSiteFactory(em).makeOne({
-        feedLine: feedLine,
-      });
+      for (const loadSiteData of feedLineData.loadSites) {
+        const loadSite = new LoadSiteFactory(em).makeOne({
+          uid: loadSiteData.uid,
+          feedLine: feedLine,
+        });
 
-      const transformers = new TransformerFactory(em)
-        .each((transformer) => {
-          transformer.loadSite = loadSite;
-        })
-        .make(1);
+        const transformer = new TransformerFactory(em).makeOne({
+          uid: loadSiteData.transformer.uid,
+          loadSite: loadSite,
+        });
 
-      const chargingStations = new ChargingStationFactory(em)
-        .each((chargingStation) => {
-          chargingStation.district = district;
-          chargingStation.feedLine = feedLine;
-          chargingStation.loadSite = loadSite;
-          chargingStation.csms = null;
-        })
-        .make(1);
+        const chargingStation = new ChargingStationFactory(em).makeOne({
+          district: district,
+          feedLine: feedLine,
+          loadSite: loadSite,
+          csms: null,
+        });
 
-      allEntities.push(
-        feedLine,
-        loadSite,
-        ...transformers,
-        ...chargingStations,
-      );
-    });
+        allEntities.push(
+          district,
+          feedLine,
+          loadSite,
+          transformer,
+          chargingStation,
+        );
+      }
+    }
 
     await em.persistAndFlush(allEntities);
   }
