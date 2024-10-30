@@ -20,8 +20,16 @@ const FIFTEEN_MINUTE_INTERVAL_BASE_INDEX_NAME =
 // log-elmo-load_site-statistics
 const ONE_DAY_INTERVAL_INDEX_NAME = 'log-elmo-load_site-statistics';
 
-const FIFTEEN_MINUTE_FIELDS = ['time_mark', 'total_load_kw', 'charge_load_kw'];
-const ONE_DAY_FIELDS = ['time_mark', 'total_load_kwh', 'charge_load_kwh'];
+const FIFTEEN_MINUTE_FIELDS: (keyof LoadSiteFifteenMinuteESRawData)[] = [
+  'time_mark',
+  'total_load_kw',
+  'charge_load_kw',
+];
+const ONE_DAY_FIELDS: (keyof LoadSiteOneDayESRawData)[] = [
+  'time_mark',
+  'total_load_kwh',
+  'charge_load_kwh',
+];
 
 @Injectable()
 export class LoadSiteHistoryDataService {

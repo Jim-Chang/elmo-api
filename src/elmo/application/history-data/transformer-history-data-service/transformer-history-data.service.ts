@@ -20,7 +20,7 @@ const FIFTEEN_MINUTE_INTERVAL_BASE_INDEX_NAME =
 // log-elmo-transformer-statistics
 const ONE_DAY_INTERVAL_INDEX_NAME = 'log-elmo-transformer-statistics';
 
-const FIFTEEN_MINUTE_FIELDS = [
+const FIFTEEN_MINUTE_FIELDS: (keyof TransformerFifteenMinuteESRawData)[] = [
   'time_mark',
   'ac_power_meter_output_kw',
   'ac_power_meter_output_kvar',
@@ -35,7 +35,7 @@ const FIFTEEN_MINUTE_FIELDS = [
   'ac_power_meter_line_volts_c_a',
 ];
 
-const ONE_DAY_FIELDS = [
+const ONE_DAY_FIELDS: (keyof TransformerOneDayESRawData)[] = [
   'time_mark',
   'ac_power_meter_input_kwh_today',
   'ac_power_meter_input_kvarh_today',
