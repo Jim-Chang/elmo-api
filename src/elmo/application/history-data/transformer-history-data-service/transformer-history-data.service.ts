@@ -37,9 +37,9 @@ const FIFTEEN_MINUTE_FIELDS = [
 
 const ONE_DAY_FIELDS = [
   'time_mark',
-  'ac_power_meter_kwh',
-  'ac_power_meter_kvarh',
-  'ac_power_meter_kvah',
+  'ac_power_meter_input_kwh_today',
+  'ac_power_meter_input_kvarh_today',
+  'ac_power_meter_input_kvah_today',
   'ac_power_meter_output_kwh',
   'ac_power_meter_output_kvarh',
   'ac_power_meter_output_kvah',
