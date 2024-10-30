@@ -195,7 +195,7 @@ export class TransformerHistoryDataService {
 
     // @ts-ignore
     const buckets = result.aggregations.hourly_data.buckets;
-    return buckets.map((bucket: any) => {
+    const data = buckets.map((bucket: any) => {
       return {
         time_mark: ensureTimeMarkIsISOFormat(bucket.key_as_string),
         ac_power_meter_output_kw:
@@ -219,6 +219,23 @@ export class TransformerHistoryDataService {
           bucket.avg_ac_power_meter_line_volts_b_c.value ?? null,
         ac_power_meter_line_volts_c_a:
           bucket.avg_ac_power_meter_line_volts_c_a.value ?? null,
+      };
+    });
+
+    return fillMissingDataPoints(data, startDate, endDate, 60, (timeMark) => {
+      return {
+        time_mark: timeMark,
+        ac_power_meter_output_kw: null,
+        ac_power_meter_output_kvar: null,
+        ac_power_meter_output_kva: null,
+        ac_power_meter_output_pf: null,
+        ac_power_meter_freq: null,
+        ac_power_meter_line_amps_a: null,
+        ac_power_meter_line_amps_b: null,
+        ac_power_meter_line_amps_c: null,
+        ac_power_meter_line_volts_a_b: null,
+        ac_power_meter_line_volts_b_c: null,
+        ac_power_meter_line_volts_c_a: null,
       };
     });
   }
