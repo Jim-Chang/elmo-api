@@ -7,6 +7,16 @@ import { ChargingStationRealTimeData, TransformerRealTimeData } from './types';
 export class RealTimeDataService {
   constructor(private readonly redisHelper: RedisHelper) {}
 
+  async collectMultipleChargingStationRealTimeData(
+    chargingStationUidList: string[],
+  ): Promise<ChargingStationRealTimeData[]> {
+    return await Promise.all(
+      chargingStationUidList.map((uid) =>
+        this.getChargingStationRealTimeData(uid),
+      ),
+    );
+  }
+
   async getChargingStationRealTimeData(
     chargingStationUid: string,
   ): Promise<ChargingStationRealTimeData> {
@@ -25,6 +35,14 @@ export class RealTimeDataService {
 
   buildChargingStationRedisKey(chargingStationUid: string): string {
     return `elmo:charging_station:${chargingStationUid}`;
+  }
+
+  async collectMultipleTransformerRealTimeData(
+    transformerUidList: string[],
+  ): Promise<TransformerRealTimeData[]> {
+    return await Promise.all(
+      transformerUidList.map((uid) => this.getTransformerRealTimeData(uid)),
+    );
   }
 
   async getTransformerRealTimeData(
@@ -67,6 +85,15 @@ export class RealTimeDataService {
     return `elmo:transformer:${transformerUid}`;
   }
 
+  getEarliestTimeMark(timeMarks: (DateTime | null)[]): DateTime | null {
+    return timeMarks.reduce((acc: DateTime | null, curr: DateTime | null) => {
+      if (acc !== null && curr !== null) {
+        return acc < curr ? acc : curr;
+      }
+      return acc ?? curr;
+    }, null);
+  }
+
   determineUpdateAt(
     transformerTimeMark: DateTime | null,
     chargingStationTimeMark: DateTime | null,
@@ -80,6 +107,45 @@ export class RealTimeDataService {
     } else {
       return transformerTimeMark ?? chargingStationTimeMark;
     }
+  }
+
+  determineTotalLoadKw(
+    transformerDataset: TransformerRealTimeData[],
+  ): number | null {
+    return transformerDataset.reduce(
+      (acc: number | null, curr: TransformerRealTimeData) => {
+        if (curr.ac_power_meter_output_kw !== null) {
+          return (acc ?? 0) + curr.ac_power_meter_output_kw;
+        }
+        return acc;
+      },
+      null,
+    );
+  }
+
+  determineChargeLoadKw(
+    chargingStationDataset: ChargingStationRealTimeData[],
+  ): number | null {
+    return chargingStationDataset.reduce(
+      (acc: number | null, curr: ChargingStationRealTimeData) => {
+        if (curr.kw !== null) {
+          return (acc ?? 0) + curr.kw;
+        }
+        return acc;
+      },
+      null,
+    );
+  }
+
+  determineDemandLoadKw(
+    totalLoadKw: number | null,
+    chargeLoadKw: number | null,
+  ): number | null {
+    if (totalLoadKw === null || chargeLoadKw === null) {
+      return null;
+    }
+
+    return totalLoadKw - chargeLoadKw;
   }
 
   calculateChargeLoadPercentage(

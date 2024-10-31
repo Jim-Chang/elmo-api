@@ -23,6 +23,10 @@ import {
   ChargingStationRealTimeDataDto,
   TransformerRealTimeDataDto,
 } from './dto/real-time-data.dto';
+import {
+  ChargingStationRealTimeData,
+  TransformerRealTimeData,
+} from '../../../application/real-time-data/types';
 
 @Controller(`${API_PREFIX}/real-time-data`)
 @UsePipes(ZodValidationPipe)
@@ -54,48 +58,63 @@ export class RealTimeDataController {
 
     const itemDataList = await Promise.all(
       loadSites.map(async (loadSite) => {
-        // Get transformer real time data
-        const transformer = loadSite.transformers?.[0] ?? null;
-        const transformerData =
-          transformer && transformer.uid
-            ? await this.realTimeDataService.getTransformerRealTimeData(
-                transformer.uid,
-              )
-            : null;
+        const transformers = loadSite.transformers;
+        const chargingStations = loadSite.chargingStations;
 
-        // Get charging station real time data
-        const chargingStation = loadSite.chargingStations?.[0] ?? null;
-        const chargingStationData = chargingStation
-          ? await this.realTimeDataService.getChargingStationRealTimeData(
-              chargingStation.uid,
-            )
-          : null;
+        // Get real time data of transformers
+        const transformerDataset: TransformerRealTimeData[] =
+          await this.realTimeDataService.collectMultipleTransformerRealTimeData(
+            transformers.map((t) => t.uid),
+          );
+
+        // Get real time data of charging stations
+        const chargingStationDataset: ChargingStationRealTimeData[] =
+          await this.realTimeDataService.collectMultipleChargingStationRealTimeData(
+            chargingStations.map((cs) => cs.uid),
+          );
 
         // Get total/charge/demand loads
-        const totalLoad = transformerData?.ac_power_meter_output_kw ?? null;
+        const totalLoad =
+          this.realTimeDataService.determineTotalLoadKw(transformerDataset);
 
-        const chargeLoad = chargingStationData?.kw ?? null;
-        // Calculate demand load
-        const demandLoad =
-          totalLoad !== null && chargeLoad !== null
-            ? totalLoad - chargeLoad
-            : null;
+        const chargeLoad = this.realTimeDataService.determineChargeLoadKw(
+          chargingStationDataset,
+        );
 
-        // Get available capacity of charging station
-        const availableCapacity = chargingStation
-          ? await this.availableCapacityService.getAvailableCapacityByDateTime(
-              chargingStation.id,
-              now.toJSDate(),
-            )
-          : null;
+        const demandLoad = this.realTimeDataService.determineDemandLoadKw(
+          totalLoad,
+          chargeLoad,
+        );
+
+        // Get available capacity from charging stations
+        const availableCapacities = await Promise.all(
+          chargingStations.map(
+            async (chargingStation) =>
+              await this.availableCapacityService.getAvailableCapacityByDateTime(
+                chargingStation.id,
+                now.toJSDate(),
+              ),
+          ),
+        );
+
+        const totalAvailableCapacity = availableCapacities.reduce(
+          (acc, curr) => acc + curr,
+          0,
+        );
 
         // Get update time
-        const transformerTimeMark = transformerData?.time_mark
-          ? DateTime.fromJSDate(transformerData.time_mark)
-          : null;
-        const chargingStationTimeMark = chargingStationData?.time_mark
-          ? DateTime.fromJSDate(chargingStationData.time_mark)
-          : null;
+        const transformerTimeMark =
+          this.realTimeDataService.getEarliestTimeMark(
+            transformerDataset.map((t) =>
+              t.time_mark ? DateTime.fromJSDate(t.time_mark) : null,
+            ),
+          );
+        const chargingStationTimeMark =
+          this.realTimeDataService.getEarliestTimeMark(
+            chargingStationDataset.map((cs) =>
+              cs.time_mark ? DateTime.fromJSDate(cs.time_mark) : null,
+            ),
+          );
 
         const updateAt = this.realTimeDataService.determineUpdateAt(
           transformerTimeMark,
@@ -114,7 +133,7 @@ export class RealTimeDataController {
               chargeLoad,
               totalLoad,
             ),
-          available_capacity: availableCapacity,
+          available_capacity: totalAvailableCapacity,
           updated_at: updateAt?.setZone('utc').toISO() ?? null,
         };
       }),
