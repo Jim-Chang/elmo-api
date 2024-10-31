@@ -8,4 +8,4 @@ export const OSCP_TOKEN_ALPHABET =
   '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 export const OSCP_TOKEN_LENGTH = 256;
 export const TAIPEI_TZ = 'Asia/Taipei';
-export const HTTP_TIMEOUT_MILLISECONDS = 5000;
+export const HTTP_TIMEOUT_MILLISECONDS = 20000;
