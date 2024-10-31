@@ -43,9 +43,9 @@ const TransformerOneHourHistoryDataSchema =
 
 const TransformerOneDayHistoryDataSchema = z.object({
   time_mark: z.string(),
-  ac_power_meter_kwh: z.number().nullable(),
-  ac_power_meter_kvarh: z.number().nullable(),
-  ac_power_meter_kvah: z.number().nullable(),
+  ac_power_meter_input_kwh_today: z.number().nullable(),
+  ac_power_meter_input_kvarh_today: z.number().nullable(),
+  ac_power_meter_input_kvah_today: z.number().nullable(),
   ac_power_meter_output_kwh: z.number().nullable(),
   ac_power_meter_output_kvarh: z.number().nullable(),
   ac_power_meter_output_kvah: z.number().nullable(),

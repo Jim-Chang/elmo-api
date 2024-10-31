@@ -20,8 +20,15 @@ const FIFTEEN_MINUTE_INTERVAL_BASE_INDEX_NAME =
 // log-elmo-charging-station-statistics
 const ONE_DAY_INTERVAL_INDEX_NAME = 'log-elmo-charging_station-statistics';
 
-const FIFTEEN_MINUTE_FIELDS = ['time_mark', 'kw'];
-const ONE_DAY_FIELDS = ['time_mark', 'kwh', 'life_kwh_total'];
+const FIFTEEN_MINUTE_FIELDS: (keyof ChargingStationFifteenMinuteESRawData)[] = [
+  'time_mark',
+  'kw',
+];
+const ONE_DAY_FIELDS: (keyof ChargingStationOneDayESRawData)[] = [
+  'time_mark',
+  'kwh',
+  'life_kwh_total',
+];
 
 @Injectable()
 export class ChargingStationHistoryDataService {

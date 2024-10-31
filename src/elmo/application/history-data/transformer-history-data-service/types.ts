@@ -29,9 +29,9 @@ export type TransformerOneDayESRawData = {
   time_mark: string; // 使用 ISO time_mark
 
   // 當日最後一筆 扣掉 當日第一筆 (輸入電量)
-  ac_power_meter_kwh: number | null; // Δ 輸入有效電能
-  ac_power_meter_kvarh: number | null; // Δ 輸入無效電能
-  ac_power_meter_kvah: number | null; // Δ 輸入視在電能
+  ac_power_meter_input_kwh_today: number | null; // Δ 輸入有效電能
+  ac_power_meter_input_kvarh_today: number | null; // Δ 輸入無效電能
+  ac_power_meter_input_kvah_today: number | null; // Δ 輸入視在電能
 
   // 歷史輸出電量 (取最後一筆)
   ac_power_meter_output_kwh: number | null; // 有效電能
