@@ -14,6 +14,7 @@ import {
 import { ChargingStationService } from '../charging-station/charging-station.service';
 import { AvailableCapacityNegotiationService } from './available-capacity-negotiation.service';
 import { TAIPEI_TZ } from '../../../constants';
+import { EmergencyStatus } from './types';
 
 @Injectable()
 export class AvailableCapacityEmergencyService {
@@ -31,6 +32,27 @@ export class AvailableCapacityEmergencyService {
     id: number,
   ): Promise<AvailableCapacityEmergencyEntity | null> {
     return this.emergencyRepo.findOne({ id });
+  }
+
+  determineLastEmergencyStatusByDateTime(
+    lastEmergency: AvailableCapacityEmergencyEntity,
+    dateTime: Date,
+  ): EmergencyStatus {
+    const time = DateTime.fromJSDate(dateTime);
+    const periodStartAt = DateTime.fromJSDate(lastEmergency.periodStartAt);
+    const periodEndAt = DateTime.fromJSDate(lastEmergency.periodEndAt);
+
+    if (!lastEmergency.isSuccessSent) {
+      return EmergencyStatus.EMERGENCY_CONTROL_FAILED;
+    }
+
+    if (time < periodStartAt) {
+      return EmergencyStatus.PREPARE_EMERGENCY_CONTROL;
+    } else if (time >= periodStartAt && time < periodEndAt) {
+      return EmergencyStatus.EMERGENCY_CONTROL;
+    } else {
+      return EmergencyStatus.EMERGENCY_CONTROL_FINISH;
+    }
   }
 
   async getEmergencyCapacityByDateTime(

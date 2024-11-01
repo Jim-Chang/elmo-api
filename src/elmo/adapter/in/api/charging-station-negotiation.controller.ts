@@ -89,7 +89,12 @@ export class ChargingStationNegotiationController {
       let lastStatus: NegotiationWithEmergencyStatus =
         negotiation.lastDetailStatus;
       if (negotiation.lastEmergency) {
-        lastStatus = determineLastStatusByEmergency(negotiation.lastEmergency);
+        const now = DateTime.now();
+        lastStatus =
+          this.availableCapacityEmergencyService.determineLastEmergencyStatusByDateTime(
+            negotiation.lastEmergency,
+            now.toJSDate(),
+          );
       }
 
       return {
@@ -185,7 +190,12 @@ export class ChargingStationNegotiationController {
     let lastStatus: NegotiationWithEmergencyStatus =
       negotiation.lastDetailStatus;
     if (lastEmergency) {
-      lastStatus = determineLastStatusByEmergency(lastEmergency);
+      const now = DateTime.now();
+      lastStatus =
+        this.availableCapacityEmergencyService.determineLastEmergencyStatusByDateTime(
+          lastEmergency,
+          now.toJSDate(),
+        );
     }
 
     return {
@@ -329,24 +339,4 @@ function buildNegotiationEmergencyDto(
     is_success_sent: emergency.isSuccessSent,
     created_at: emergency.createdAt,
   };
-}
-
-function determineLastStatusByEmergency(
-  lastEmergency: AvailableCapacityEmergencyEntity,
-): EmergencyStatus {
-  const now = DateTime.now();
-  const periodStartAt = DateTime.fromJSDate(lastEmergency.periodStartAt);
-  const periodEndAt = DateTime.fromJSDate(lastEmergency.periodEndAt);
-
-  if (!lastEmergency.isSuccessSent) {
-    return EmergencyStatus.EMERGENCY_CONTROL_FAILED;
-  }
-
-  if (now < periodStartAt) {
-    return EmergencyStatus.PREPARE_EMERGENCY_CONTROL;
-  } else if (now >= periodStartAt && now < periodEndAt) {
-    return EmergencyStatus.EMERGENCY_CONTROL;
-  } else {
-    return EmergencyStatus.EMERGENCY_CONTROL_FINISH;
-  }
 }
