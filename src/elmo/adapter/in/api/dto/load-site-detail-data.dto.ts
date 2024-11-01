@@ -12,6 +12,7 @@ const ChargingStationDataSchema = z.object({
   uid: z.string(),
   name: z.string(),
   contract_capacity: z.number(),
+  electricity_account_no: z.string().nullable(),
 });
 
 const TransformerDataSchema = z.object({

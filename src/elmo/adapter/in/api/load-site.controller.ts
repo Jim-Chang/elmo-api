@@ -62,6 +62,7 @@ export class LoadSiteController {
         uid: cs.uid,
         name: cs.name,
         contract_capacity: cs.contractCapacity,
+        electricity_account_no: cs.electricityAccountNo,
       })),
       transformers: loadSite.transformers.map((t) => ({
         id: t.id,
