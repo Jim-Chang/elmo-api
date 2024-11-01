@@ -21,6 +21,7 @@ import { ChargingStationService } from '../../../application/charging-station/ch
 import { TransformerService } from '../../../application/transformer/transformer.service';
 import {
   ChargingStationRealTimeDataDto,
+  LoadSiteRealTimeDataDto,
   TransformerRealTimeDataDto,
 } from './dto/real-time-data.dto';
 import {
@@ -225,6 +226,93 @@ export class RealTimeDataController {
       ac_power_meter_input_kwh: data?.ac_power_meter_input_kwh ?? null,
       ac_power_meter_input_kvarh: data?.ac_power_meter_input_kvarh ?? null,
       ac_power_meter_input_kvah: data?.ac_power_meter_input_kvah ?? null,
+    };
+  }
+
+  @Get('load-site/:id')
+  async getLoadSiteRealTimeData(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<LoadSiteRealTimeDataDto> {
+    const loadSite = await this.loadSiteService.getLoadSiteById(id);
+
+    if (!loadSite) {
+      throw new BadRequestException(`Load site with id ${id} does not exist`);
+    }
+
+    const now = DateTime.now();
+    const transformers = loadSite.transformers;
+    const chargingStations = loadSite.chargingStations;
+
+    // Get real time data of transformers
+    const transformerDataset: TransformerRealTimeData[] =
+      await this.realTimeDataService.collectMultipleTransformerRealTimeData(
+        transformers.map((t) => t.uid),
+      );
+
+    // Get real time data of charging stations
+    const chargingStationDataset: ChargingStationRealTimeData[] =
+      await this.realTimeDataService.collectMultipleChargingStationRealTimeData(
+        chargingStations.map((cs) => cs.uid),
+      );
+
+    // 變壓器更新時間（最舊）
+    const transformerTimeMark = this.realTimeDataService.getEarliestTimeMark(
+      transformerDataset.map((t) =>
+        t.time_mark ? DateTime.fromJSDate(t.time_mark) : null,
+      ),
+    );
+
+    // 充電站更新時間（最舊）
+    const chargingStationTimeMark =
+      this.realTimeDataService.getEarliestTimeMark(
+        chargingStationDataset.map((cs) =>
+          cs.time_mark ? DateTime.fromJSDate(cs.time_mark) : null,
+        ),
+      );
+
+    // 總負載
+    const totalLoadKw =
+      this.realTimeDataService.determineTotalLoadKw(transformerDataset);
+
+    // 充電負載
+    const chargeLoadKw = this.realTimeDataService.determineChargeLoadKw(
+      chargingStationDataset,
+    );
+
+    // 一般負載
+    const demandLoadKw = this.realTimeDataService.determineDemandLoadKw(
+      totalLoadKw,
+      chargeLoadKw,
+    );
+
+    // 充電站可用容量
+    const availableCapacities = await Promise.all(
+      chargingStations.map(
+        async (chargingStation) =>
+          await this.availableCapacityService.getAvailableCapacityByDateTime(
+            chargingStation.id,
+            now.toJSDate(),
+          ),
+      ),
+    );
+
+    const totalAvailableCapacity = availableCapacities.reduce(
+      (acc, curr) => acc + curr,
+      0,
+    );
+
+    return {
+      uid: loadSite.uid,
+      transformer_time_mark:
+        transformerTimeMark?.setZone('utc').toISO() ?? null,
+      charging_station_time_mark:
+        chargingStationTimeMark?.setZone('utc').toISO() ?? null,
+      total_load_kw: totalLoadKw,
+      demand_load_kw: demandLoadKw,
+      charge_load_kw: chargeLoadKw,
+      available_capacity: totalAvailableCapacity,
+      today_negotiation_status: null, // TODO: 今日可用容量協商狀態
+      tomorrow_negotiation_status: null, // TODO: 明日可用容量協商狀態
     };
   }
 }
