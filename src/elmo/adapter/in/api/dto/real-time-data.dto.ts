@@ -1,6 +1,5 @@
 import { createZodDto } from '@anatine/zod-nestjs';
 import { z } from 'zod';
-import { NegotiationStatus } from '../../../../application/available-capacity/types';
 
 const ChargingStationRealTimeDataSchema = z.object({
   uid: z.string(),
@@ -52,8 +51,6 @@ const LoadSiteRealTimeDataSchema = z.object({
   demand_load_kw: z.number().nullable(),
   charge_load_kw: z.number().nullable(),
   available_capacity: z.number(),
-  today_negotiation_status: z.nativeEnum(NegotiationStatus).nullable(),
-  tomorrow_negotiation_status: z.nativeEnum(NegotiationStatus).nullable(),
 });
 
 export class LoadSiteRealTimeDataDto extends createZodDto(

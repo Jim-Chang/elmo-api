@@ -311,8 +311,6 @@ export class RealTimeDataController {
       demand_load_kw: demandLoadKw,
       charge_load_kw: chargeLoadKw,
       available_capacity: totalAvailableCapacity,
-      today_negotiation_status: null, // TODO: 今日可用容量協商狀態
-      tomorrow_negotiation_status: null, // TODO: 明日可用容量協商狀態
     };
   }
 }
