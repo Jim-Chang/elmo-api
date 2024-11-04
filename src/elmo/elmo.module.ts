@@ -28,6 +28,7 @@ import { RealTimeDataController } from './adapter/in/api/real-time-data.controll
 import { AccessTokenEntity } from './adapter/out/entities/access-token.entity';
 import { FeedLineEntity } from './adapter/out/entities/feed-line.entity';
 import { LoadSiteEntity } from './adapter/out/entities/load-site.entity';
+import { AuthService } from './application/auth/auth.service';
 import { FeedLineService } from './application/feed-line/feed-line.service';
 import { FilterOptionsController } from './adapter/in/api/filter-options.controller';
 import { DistrictEntity } from './adapter/out/entities/district.entity';
@@ -42,6 +43,7 @@ import { LoadSiteService } from './application/load-site/load-site.service';
 import { TreeGeneratorService } from './application/tree/tree-generator.service';
 import { ElasticsearchModule } from '@nestjs/elasticsearch';
 import { ElasticsearchConfig } from '../config/es.config';
+import { AuthController } from './adapter/in/api/auth.controller';
 import { TransformerController } from './adapter/in/api/transformer.controller';
 import { TransformerHistoryDataService } from './application/history-data/transformer-history-data-service/transformer-history-data.service';
 import { ChargingStationController } from './adapter/in/api/charging-station.controller';
@@ -102,6 +104,7 @@ import { UserPasswordService } from './application/user/user-password.service';
     }),
   ],
   controllers: [
+    AuthController,
     ChargingStationEmergencyController,
     ChargingStationNegotiationController,
     FilterOptionsController,
@@ -115,6 +118,7 @@ import { UserPasswordService } from './application/user/user-password.service';
     UserController,
   ],
   providers: [
+    AuthService,
     AvailableCapacityService,
     AvailableCapacityEmergencyService,
     AvailableCapacityNegotiationCronjobService,

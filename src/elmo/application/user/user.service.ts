@@ -125,4 +125,20 @@ export class UserService {
     const em = this.userRepository.getEntityManager();
     await em.removeAndFlush(user);
   }
+
+  async validateUser(
+    email: string,
+    password: string,
+  ): Promise<UserEntity | null> {
+    const user = await this.userRepository.findOne({ email });
+    if (!user) {
+      return null;
+    }
+
+    const isPasswordValid = await this.userPasswordService.verify(
+      password,
+      user.password,
+    );
+    return isPasswordValid ? user : null;
+  }
 }
