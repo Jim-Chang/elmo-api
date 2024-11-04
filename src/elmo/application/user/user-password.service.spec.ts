@@ -13,23 +13,21 @@ describe('UserPasswordService', () => {
   });
 
   describe('verify', () => {
-    it('當密碼正確時，不應拋出錯誤', async () => {
+    it('當密碼正確時，結果為 true', async () => {
       const plainPassword = '123456';
       const hashedPassword = await service.hash(plainPassword);
 
-      await expect(
-        service.verify(plainPassword, hashedPassword),
-      ).resolves.not.toThrow();
+      const result = await service.verify(plainPassword, hashedPassword);
+      return expect(result).toBeTruthy();
     });
 
-    it('當密碼錯誤時，應拋出錯誤', async () => {
+    it('當密碼錯誤時，結果為 false', async () => {
       const plainPassword = '123456';
       const wrongPassword = '654321';
       const hashedPassword = await service.hash(plainPassword);
 
-      await expect(
-        service.verify(wrongPassword, hashedPassword),
-      ).rejects.toThrow('password not correct');
+      const result = await service.verify(wrongPassword, hashedPassword);
+      return expect(result).toBeFalsy();
     });
   });
 });

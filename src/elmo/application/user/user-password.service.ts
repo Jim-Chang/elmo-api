@@ -8,11 +8,7 @@ export class UserPasswordService {
     return await hash(plain, API_USER_PASSWORD_SALT_LENGTH);
   }
 
-  async verify(plain: string, hashed: string): Promise<void> {
-    const isMatch = await compare(plain, hashed);
-
-    if (!isMatch) {
-      throw new Error('password not correct');
-    }
+  async verify(plain: string, hashed: string): Promise<boolean> {
+    return await compare(plain, hashed);
   }
 }
