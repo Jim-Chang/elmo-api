@@ -25,6 +25,7 @@ import { ChargingStationEmergencyController } from './adapter/in/api/charging-st
 import { InternalApiController } from './adapter/in/internal-api/internal-api.controller';
 import { ChargingStationNegotiationController } from './adapter/in/api/charging-station-negotiation.controller';
 import { RealTimeDataController } from './adapter/in/api/real-time-data.controller';
+import { AccessTokenEntity } from './adapter/out/entities/access-token.entity';
 import { FeedLineEntity } from './adapter/out/entities/feed-line.entity';
 import { LoadSiteEntity } from './adapter/out/entities/load-site.entity';
 import { FeedLineService } from './application/feed-line/feed-line.service';
@@ -60,6 +61,7 @@ import { UserPasswordService } from './application/user/user-password.service';
       timeout: HTTP_TIMEOUT_MILLISECONDS,
     }),
     MikroOrmModule.forFeature([
+      AccessTokenEntity,
       ChargingStationEntity,
       AvailableCapacityEmergencyEntity,
       AvailableCapacityNegotiationEntity,

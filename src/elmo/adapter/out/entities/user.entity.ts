@@ -5,7 +5,11 @@ import {
   Enum,
   Index,
   ManyToOne,
+  OneToMany,
+  Cascade,
+  Collection,
 } from '@mikro-orm/core';
+import { AccessTokenEntity } from './access-token.entity';
 import { DistrictEntity } from './district.entity';
 import { TimestampBaseEntity } from './timestamp-base.entity';
 import { ROLE_TYPES, RoleType } from '../../../application/user/types';
@@ -31,9 +35,18 @@ export class UserEntity extends TimestampBaseEntity {
   @Property({ nullable: true })
   remark?: string;
 
+  // to parent DistrictEntity
   @ManyToOne(() => DistrictEntity, {
     nullable: true,
     deleteRule: 'set null',
   })
   district?: DistrictEntity;
+
+  // to child AccessTokenEntity
+  @OneToMany({
+    entity: () => AccessTokenEntity,
+    mappedBy: 'user',
+    cascade: [Cascade.ALL],
+  })
+  accessTokens = new Collection<AccessTokenEntity>(this);
 }
