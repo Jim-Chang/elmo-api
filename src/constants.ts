@@ -1,5 +1,6 @@
 // API
 export const API_PREFIX = '/api';
+export const API_AUTHENTICATED_USER_KEY = Symbol('AuthenticatedUser');
 export const API_USER_PASSWORD_SALT_LENGTH = 10;
 export const API_ACCESS_TOKEN_PREFIX = 'elmo_';
 export const API_ACCESS_TOKEN_ALPHABET =
