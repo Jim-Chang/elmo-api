@@ -37,6 +37,7 @@ import {
   NegotiationWithEmergencyStatus,
 } from '../../../application/available-capacity/types';
 import { AvailableCapacityEmergencyService } from '../../../application/available-capacity/available-capacity-emergency.service';
+import { ChargingStationNegotiationStatusDataDto } from './dto/charging-station-negotiation-status.dto';
 
 @Controller(`${API_PREFIX}/charging-station-negotiation`)
 @UsePipes(ZodValidationPipe)
@@ -89,7 +90,12 @@ export class ChargingStationNegotiationController {
       let lastStatus: NegotiationWithEmergencyStatus =
         negotiation.lastDetailStatus;
       if (negotiation.lastEmergency) {
-        lastStatus = determineLastStatusByEmergency(negotiation.lastEmergency);
+        const now = DateTime.now();
+        lastStatus =
+          this.availableCapacityEmergencyService.determineLastEmergencyStatusByDateTime(
+            negotiation.lastEmergency,
+            now.toJSDate(),
+          );
       }
 
       return {
@@ -185,7 +191,12 @@ export class ChargingStationNegotiationController {
     let lastStatus: NegotiationWithEmergencyStatus =
       negotiation.lastDetailStatus;
     if (lastEmergency) {
-      lastStatus = determineLastStatusByEmergency(lastEmergency);
+      const now = DateTime.now();
+      lastStatus =
+        this.availableCapacityEmergencyService.determineLastEmergencyStatusByDateTime(
+          lastEmergency,
+          now.toJSDate(),
+        );
     }
 
     return {
@@ -209,6 +220,56 @@ export class ChargingStationNegotiationController {
       last_emergency: lastEmergency
         ? buildNegotiationEmergencyDto(lastEmergency)
         : null,
+    };
+  }
+
+  @Get('/status/:chargingStationId')
+  @HttpCode(HttpStatus.OK)
+  async getStatus(
+    @Param('chargingStationId', ParseIntPipe) chargingStationId: number,
+  ): Promise<ChargingStationNegotiationStatusDataDto> {
+    const now = DateTime.now().setZone(TAIPEI_TZ);
+    const today = now.startOf('day');
+    const tomorrow = now.plus({ days: 1 }).startOf('day');
+
+    // 今日可用容量協商狀態
+    const todayNegotiation =
+      await this.availableCapacityNegotiationService.getNegotiationByChargingStationAndDate(
+        chargingStationId,
+        today.toJSDate(),
+      );
+
+    let todayStatus: NegotiationWithEmergencyStatus | null = null;
+    if (todayNegotiation) {
+      todayStatus = todayNegotiation.lastDetailStatus;
+
+      const lastEmergency = todayNegotiation.lastEmergency
+        ? await this.availableCapacityEmergencyService.getEmergencyById(
+            todayNegotiation.lastEmergency.id,
+          )
+        : null;
+      if (lastEmergency) {
+        todayStatus =
+          this.availableCapacityEmergencyService.determineLastEmergencyStatusByDateTime(
+            lastEmergency,
+            now.toJSDate(),
+          );
+      }
+    }
+
+    // 明日可用容量協商狀態
+    const tomorrowNegotiation =
+      await this.availableCapacityNegotiationService.getNegotiationByChargingStationAndDate(
+        chargingStationId,
+        tomorrow.toJSDate(),
+      );
+
+    const tomorrowStatus: NegotiationStatus | null =
+      tomorrowNegotiation?.lastDetailStatus ?? null;
+
+    return {
+      today_status: todayStatus,
+      tomorrow_status: tomorrowStatus,
     };
   }
 
@@ -329,24 +390,4 @@ function buildNegotiationEmergencyDto(
     is_success_sent: emergency.isSuccessSent,
     created_at: emergency.createdAt,
   };
-}
-
-function determineLastStatusByEmergency(
-  lastEmergency: AvailableCapacityEmergencyEntity,
-): EmergencyStatus {
-  const now = DateTime.now();
-  const periodStartAt = DateTime.fromJSDate(lastEmergency.periodStartAt);
-  const periodEndAt = DateTime.fromJSDate(lastEmergency.periodEndAt);
-
-  if (!lastEmergency.isSuccessSent) {
-    return EmergencyStatus.EMERGENCY_CONTROL_FAILED;
-  }
-
-  if (now < periodStartAt) {
-    return EmergencyStatus.PREPARE_EMERGENCY_CONTROL;
-  } else if (now >= periodStartAt && now < periodEndAt) {
-    return EmergencyStatus.EMERGENCY_CONTROL;
-  } else {
-    return EmergencyStatus.EMERGENCY_CONTROL_FINISH;
-  }
 }
