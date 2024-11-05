@@ -8,6 +8,7 @@ import {
   HttpCode,
   HttpStatus,
   Logger,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Patch,
@@ -140,6 +141,26 @@ export class UserController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<void> {
     await this.userService.deleteUser(id);
+  }
+
+  @Get('me')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthUserGuard)
+  async getCurrentUser(@ReqUserId() reqUserId: number): Promise<UserDataDto> {
+    const user = await this.userService.getUserById(reqUserId);
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    return {
+      id: user.id,
+      email: user.email,
+      full_name: user.fullName,
+      role: user.role,
+      remark: user.remark,
+      district_id: user.district?.id ?? null,
+      created_at: user.createdAt,
+    };
   }
 
   @Patch('me/password')
