@@ -145,6 +145,16 @@
           "length": null,
           "mappedType": "integer"
         },
+        "code": {
+          "name": "code",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
         "name": {
           "name": "name",
           "type": "varchar(255)",
@@ -154,6 +164,17 @@
           "nullable": false,
           "length": 255,
           "mappedType": "string"
+        },
+        "is_activated": {
+          "name": "is_activated",
+          "type": "tinyint(1)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 1,
+          "default": "true",
+          "mappedType": "boolean"
         }
       },
       "name": "districts",
