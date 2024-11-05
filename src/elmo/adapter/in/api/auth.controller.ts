@@ -14,6 +14,9 @@ import { AuthService } from '../../../application/auth/auth.service';
 import { UserService } from '../../../application/user/user.service';
 
 @Controller(`${API_PREFIX}/auth`)
+@UsePipes(
+  new ZodValidationPipe({ errorHttpStatusCode: HttpStatus.UNAUTHORIZED }),
+)
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
@@ -22,9 +25,6 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @UsePipes(
-    new ZodValidationPipe({ errorHttpStatusCode: HttpStatus.UNAUTHORIZED }),
-  )
   async login(@Body() dto: AuthLoginDto): Promise<AuthLoginDataDto> {
     const { email, password } = dto;
     const user = await this.userService.validateUser(email, password);
