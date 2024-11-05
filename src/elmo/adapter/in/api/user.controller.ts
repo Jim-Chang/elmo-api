@@ -3,25 +3,33 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
   Logger,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Put,
   Query,
+  UseGuards,
   UsePipes,
 } from '@nestjs/common';
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
 import { API_PREFIX } from '../../../../constants';
+import { AccessToken } from '../../../application/auth/types';
+import { AuthUserGuard } from '../guard/auth-user.guard';
+import { ReqUserId } from '../decorator/req-user-id';
+import { AuthService } from '../../../application/auth/auth.service';
 import { DistrictService } from '../../../application/district/district.service';
 import { UserService } from '../../../application/user/user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDataDto } from './dto/user-data.dto';
 import { UserListDataDto, UserListQueryDto } from './dto/user-list.dto';
+import { UserChangePasswordDto } from './dto/user-me.dto';
 
 @Controller(`${API_PREFIX}/user`)
 @UsePipes(ZodValidationPipe)
@@ -30,6 +38,7 @@ export class UserController {
 
   constructor(
     private readonly userService: UserService,
+    private readonly authService: AuthService,
     private readonly districtService: DistrictService,
   ) {}
 
@@ -131,5 +140,28 @@ export class UserController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<void> {
     await this.userService.deleteUser(id);
+  }
+
+  @Patch('me/password')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthUserGuard)
+  async changeSelfPassword(
+    @ReqUserId() reqUserId: number,
+    @Body() changePasswordDto: UserChangePasswordDto,
+  ): Promise<AccessToken> {
+    // change password
+    try {
+      await this.userService.changePassword(
+        reqUserId,
+        changePasswordDto.old_password,
+        changePasswordDto.new_password,
+      );
+    } catch {
+      throw new ForbiddenException();
+    }
+
+    // Invalidate all access token and login again
+    await this.authService.invalidateAllAccessTokenByUser(reqUserId);
+    return await this.authService.login(reqUserId);
   }
 }

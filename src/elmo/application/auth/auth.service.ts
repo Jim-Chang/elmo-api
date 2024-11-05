@@ -58,6 +58,14 @@ export class AuthService {
     await em.removeAndFlush(entity);
   }
 
+  async invalidateAllAccessTokenByUser(userId: number): Promise<void> {
+    const accessTokens = await this.accessTokenRepository.find({
+      user: userId,
+    });
+    const em = this.accessTokenRepository.getEntityManager();
+    await em.removeAndFlush(accessTokens);
+  }
+
   generateAccessToken(): AccessToken {
     // generate uuid part
     const generateCustomNanoid = customAlphabet(API_ACCESS_TOKEN_ALPHABET);

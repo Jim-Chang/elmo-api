@@ -1,5 +1,6 @@
 import {
   EntityData,
+  EntityManager,
   EntityRepository,
   RequiredEntityData,
   wrap,
@@ -21,6 +22,10 @@ export class UserService {
   async isUserEmailExist(email: string): Promise<boolean> {
     const user = await this.userRepository.findOne({ email });
     return !!user;
+  }
+
+  async getUserById(userId: number): Promise<UserEntity | null> {
+    return await this.userRepository.findOne({ id: userId });
   }
 
   async findUsers(filterBy: { keyword?: string }): Promise<UserEntity[]> {
@@ -140,5 +145,35 @@ export class UserService {
       user.password,
     );
     return isPasswordValid ? user : null;
+  }
+
+  async changePassword(
+    userId: number,
+    oldPassword: string,
+    newPassword: string,
+  ): Promise<void> {
+    const user = await this.getUserById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const isOldPasswordValid = await this.userPasswordService.verify(
+      oldPassword,
+      user.password,
+    );
+    if (!isOldPasswordValid) {
+      throw new Error('Invalid old password');
+    }
+
+    const hashedNewPassword = await this.userPasswordService.hash(newPassword);
+
+    const em = this.userRepository.getEntityManager();
+    await em.transactional(async (em: EntityManager) => {
+      wrap(user).assign(
+        { password: hashedNewPassword },
+        { em, mergeObjectProperties: true },
+      );
+      await em.persistAndFlush(user);
+    });
   }
 }
