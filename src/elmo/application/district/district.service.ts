@@ -14,6 +14,10 @@ export class DistrictService {
     return await this.districtRepository.findAll();
   }
 
+  async getAllActivateDistricts(): Promise<DistrictEntity[]> {
+    return await this.districtRepository.find({ isActivated: true });
+  }
+
   async isDistrictExist(id: number): Promise<boolean> {
     const district = await this.districtRepository.findOne({ id });
     return !!district;

@@ -36,7 +36,7 @@ export class TreeGeneratorService {
   }
 
   private async buildTree(): Promise<TreeData> {
-    const districts = await this.districtService.getAllDistricts();
+    const districts = await this.districtService.getAllActivateDistricts();
     const feedLines = await this.feedLineService.getAllFeedLines();
     const loadSites = await this.loadSiteService.getAllLoadSites();
     const chargingStations =

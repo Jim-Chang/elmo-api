@@ -16,7 +16,13 @@ export class DistrictEntity {
   id: number;
 
   @Property()
+  code: string; // 區碼
+
+  @Property()
   name: string;
+
+  @Property({ default: true })
+  isActivated: boolean;
 
   // to child FeedLineEntity
   @OneToMany({
