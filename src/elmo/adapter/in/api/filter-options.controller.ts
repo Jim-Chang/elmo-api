@@ -26,7 +26,7 @@ export class FilterOptionsController {
 
   @Get('districts')
   async getDistrictOptions(): Promise<OptionsResponseDto> {
-    const districts = await this.districtService.getAllDistricts();
+    const districts = await this.districtService.getAllActivateDistricts();
     return {
       options: districts.map((d) => ({ id: d.id, name: d.name })),
     };

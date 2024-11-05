@@ -16,7 +16,7 @@ export class DistrictEntity {
   id: number;
 
   @Property()
-  code: string;
+  code: string; // 區碼
 
   @Property()
   name: string;
