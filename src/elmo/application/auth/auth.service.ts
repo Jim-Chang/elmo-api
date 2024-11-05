@@ -38,6 +38,20 @@ export class AuthService {
     return accessToken;
   }
 
+  async getUserIdByAccessToken(token: AccessToken): Promise<number> {
+    const expiredAfter = DateTime.now();
+
+    try {
+      const accessToken = await this.accessTokenRepository.findOneOrFail({
+        token,
+        expiredAt: { $gt: expiredAfter.toJSDate() },
+      });
+      return accessToken.user.id;
+    } catch {
+      throw new Error('Invalid access token');
+    }
+  }
+
   generateAccessToken(): AccessToken {
     // generate uuid part
     const generateCustomNanoid = customAlphabet(API_ACCESS_TOKEN_ALPHABET);
