@@ -40,7 +40,6 @@ function validateRoleAndDistrict(data: any, ctx: z.RefinementCtx) {
 }
 
 const UpdateUserSchema = z.object({
-  password: z.string().min(1).optional(),
   full_name: z.string().optional(),
   role: z.enum(ROLE_TYPES).optional(),
   district_id: z.number().nullable().optional(),

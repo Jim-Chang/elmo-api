@@ -116,7 +116,6 @@ export class UserController {
 
     try {
       const user = await this.userService.updateUser(id, {
-        password: dto.password,
         fullName: dto.full_name,
         role: dto.role,
         district: dto.district_id,
