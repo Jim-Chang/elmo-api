@@ -20,7 +20,6 @@ import {
 } from '@nestjs/common';
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
 import { API_PREFIX } from '../../../../constants';
-import { AccessToken } from '../../../application/auth/types';
 import { AuthUserGuard } from '../guard/auth-user.guard';
 import { ReqUserId } from '../decorator/req-user-id';
 import { AuthService } from '../../../application/auth/auth.service';
@@ -30,7 +29,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDataDto } from './dto/user-data.dto';
 import { UserListDataDto, UserListQueryDto } from './dto/user-list.dto';
-import { UserChangePasswordDto } from './dto/user-me.dto';
+import {
+  UserChangePasswordDto,
+  UserChangePasswordResponseDto,
+} from './dto/user-me.dto';
 
 @Controller(`${API_PREFIX}/user`)
 @UsePipes(ZodValidationPipe)
@@ -169,7 +171,7 @@ export class UserController {
   async changeSelfPassword(
     @ReqUserId() reqUserId: number,
     @Body() changePasswordDto: UserChangePasswordDto,
-  ): Promise<AccessToken> {
+  ): Promise<UserChangePasswordResponseDto> {
     // change password
     try {
       await this.userService.changePassword(
@@ -183,6 +185,10 @@ export class UserController {
 
     // Invalidate all access token and login again
     await this.authService.invalidateAllAccessTokenByUser(reqUserId);
-    return await this.authService.login(reqUserId);
+    const accessToken = await this.authService.login(reqUserId);
+
+    return {
+      access_token: accessToken,
+    };
   }
 }
