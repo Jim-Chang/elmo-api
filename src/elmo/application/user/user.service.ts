@@ -87,9 +87,6 @@ export class UserService {
   ): Promise<Partial<EntityData<UserEntity>>> {
     const updateData: Partial<EntityData<UserEntity>> = {};
 
-    if (data.password) {
-      updateData.password = await this.userPasswordService.hash(data.password);
-    }
     if (data.fullName) {
       updateData.fullName = data.fullName;
     }
