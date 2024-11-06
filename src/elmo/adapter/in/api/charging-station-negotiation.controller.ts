@@ -264,7 +264,7 @@ export class ChargingStationNegotiationController {
         tomorrow.toJSDate(),
       );
 
-    const tomorrowStatus: NegotiationStatus | null =
+    const tomorrowStatus: NegotiationWithEmergencyStatus | null =
       tomorrowNegotiation?.lastDetailStatus ?? null;
 
     return {
