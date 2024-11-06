@@ -25,8 +25,7 @@ import { ReqUserId } from '../decorator/req-user-id';
 import { AuthService } from '../../../application/auth/auth.service';
 import { DistrictService } from '../../../application/district/district.service';
 import { UserService } from '../../../application/user/user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { UserDataDto } from './dto/user-data.dto';
 import { UserListDataDto, UserListQueryDto } from './dto/user-list.dto';
 import {
