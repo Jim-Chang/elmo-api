@@ -7,6 +7,7 @@ export class DistrictFactory extends Factory<DistrictEntity> {
   definition() {
     return {
       name: faker.lorem.word(),
+      code: faker.string.uuid(),
     };
   }
 }
