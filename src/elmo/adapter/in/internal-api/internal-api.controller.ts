@@ -10,9 +10,13 @@ import {
   Param,
   Post,
   Query,
+  UseGuards,
   UsePipes,
 } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
+import { Roles } from '../decorator/roles';
+import { AuthUserGuard } from '../guard/auth-user.guard';
+import { ADMIN_ROLE } from '../../../application/user/types';
 import { InternalNegotiationHelper } from './internal-negotiation-helper';
 import { AvailableCapacityNegotiationEntity } from '../../out/entities/available-capacity-negotiation.entity';
 import { InternalApiNegotiationRefreshDto } from '../oscp/dto/internal-api-negotiation-refresh.dto';
@@ -41,6 +45,8 @@ export class InternalApiController {
    * }
    */
   @Post('negotiation/refresh')
+  @UseGuards(AuthUserGuard)
+  @Roles(ADMIN_ROLE)
   async refreshNegotiation(
     @Body() dto: InternalApiNegotiationRefreshDto,
   ): Promise<AvailableCapacityNegotiationEntity> {
@@ -48,6 +54,8 @@ export class InternalApiController {
   }
 
   @Post('cronjob/trigger/:jobName')
+  @UseGuards(AuthUserGuard)
+  @Roles(ADMIN_ROLE)
   @HttpCode(HttpStatus.OK)
   async triggerCronjob(@Param('jobName') jobName: string) {
     try {
@@ -62,6 +70,8 @@ export class InternalApiController {
   }
 
   @Get('redis/json-from-list')
+  @UseGuards(AuthUserGuard)
+  @Roles(ADMIN_ROLE)
   @HttpCode(HttpStatus.OK)
   async getRedisListJson(
     @Query('key') key: string,
@@ -73,6 +83,8 @@ export class InternalApiController {
   }
 
   @Get('redis/json-from-string')
+  @UseGuards(AuthUserGuard)
+  @Roles(ADMIN_ROLE)
   @HttpCode(HttpStatus.OK)
   async getRedisStringJson(@Query('key') key: string) {
     this.logger.log(`[Internal API] redis STRING: key[${key}]`);
