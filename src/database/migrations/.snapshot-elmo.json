@@ -1206,12 +1206,13 @@
         },
         "role": {
           "name": "role",
-          "type": "enum('powerUser','supervisor')",
+          "type": "enum('admin','powerUser','supervisor')",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
           "enumItems": [
+            "admin",
             "powerUser",
             "supervisor"
           ],
