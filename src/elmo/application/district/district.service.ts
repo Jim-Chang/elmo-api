@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/core';
 import { DistrictEntity } from '../../adapter/out/entities/district.entity';
+import { UserEntity } from '../../adapter/out/entities/user.entity';
 
 @Injectable()
 export class DistrictService {
@@ -10,12 +11,17 @@ export class DistrictService {
     private readonly districtRepository: EntityRepository<DistrictEntity>,
   ) {}
 
-  async getAllDistricts(): Promise<DistrictEntity[]> {
-    return await this.districtRepository.findAll();
-  }
+  async getAllActivateDistricts(user: UserEntity): Promise<DistrictEntity[]> {
+    const filterBy = {
+      isActivated: true,
+    };
 
-  async getAllActivateDistricts(): Promise<DistrictEntity[]> {
-    return await this.districtRepository.find({ isActivated: true });
+    // If user has district, filter by user's district
+    if (user.district) {
+      filterBy['id'] = user.district.id;
+    }
+
+    return await this.districtRepository.find(filterBy);
   }
 
   async isDistrictExist(id: number): Promise<boolean> {
