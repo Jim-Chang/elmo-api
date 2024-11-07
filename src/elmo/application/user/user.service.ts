@@ -9,7 +9,7 @@ import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable } from '@nestjs/common';
 import { UserEntity } from '../../adapter/out/entities/user.entity';
 import { UserPasswordService } from './user-password.service';
-import { POWER_USER_ROLE, SUPERVISOR_ROLE } from './types';
+import { ADMIN_ROLE, POWER_USER_ROLE, SUPERVISOR_ROLE } from './types';
 
 @Injectable()
 export class UserService {
@@ -31,9 +31,11 @@ export class UserService {
   async findUsers(filterBy: { keyword?: string }): Promise<UserEntity[]> {
     const { keyword } = filterBy;
 
-    // filter users by keyword
-    let userFilters: any = {};
+    let userFilters: any = {
+      role: { $ne: ADMIN_ROLE }, // exclude admin user
+    };
 
+    // filter users by keyword
     if (keyword) {
       userFilters = {
         ...userFilters,
@@ -123,7 +125,10 @@ export class UserService {
   }
 
   async deleteUser(userId: number): Promise<void> {
-    const user = await this.userRepository.findOneOrFail(userId);
+    const user = await this.userRepository.findOneOrFail({
+      id: userId,
+      role: { $ne: ADMIN_ROLE },
+    });
     const em = this.userRepository.getEntityManager();
     await em.removeAndFlush(user);
   }
