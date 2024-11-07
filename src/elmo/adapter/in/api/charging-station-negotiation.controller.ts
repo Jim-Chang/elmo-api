@@ -11,6 +11,7 @@ import {
   ParseIntPipe,
   Post,
   Query,
+  UseGuards,
   UsePipes,
 } from '@nestjs/common';
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
@@ -38,8 +39,12 @@ import {
 } from '../../../application/available-capacity/types';
 import { AvailableCapacityEmergencyService } from '../../../application/available-capacity/available-capacity-emergency.service';
 import { ChargingStationNegotiationStatusDataDto } from './dto/charging-station-negotiation-status.dto';
+import { AuthUserGuard } from '../guard/auth-user.guard';
+import { ReqUserId } from '../decorator/req-user-id';
+import { UserService } from '../../../application/user/user.service';
 
 @Controller(`${API_PREFIX}/charging-station-negotiation`)
+@UseGuards(AuthUserGuard)
 @UsePipes(ZodValidationPipe)
 export class ChargingStationNegotiationController {
   private logger = new Logger(ChargingStationNegotiationController.name);
@@ -48,13 +53,17 @@ export class ChargingStationNegotiationController {
     private chargingStationService: ChargingStationService,
     private availableCapacityEmergencyService: AvailableCapacityEmergencyService,
     private availableCapacityNegotiationService: AvailableCapacityNegotiationService,
+    private userService: UserService,
   ) {}
 
   @Get()
   async getListItems(
     @Query() query: ChargingStationNegotiationListQueryDto,
+    @ReqUserId() reqUserId: number,
   ): Promise<ChargingStationNegotiationListDataDto> {
     const lastStatus = query.last_status;
+    const user = await this.userService.getUserById(reqUserId);
+
     let negotiationStatusList: NegotiationStatus[];
     let emergencyStatus: EmergencyStatus;
 
@@ -78,6 +87,10 @@ export class ChargingStationNegotiationController {
       emergencyStatus,
       keyword: query.keyword,
     };
+    // If user has district, filter by user's district
+    if (user.district) {
+      filterBy.districtId = user.district.id;
+    }
 
     const chargingStations =
       await this.chargingStationService.findChargingStationWithNegotiation(

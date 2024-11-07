@@ -18,6 +18,11 @@ import { AuthService } from '../../../application/auth/auth.service';
 import { UserService } from '../../../application/user/user.service';
 import { ReqUserId } from '../decorator/req-user-id';
 import { parseAccessToken } from '../../../application/auth/utils';
+import { Roles } from '../decorator/roles';
+import {
+  POWER_USER_ROLE,
+  SUPERVISOR_ROLE,
+} from '../../../application/user/types';
 
 @Controller(`${API_PREFIX}/auth`)
 @UsePipes(
@@ -47,8 +52,9 @@ export class AuthController {
   }
 
   @Post('logout')
-  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthUserGuard)
+  @Roles(POWER_USER_ROLE, SUPERVISOR_ROLE)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async logout(
     @ReqUserId() _reqUserId: number,
     @Headers('Authorization') authHeader: string,

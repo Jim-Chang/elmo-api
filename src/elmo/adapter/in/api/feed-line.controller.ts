@@ -4,6 +4,7 @@ import {
   Param,
   ParseIntPipe,
   Query,
+  UseGuards,
   UsePipes,
 } from '@nestjs/common';
 import { FeedLineHistoryDataService } from '../../../application/history-data/feed-line-history-data-service/feed-line-history-data.service';
@@ -17,8 +18,10 @@ import { LoadSiteService } from '../../../application/load-site/load-site.servic
 import { ChargingStationService } from '../../../application/charging-station/charging-station.service';
 import { DateTime } from 'luxon';
 import { AvailableCapacityService } from '../../../application/available-capacity/available-capacity.service';
+import { AuthUserGuard } from '../guard/auth-user.guard';
 
 @Controller(`${API_PREFIX}/feed-line`)
+@UseGuards(AuthUserGuard)
 @UsePipes(ZodValidationPipe)
 export class FeedLineController {
   constructor(

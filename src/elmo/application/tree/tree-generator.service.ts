@@ -11,10 +11,11 @@ import { FeedLineEntity } from '../../adapter/out/entities/feed-line.entity';
 import { ChargingStationEntity } from '../../adapter/out/entities/charging-station.entity';
 import { LoadSiteEntity } from '../../adapter/out/entities/load-site.entity';
 import { TransformerEntity } from '../../adapter/out/entities/transformer.entity';
+import { UserEntity } from '../../adapter/out/entities/user.entity';
 
 @Injectable()
 export class TreeGeneratorService {
-  private treeCache: TreeData | null = null;
+  private treeCache: Record<number | null, TreeData> = {}; // districtId -> tree
 
   constructor(
     private readonly districtService: DistrictService,
@@ -24,20 +25,21 @@ export class TreeGeneratorService {
     private readonly transformerService: TransformerService,
   ) {}
 
-  async getTree(): Promise<TreeData> {
-    if (!this.treeCache) {
-      this.treeCache = await this.buildTree();
+  async getTree(user: UserEntity): Promise<TreeData> {
+    const districtId = user.district?.id;
+    if (!this.treeCache[districtId]) {
+      this.treeCache[districtId] = await this.buildTree(user);
     }
-    return this.treeCache;
+    return this.treeCache[districtId];
   }
 
   async invalidateTreeCache(): Promise<void> {
-    this.treeCache = null;
+    this.treeCache = {};
   }
 
-  private async buildTree(): Promise<TreeData> {
-    const districts = await this.districtService.getAllActivateDistricts();
-    const feedLines = await this.feedLineService.getAllFeedLines();
+  private async buildTree(user: UserEntity): Promise<TreeData> {
+    const districts = await this.districtService.getAllActivateDistricts(user);
+    const feedLines = await this.feedLineService.getAllFeedLines(user);
     const loadSites = await this.loadSiteService.getAllLoadSites();
     const chargingStations =
       await this.chargingStationService.getAllChargingStations();

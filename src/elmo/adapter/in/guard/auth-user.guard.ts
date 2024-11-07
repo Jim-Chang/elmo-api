@@ -5,6 +5,7 @@ import {
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { API_AUTHENTICATED_USER_KEY } from '../../../../constants';
 import { AuthService } from '../../../application/auth/auth.service';
 import { parseAccessToken } from '../../../application/auth/utils';
@@ -13,7 +14,10 @@ import { parseAccessToken } from '../../../application/auth/utils';
 export class AuthUserGuard implements CanActivate {
   private logger: Logger = new Logger(AuthUserGuard.name);
 
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private reflector: Reflector,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
@@ -23,8 +27,13 @@ export class AuthUserGuard implements CanActivate {
         request.headers.authorization ?? null,
       );
 
-      request[API_AUTHENTICATED_USER_KEY] =
-        await this.authService.getUserIdByAccessToken(accessToken);
+      const user = await this.authService.getUserByAccessToken(accessToken);
+      request[API_AUTHENTICATED_USER_KEY] = user.id;
+
+      const roles = this.reflector.get<string[]>('roles', context.getHandler());
+      if (roles) {
+        return roles.includes(user.role);
+      }
 
       return true;
     } catch (error) {

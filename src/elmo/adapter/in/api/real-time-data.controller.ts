@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Query,
+  UseGuards,
   UsePipes,
 } from '@nestjs/common';
 import { DateTime } from 'luxon';
@@ -28,8 +29,12 @@ import {
   ChargingStationRealTimeData,
   TransformerRealTimeData,
 } from '../../../application/real-time-data/types';
+import { AuthUserGuard } from '../guard/auth-user.guard';
+import { ReqUserId } from '../decorator/req-user-id';
+import { UserService } from '../../../application/user/user.service';
 
 @Controller(`${API_PREFIX}/real-time-data`)
+@UseGuards(AuthUserGuard)
 @UsePipes(ZodValidationPipe)
 export class RealTimeDataController {
   constructor(
@@ -38,19 +43,27 @@ export class RealTimeDataController {
     private readonly chargingStationService: ChargingStationService,
     private readonly loadSiteService: LoadSiteService,
     private readonly transformerService: TransformerService,
+    private readonly userService: UserService,
   ) {}
 
   @Get()
   async getListItems(
     @Query() query: RealTimeDataListQueryDto,
+    @ReqUserId() reqUserId: number,
   ): Promise<LoadSiteRealTimeDataListDataDto> {
     const now = DateTime.now();
+
+    const user = await this.userService.getUserById(reqUserId);
 
     const filterBy = {
       districtId: query.district_id,
       feedLineId: query.feed_line_id,
       keyword: query.keyword,
     };
+    // If user has district, filter by user's district
+    if (user.district) {
+      filterBy.districtId = user.district.id;
+    }
 
     const loadSites =
       await this.loadSiteService.findLoadSiteWithChargeStationAndTransformer(

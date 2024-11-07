@@ -4,6 +4,7 @@ import {
   Param,
   ParseIntPipe,
   Query,
+  UseGuards,
   UsePipes,
 } from '@nestjs/common';
 import { ChargingStationHistoryDataService } from '../../../application/history-data/charging-station-history-data-service/charging-station-history-data.service';
@@ -16,8 +17,10 @@ import { ZodValidationPipe } from '@anatine/zod-nestjs';
 import { ChargingStationService } from '../../../application/charging-station/charging-station.service';
 import { AvailableCapacityService } from '../../../application/available-capacity/available-capacity.service';
 import { DateTime } from 'luxon';
+import { AuthUserGuard } from '../guard/auth-user.guard';
 
 @Controller(`${API_PREFIX}/charging-station`)
+@UseGuards(AuthUserGuard)
 @UsePipes(ZodValidationPipe)
 export class ChargingStationController {
   constructor(

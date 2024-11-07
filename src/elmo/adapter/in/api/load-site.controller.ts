@@ -5,6 +5,7 @@ import {
   Param,
   ParseIntPipe,
   Query,
+  UseGuards,
   UsePipes,
 } from '@nestjs/common';
 import { LoadSiteHistoryDataService } from '../../../application/history-data/load-site-history-data-service/load-site-history-data.service';
@@ -20,8 +21,12 @@ import { LoadSiteService } from '../../../application/load-site/load-site.servic
 import { ChargingStationService } from '../../../application/charging-station/charging-station.service';
 import { AvailableCapacityService } from '../../../application/available-capacity/available-capacity.service';
 import { DateTime } from 'luxon';
+import { AuthUserGuard } from '../guard/auth-user.guard';
+import { ADMIN_ROLE } from '../../../application/user/types';
+import { Roles } from '../decorator/roles';
 
 @Controller(`${API_PREFIX}/load-site`)
+@UseGuards(AuthUserGuard)
 @UsePipes(ZodValidationPipe)
 export class LoadSiteController {
   constructor(
@@ -32,6 +37,7 @@ export class LoadSiteController {
   ) {}
 
   @Get('uid-mapping')
+  @Roles(ADMIN_ROLE)
   async getUidMapping(): Promise<LoadSiteUidMappingDto> {
     return await this.loadSiteService.listLoadSiteUidMapping();
   }

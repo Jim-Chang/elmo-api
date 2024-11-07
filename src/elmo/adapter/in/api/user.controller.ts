@@ -22,6 +22,8 @@ import { ZodValidationPipe } from '@anatine/zod-nestjs';
 import { API_PREFIX } from '../../../../constants';
 import { AuthUserGuard } from '../guard/auth-user.guard';
 import { ReqUserId } from '../decorator/req-user-id';
+import { Roles } from '../decorator/roles';
+import { POWER_USER_ROLE } from '../../../application/user/types';
 import { AuthService } from '../../../application/auth/auth.service';
 import { DistrictService } from '../../../application/district/district.service';
 import { UserService } from '../../../application/user/user.service';
@@ -34,6 +36,7 @@ import {
 } from './dto/user-me.dto';
 
 @Controller(`${API_PREFIX}/user`)
+@UseGuards(AuthUserGuard)
 @UsePipes(ZodValidationPipe)
 export class UserController {
   private readonly logger = new Logger(UserController.name);
@@ -45,6 +48,7 @@ export class UserController {
   ) {}
 
   @Get()
+  @Roles(POWER_USER_ROLE)
   async getListItems(
     @Query() query: UserListQueryDto,
   ): Promise<UserListDataDto> {
@@ -68,6 +72,7 @@ export class UserController {
   }
 
   @Post()
+  @Roles(POWER_USER_ROLE)
   @HttpCode(HttpStatus.CREATED)
   async createUser(@Body() dto: CreateUserDto): Promise<UserDataDto> {
     const isEmailExist = await this.userService.isUserEmailExist(dto.email);
@@ -97,6 +102,7 @@ export class UserController {
   }
 
   @Put(':id')
+  @Roles(POWER_USER_ROLE)
   @HttpCode(HttpStatus.OK)
   async updateUser(
     @Param('id', ParseIntPipe) id: number,
@@ -138,6 +144,7 @@ export class UserController {
   }
 
   @Delete(':id')
+  @Roles(POWER_USER_ROLE)
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<void> {
     await this.userService.deleteUser(id);
@@ -145,7 +152,6 @@ export class UserController {
 
   @Get('me')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthUserGuard)
   async getCurrentUser(@ReqUserId() reqUserId: number): Promise<UserDataDto> {
     const user = await this.userService.getUserById(reqUserId);
     if (!user) {
@@ -165,7 +171,6 @@ export class UserController {
 
   @Patch('me/password')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthUserGuard)
   async changeSelfPassword(
     @ReqUserId() reqUserId: number,
     @Body() changePasswordDto: UserChangePasswordDto,
