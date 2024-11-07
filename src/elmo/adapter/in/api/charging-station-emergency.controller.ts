@@ -7,14 +7,17 @@ import {
   HttpStatus,
   NotFoundException,
   Post,
+  UseGuards,
   UsePipes,
 } from '@nestjs/common';
 import { API_PREFIX } from '../../../../constants';
 import { AvailableCapacityEmergencyService } from '../../../application/available-capacity/available-capacity-emergency.service';
 import { CreateAndSendEmergencyDto } from '../oscp/dto/create-and-send-emergency.dto';
 import { AvailableCapacityNegotiationService } from '../../../application/available-capacity/available-capacity-negotiation.service';
+import { AuthUserGuard } from '../guard/auth-user.guard';
 
 @Controller(`${API_PREFIX}/charging-station-emergency`)
+@UseGuards(AuthUserGuard)
 @UsePipes(ZodValidationPipe)
 export class ChargingStationEmergencyController {
   constructor(

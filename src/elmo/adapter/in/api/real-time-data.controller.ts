@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Query,
+  UseGuards,
   UsePipes,
 } from '@nestjs/common';
 import { DateTime } from 'luxon';
@@ -28,8 +29,10 @@ import {
   ChargingStationRealTimeData,
   TransformerRealTimeData,
 } from '../../../application/real-time-data/types';
+import { AuthUserGuard } from '../guard/auth-user.guard';
 
 @Controller(`${API_PREFIX}/real-time-data`)
+@UseGuards(AuthUserGuard)
 @UsePipes(ZodValidationPipe)
 export class RealTimeDataController {
   constructor(

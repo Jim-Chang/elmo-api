@@ -4,6 +4,7 @@ import {
   Param,
   ParseIntPipe,
   Query,
+  UseGuards,
   UsePipes,
 } from '@nestjs/common';
 import { TransformerHistoryDataService } from '../../../application/history-data/transformer-history-data-service/transformer-history-data.service';
@@ -14,8 +15,10 @@ import {
 } from './dto/history-data-query.dto';
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
 import { TransformerService } from '../../../application/transformer/transformer.service';
+import { AuthUserGuard } from '../guard/auth-user.guard';
 
 @Controller(`${API_PREFIX}/transformer`)
+@UseGuards(AuthUserGuard)
 @UsePipes(ZodValidationPipe)
 export class TransformerController {
   constructor(

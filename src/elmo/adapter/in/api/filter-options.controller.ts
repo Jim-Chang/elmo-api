@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { API_PREFIX } from '../../../../constants';
 import { FeedLineService } from '../../../application/feed-line/feed-line.service';
 import {
@@ -7,8 +7,10 @@ import {
 } from './dto/filter-options.dto';
 import { DistrictService } from '../../../application/district/district.service';
 import { TreeGeneratorService } from '../../../application/tree/tree-generator.service';
+import { AuthUserGuard } from '../guard/auth-user.guard';
 
 @Controller(`${API_PREFIX}/filter-options`)
+@UseGuards(AuthUserGuard)
 export class FilterOptionsController {
   constructor(
     private readonly feedLineService: FeedLineService,

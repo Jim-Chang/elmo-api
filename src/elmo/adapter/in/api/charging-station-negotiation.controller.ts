@@ -11,6 +11,7 @@ import {
   ParseIntPipe,
   Post,
   Query,
+  UseGuards,
   UsePipes,
 } from '@nestjs/common';
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
@@ -38,8 +39,10 @@ import {
 } from '../../../application/available-capacity/types';
 import { AvailableCapacityEmergencyService } from '../../../application/available-capacity/available-capacity-emergency.service';
 import { ChargingStationNegotiationStatusDataDto } from './dto/charging-station-negotiation-status.dto';
+import { AuthUserGuard } from '../guard/auth-user.guard';
 
 @Controller(`${API_PREFIX}/charging-station-negotiation`)
+@UseGuards(AuthUserGuard)
 @UsePipes(ZodValidationPipe)
 export class ChargingStationNegotiationController {
   private logger = new Logger(ChargingStationNegotiationController.name);
