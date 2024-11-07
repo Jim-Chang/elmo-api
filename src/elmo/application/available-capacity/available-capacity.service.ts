@@ -61,18 +61,20 @@ export class AvailableCapacityService {
     const intervalDuration = { minutes: 15 };
 
     // Query all capacities and emergencies within the date range
-    const [negotiationCapacities, emergencyCapacities] = await Promise.all([
-      this.negotiationService.getNegotiationCapacitiesByDateRange(
-        chargingStationId,
-        startDate,
-        endDate,
-      ),
-      this.emergencyService.getEmergencyCapacitiesByDateRange(
-        chargingStationId,
-        startDate,
-        endDate,
-      ),
-    ]);
+    const [contractCapacity, negotiationCapacities, emergencyCapacities] =
+      await Promise.all([
+        this.chargingStationService.getContractCapacityById(chargingStationId),
+        this.negotiationService.getNegotiationCapacitiesByDateRange(
+          chargingStationId,
+          startDate,
+          endDate,
+        ),
+        this.emergencyService.getEmergencyCapacitiesByDateRange(
+          chargingStationId,
+          startDate,
+          endDate,
+        ),
+      ]);
 
     const results = [];
     for (
@@ -83,6 +85,7 @@ export class AvailableCapacityService {
       const { availableCapacity, isInEmergency } =
         this.calculateAvailableCapacityAndIsInEmergency(
           current.toJSDate(),
+          contractCapacity,
           negotiationCapacities,
           emergencyCapacities,
         );
@@ -124,10 +127,11 @@ export class AvailableCapacityService {
 
   private calculateAvailableCapacityAndIsInEmergency(
     dateTime: Date,
+    contractCapacity: number,
     negotiationCapacities: { dateTime: Date; capacity: number }[],
     emergencyCapacities: { dateTime: Date; capacity: number }[],
   ): { availableCapacity: number; isInEmergency: boolean } {
-    let availableCapacity = Infinity;
+    let availableCapacity = contractCapacity;
     let isInEmergency = false;
 
     // Compare with negotiation capacities
@@ -151,10 +155,6 @@ export class AvailableCapacityService {
     if (emergencyCapacity && emergencyCapacity < availableCapacity) {
       availableCapacity = emergencyCapacity;
       isInEmergency = true;
-    }
-
-    if (availableCapacity === Infinity) {
-      availableCapacity = 0;
     }
 
     return { availableCapacity, isInEmergency };
