@@ -11,6 +11,7 @@ import {
 import { AccessTokenEntity } from '../../adapter/out/entities/access-token.entity';
 import { AccessToken } from './types';
 import { DateTime } from 'luxon';
+import { UserEntity } from '../../adapter/out/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -38,15 +39,20 @@ export class AuthService {
     return accessToken;
   }
 
-  async getUserIdByAccessToken(token: AccessToken): Promise<number> {
+  async getUserByAccessToken(token: AccessToken): Promise<UserEntity> {
     const expiredAfter = DateTime.now();
 
     try {
-      const accessToken = await this.accessTokenRepository.findOneOrFail({
-        token,
-        expiredAt: { $gt: expiredAfter.toJSDate() },
-      });
-      return accessToken.user.id;
+      const accessToken = await this.accessTokenRepository.findOneOrFail(
+        {
+          token,
+          expiredAt: { $gt: expiredAfter.toJSDate() },
+        },
+        {
+          populate: ['user'],
+        },
+      );
+      return accessToken.user;
     } catch {
       throw new Error('Invalid access token');
     }
