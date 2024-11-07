@@ -8,6 +8,7 @@ export const LOAD_SITE_UID_LIST = {
   UL15: ['ML_B1'],
   WF37: ['NTP_01'],
   B526: ['KA0101_01'],
+  W360: ['BC_B1'],
 };
 export class LoadSiteFactory extends Factory<LoadSiteEntity> {
   model = LoadSiteEntity;

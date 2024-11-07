@@ -34,6 +34,17 @@ export const FEED_LINE_TREE = [
       },
     ],
   },
+  {
+    name: 'W360',
+    loadSites: [
+      {
+        uid: LOAD_SITE_UID_LIST.W360[0],
+        transformer: {
+          uid: TRANSFORMER_UID_MAP.W360[0],
+        },
+      },
+    ],
+  },
 ];
 export class FeedLineFactory extends Factory<FeedLineEntity> {
   model = FeedLineEntity;

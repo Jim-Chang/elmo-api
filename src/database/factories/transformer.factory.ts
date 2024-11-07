@@ -7,6 +7,7 @@ export const TRANSFORMER_UID_MAP = {
   UL15: ['ML_ELMO_GW01'],
   WF37: ['NTP_ELMO_DK1000_01'],
   B526: ['Q1907_CC4701_V27261x13_V17651x3'],
+  W360: ['B5739_GB2822_T01_3'],
 };
 export class TransformerFactory extends Factory<TransformerEntity> {
   model = TransformerEntity;
