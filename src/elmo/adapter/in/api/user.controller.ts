@@ -64,7 +64,7 @@ export class UserController {
         email: u.email,
         full_name: u.fullName,
         role: u.role,
-        distinct_id: u.district?.id ?? null,
+        district_id: u.district?.id ?? null,
         remark: u.remark ?? null,
         created_at: u.createdAt,
       })),
