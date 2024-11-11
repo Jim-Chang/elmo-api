@@ -29,7 +29,7 @@ export class FeederEntity {
   // to child LoadSiteEntity
   @OneToMany({
     entity: () => LoadSiteEntity,
-    mappedBy: 'feedLine',
+    mappedBy: 'feeder',
     cascade: [Cascade.ALL],
   })
   loadSites = new Collection<LoadSiteEntity>(this);
@@ -37,7 +37,7 @@ export class FeederEntity {
   // to child ChargingStationEntity
   @OneToMany({
     entity: () => ChargingStationEntity,
-    mappedBy: 'feedLine',
+    mappedBy: 'feeder',
     cascade: [Cascade.ALL],
   })
   chargingStations = new Collection<ChargingStationEntity>(this);

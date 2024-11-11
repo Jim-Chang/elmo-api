@@ -35,7 +35,7 @@ export class LoadSiteEntity {
     nullable: true,
     deleteRule: 'set null',
   })
-  feedLine?: FeederEntity;
+  feeder?: FeederEntity;
 
   // to child ChargingStationEntity
   @OneToMany({

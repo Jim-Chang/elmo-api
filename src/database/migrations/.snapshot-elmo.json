@@ -323,8 +323,8 @@
           "length": 255,
           "mappedType": "string"
         },
-        "feed_line_id": {
-          "name": "feed_line_id",
+        "feeder_id": {
+          "name": "feeder_id",
           "type": "int",
           "unsigned": true,
           "autoincrement": false,
@@ -338,10 +338,10 @@
       "indexes": [
         {
           "columnNames": [
-            "feed_line_id"
+            "feeder_id"
           ],
           "composite": false,
-          "keyName": "load_sites_feed_line_id_index",
+          "keyName": "load_sites_feeder_id_index",
           "constraint": false,
           "primary": false,
           "unique": false
@@ -359,10 +359,10 @@
       ],
       "checks": [],
       "foreignKeys": {
-        "load_sites_feed_line_id_foreign": {
-          "constraintName": "load_sites_feed_line_id_foreign",
+        "load_sites_feeder_id_foreign": {
+          "constraintName": "load_sites_feeder_id_foreign",
           "columnNames": [
-            "feed_line_id"
+            "feeder_id"
           ],
           "localTableName": "load_sites",
           "referencedColumnNames": [
@@ -448,8 +448,8 @@
           "length": null,
           "mappedType": "integer"
         },
-        "feed_line_id": {
-          "name": "feed_line_id",
+        "feeder_id": {
+          "name": "feeder_id",
           "type": "int",
           "unsigned": true,
           "autoincrement": false,
@@ -503,10 +503,10 @@
         },
         {
           "columnNames": [
-            "feed_line_id"
+            "feeder_id"
           ],
           "composite": false,
-          "keyName": "charging_stations_feed_line_id_index",
+          "keyName": "charging_stations_feeder_id_index",
           "constraint": false,
           "primary": false,
           "unique": false
@@ -560,10 +560,10 @@
           "deleteRule": "set null",
           "updateRule": "cascade"
         },
-        "charging_stations_feed_line_id_foreign": {
-          "constraintName": "charging_stations_feed_line_id_foreign",
+        "charging_stations_feeder_id_foreign": {
+          "constraintName": "charging_stations_feeder_id_foreign",
           "columnNames": [
-            "feed_line_id"
+            "feeder_id"
           ],
           "localTableName": "charging_stations",
           "referencedColumnNames": [

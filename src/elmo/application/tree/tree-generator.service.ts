@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DistrictService } from '../district/district.service';
-import { FeedLineService } from '../feed-line/feed-line.service';
+import { FeederService } from '../feeder/feeder.service';
 import { LoadSiteService } from '../load-site/load-site.service';
 import { ChargingStationService } from '../charging-station/charging-station.service';
 import { TransformerService } from '../transformer/transformer.service';
@@ -19,7 +19,7 @@ export class TreeGeneratorService {
 
   constructor(
     private readonly districtService: DistrictService,
-    private readonly feedLineService: FeedLineService,
+    private readonly feederService: FeederService,
     private readonly loadSiteService: LoadSiteService,
     private readonly chargingStationService: ChargingStationService,
     private readonly transformerService: TransformerService,
@@ -39,19 +39,19 @@ export class TreeGeneratorService {
 
   private async buildTree(user: UserEntity): Promise<TreeData> {
     const districts = await this.districtService.getAllActivateDistricts(user);
-    const feedLines = await this.feedLineService.getAllFeedLines(user);
+    const feeders = await this.feederService.getAllFeeders(user);
     const loadSites = await this.loadSiteService.getAllLoadSites();
     const chargingStations =
       await this.chargingStationService.getAllChargingStations();
     const transformers = await this.transformerService.getAllTransformers();
 
-    const districtIdToFeedLines = groupBy(
-      feedLines,
-      (feedLine) => feedLine.district?.id,
+    const districtIdToFeeders = groupBy(
+      feeders,
+      (feeder) => feeder.district?.id,
     );
-    const feedLineIdToLoadSites = groupBy(
+    const feederIdToLoadSites = groupBy(
       loadSites,
-      (loadSite) => loadSite.feedLine?.id,
+      (loadSite) => loadSite.feeder?.id,
     );
     const loadSiteIdToChargingStations = groupBy(
       chargingStations,
@@ -64,8 +64,8 @@ export class TreeGeneratorService {
 
     return buildTreeData(
       districts,
-      districtIdToFeedLines,
-      feedLineIdToLoadSites,
+      districtIdToFeeders,
+      feederIdToLoadSites,
       loadSiteIdToChargingStations,
       loadSiteIdToTransformers,
     );
@@ -81,8 +81,8 @@ type SupportEntities =
 
 function buildTreeData(
   districts: DistrictEntity[],
-  districtIdToFeedLines: Record<number, FeederEntity[]>,
-  feedLineIdToLoadSites: Record<number, LoadSiteEntity[]>,
+  districtIdToFeeders: Record<number, FeederEntity[]>,
+  feederIdToLoadSites: Record<number, LoadSiteEntity[]>,
   loadSiteIdToChargingStations: Record<number, ChargingStationEntity[]>,
   loadSiteIdToTransformers: Record<number, TransformerEntity[]>,
 ): TreeData {
@@ -93,10 +93,10 @@ function buildTreeData(
 
     if (entity instanceof DistrictEntity) {
       nodeType = NodeType.District;
-      childrenEntities = districtIdToFeedLines[entity.id];
+      childrenEntities = districtIdToFeeders[entity.id];
     } else if (entity instanceof FeederEntity) {
-      nodeType = NodeType.FeedLine;
-      childrenEntities = feedLineIdToLoadSites[entity.id];
+      nodeType = NodeType.Feeder;
+      childrenEntities = feederIdToLoadSites[entity.id];
     } else if (entity instanceof LoadSiteEntity) {
       nodeType = NodeType.LoadSite;
       const childrenChargingStations =

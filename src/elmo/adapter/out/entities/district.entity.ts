@@ -30,7 +30,7 @@ export class DistrictEntity {
     mappedBy: 'district',
     cascade: [Cascade.ALL],
   })
-  feedLines = new Collection<FeederEntity>(this);
+  feeders = new Collection<FeederEntity>(this);
 
   // to child ChargingStationEntity
   @OneToMany({

@@ -7,7 +7,7 @@ import {
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
-import { FeedLineHistoryDataService } from '../../../application/history-data/feed-line-history-data-service/feed-line-history-data.service';
+import { FeederHistoryDataService } from '../../../application/history-data/feeder-history-data-service/feeder-history-data.service';
 import { API_PREFIX } from '../../../../constants';
 import {
   HistoryDataDto,
@@ -20,28 +20,28 @@ import { DateTime } from 'luxon';
 import { AvailableCapacityService } from '../../../application/available-capacity/available-capacity.service';
 import { AuthUserGuard } from '../guard/auth-user.guard';
 
-@Controller(`${API_PREFIX}/feed-line`)
+@Controller(`${API_PREFIX}/feeder`)
 @UseGuards(AuthUserGuard)
 @UsePipes(ZodValidationPipe)
-export class FeedLineController {
+export class FeederController {
   constructor(
     private readonly loadSiteService: LoadSiteService,
-    private readonly feedLineHistoryDataService: FeedLineHistoryDataService,
+    private readonly feederHistoryDataService: FeederHistoryDataService,
     private readonly chargingStationService: ChargingStationService,
     private readonly availableCapacityService: AvailableCapacityService,
   ) {}
 
   @Get('history/:id/fifteen-minute')
-  async getFeedLineFifteenMinuteHistoryData(
+  async getFeederFifteenMinuteHistoryData(
     @Param('id', ParseIntPipe) id: number,
     @Query() query: HistoryDataQueryDto,
   ): Promise<HistoryDataDto> {
-    const loadSiteUids = await this.loadSiteService.getUidsByFeedLineId(id);
+    const loadSiteUids = await this.loadSiteService.getUidsByFeederId(id);
     const chargingStations =
-      await this.chargingStationService.findChargingStationByFeedLineId(id);
+      await this.chargingStationService.findChargingStationByFeederId(id);
 
     const data =
-      await this.feedLineHistoryDataService.queryInFifteenMinuteDataInterval(
+      await this.feederHistoryDataService.queryInFifteenMinuteDataInterval(
         loadSiteUids,
         query.start_date,
         query.end_date,
@@ -108,20 +108,19 @@ export class FeedLineController {
   }
 
   @Get('history/:id/one-hour')
-  async getFeedLineOneHourHistoryData(
+  async getFeederOneHourHistoryData(
     @Param('id', ParseIntPipe) id: number,
     @Query() query: HistoryDataQueryDto,
   ): Promise<HistoryDataDto> {
-    const loadSiteUids = await this.loadSiteService.getUidsByFeedLineId(id);
+    const loadSiteUids = await this.loadSiteService.getUidsByFeederId(id);
     const chargingStations =
-      await this.chargingStationService.findChargingStationByFeedLineId(id);
+      await this.chargingStationService.findChargingStationByFeederId(id);
 
-    const data =
-      await this.feedLineHistoryDataService.queryInOneHourDataInterval(
-        loadSiteUids,
-        query.start_date,
-        query.end_date,
-      );
+    const data = await this.feederHistoryDataService.queryInOneHourDataInterval(
+      loadSiteUids,
+      query.start_date,
+      query.end_date,
+    );
 
     const capacityResults = await Promise.all(
       chargingStations.map(async (chargingStation) => {
@@ -178,18 +177,17 @@ export class FeedLineController {
   }
 
   @Get('history/:id/one-day')
-  async getFeedLineOneDayHistoryData(
+  async getFeederOneDayHistoryData(
     @Param('id', ParseIntPipe) id: number,
     @Query() query: HistoryDataQueryDto,
   ): Promise<HistoryDataDto> {
-    const loadSiteUids = await this.loadSiteService.getUidsByFeedLineId(id);
+    const loadSiteUids = await this.loadSiteService.getUidsByFeederId(id);
 
-    const data =
-      await this.feedLineHistoryDataService.queryInOneDayDataInterval(
-        loadSiteUids,
-        query.start_date,
-        query.end_date,
-      );
+    const data = await this.feederHistoryDataService.queryInOneDayDataInterval(
+      loadSiteUids,
+      query.start_date,
+      query.end_date,
+    );
 
     return { data };
   }

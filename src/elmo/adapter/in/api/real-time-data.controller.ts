@@ -57,7 +57,7 @@ export class RealTimeDataController {
 
     const filterBy = {
       districtId: query.district_id,
-      feedLineId: query.feed_line_id,
+      feederId: query.feeder_id,
       keyword: query.keyword,
     };
     // If user has district, filter by user's district
@@ -138,7 +138,7 @@ export class RealTimeDataController {
         return {
           load_site_id: loadSite.id,
           load_site_name: loadSite.name,
-          feed_line_name: loadSite.feedLine?.name ?? null,
+          feeder_name: loadSite.feeder?.name ?? null,
           total_load: totalLoad,
           demand_load: demandLoad,
           charge_load: chargeLoad,

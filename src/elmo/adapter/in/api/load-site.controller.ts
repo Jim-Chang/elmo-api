@@ -57,10 +57,10 @@ export class LoadSiteController {
       load_site_name: loadSite.name,
       load_site_category: loadSite.category,
       load_site_address: loadSite.address ?? null,
-      feed_line: loadSite.feedLine
+      feeder: loadSite.feeder
         ? {
-            id: loadSite.feedLine.id,
-            name: loadSite.feedLine.name,
+            id: loadSite.feeder.id,
+            name: loadSite.feeder.name,
           }
         : null,
       charging_stations: loadSite.chargingStations.map((cs) => ({

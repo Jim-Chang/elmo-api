@@ -27,7 +27,7 @@ const ChargingStationNegotiationListQuerySchema = z.object({
     (val) => (val !== undefined ? Number(val) : val),
     z.number().optional(),
   ),
-  feed_line_id: z.preprocess(
+  feeder_id: z.preprocess(
     (val) => (val !== undefined ? Number(val) : val),
     z.number().optional(),
   ),
@@ -54,7 +54,7 @@ export class ChargingStationNegotiationListQueryDto extends createZodDto(
 
 const ChargingStationNegotiationDashboardItemDataSchema = z.object({
   negotiation_id: z.number(),
-  feed_line: z.string(),
+  feeder: z.string(),
   electricity_account_no: z.string(),
   charging_station_name: z.string(),
   load_site_name: z.string(),

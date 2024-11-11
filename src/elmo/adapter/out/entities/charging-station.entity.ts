@@ -63,7 +63,7 @@ export class ChargingStationEntity {
     nullable: true,
     deleteRule: 'set null',
   })
-  feedLine?: FeederEntity;
+  feeder?: FeederEntity;
 
   @ManyToOne(() => DistrictEntity, {
     nullable: true,

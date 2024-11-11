@@ -7,13 +7,13 @@ import {
 } from '../load-site-history-data-service/types';
 import _ from 'lodash';
 import {
-  FeedLineFifteenMinuteESRawData,
-  FeedLineOneDayESRawData,
-  FeedLineOneHourESRawData,
+  FeederFifteenMinuteESRawData,
+  FeederOneDayESRawData,
+  FeederOneHourESRawData,
 } from './types';
 
 @Injectable()
-export class FeedLineHistoryDataService {
+export class FeederHistoryDataService {
   constructor(
     private readonly loadSiteHistoryDataService: LoadSiteHistoryDataService,
   ) {}
@@ -22,7 +22,7 @@ export class FeedLineHistoryDataService {
     loadSiteUidList: string[],
     startDate: Date,
     endDate: Date,
-  ): Promise<FeedLineFifteenMinuteESRawData[]> {
+  ): Promise<FeederFifteenMinuteESRawData[]> {
     const loadSiteRawDataList = await Promise.all(
       loadSiteUidList.map((uid) =>
         this.loadSiteHistoryDataService.queryInFifteenMinuteDataInterval(
@@ -60,14 +60,14 @@ export class FeedLineHistoryDataService {
       dataInitializer,
       mergeFields,
       loadSiteRawDataList,
-    ) as FeedLineFifteenMinuteESRawData[];
+    ) as FeederFifteenMinuteESRawData[];
   }
 
   async queryInOneHourDataInterval(
     loadSiteUidList: string[],
     startDate: Date,
     endDate: Date,
-  ): Promise<FeedLineOneHourESRawData[]> {
+  ): Promise<FeederOneHourESRawData[]> {
     const loadSiteRawDataList = await Promise.all(
       loadSiteUidList.map((uid) =>
         this.loadSiteHistoryDataService.queryInOneHourDataInterval(
@@ -105,14 +105,14 @@ export class FeedLineHistoryDataService {
       dataInitializer,
       mergeFields,
       loadSiteRawDataList,
-    ) as FeedLineOneHourESRawData[];
+    ) as FeederOneHourESRawData[];
   }
 
   async queryInOneDayDataInterval(
     loadSiteUidList: string[],
     startDate: Date,
     endDate: Date,
-  ): Promise<FeedLineOneDayESRawData[]> {
+  ): Promise<FeederOneDayESRawData[]> {
     const loadSiteRawDataList = await Promise.all(
       loadSiteUidList.map((uid) =>
         this.loadSiteHistoryDataService.queryInOneDayDataInterval(
@@ -150,7 +150,7 @@ export class FeedLineHistoryDataService {
       dataInitializer,
       mergeFields,
       loadSiteRawDataList,
-    ) as FeedLineOneDayESRawData[];
+    ) as FeederOneDayESRawData[];
   }
 }
 

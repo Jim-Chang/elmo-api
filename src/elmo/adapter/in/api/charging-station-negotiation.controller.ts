@@ -81,7 +81,7 @@ export class ChargingStationNegotiationController {
         zone: TAIPEI_TZ,
       }).toJSDate(),
       districtId: query.district_id,
-      feedLineId: query.feed_line_id,
+      feederId: query.feeder_id,
       loadSiteId: query.load_site_id,
       negotiationStatusList,
       emergencyStatus,
@@ -113,7 +113,7 @@ export class ChargingStationNegotiationController {
 
       return {
         negotiation_id: negotiation?.id ?? null,
-        feed_line: chargingStation.feedLine?.name ?? null,
+        feeder: chargingStation.feeder?.name ?? null,
         electricity_account_no: chargingStation.electricityAccountNo ?? null,
         charging_station_name: chargingStation.name,
         load_site_name: chargingStation.loadSite?.name ?? null,

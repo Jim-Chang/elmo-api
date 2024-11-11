@@ -6,7 +6,7 @@ const RealTimeDataListQuerySchema = z.object({
     (val) => (val !== undefined ? Number(val) : val),
     z.number().optional(),
   ),
-  feed_line_id: z.preprocess(
+  feeder_id: z.preprocess(
     (val) => (val !== undefined ? Number(val) : val),
     z.number().optional(),
   ),
@@ -20,7 +20,7 @@ export class RealTimeDataListQueryDto extends createZodDto(
 const RealTimeDataListItemDataSchema = z.object({
   load_site_id: z.number(),
   load_site_name: z.string(),
-  feed_line_name: z.string().nullable(),
+  feeder_name: z.string().nullable(),
   total_load: z.number().nullable(),
   demand_load: z.number().nullable(),
   charge_load: z.number().nullable(),
