@@ -7,7 +7,7 @@ import {
   Property,
 } from '@mikro-orm/core';
 import { ChargingStationEntity } from './charging-station.entity';
-import { FeedLineEntity } from './feed-line.entity';
+import { FeederEntity } from './feeder.entity';
 import { UserEntity } from './user.entity';
 
 @Entity({ tableName: 'districts' })
@@ -24,13 +24,13 @@ export class DistrictEntity {
   @Property({ default: true })
   isActivated: boolean;
 
-  // to child FeedLineEntity
+  // to child FeederEntity
   @OneToMany({
-    entity: () => FeedLineEntity,
+    entity: () => FeederEntity,
     mappedBy: 'district',
     cascade: [Cascade.ALL],
   })
-  feedLines = new Collection<FeedLineEntity>(this);
+  feedLines = new Collection<FeederEntity>(this);
 
   // to child ChargingStationEntity
   @OneToMany({

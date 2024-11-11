@@ -1,5 +1,5 @@
 import { Factory } from '@mikro-orm/seeder';
-import { FeedLineEntity } from '../../elmo/adapter/out/entities/feed-line.entity';
+import { FeederEntity } from '../../elmo/adapter/out/entities/feeder.entity';
 import { faker } from '@faker-js/faker';
 import { LOAD_SITE_UID_LIST } from './load-site.factory';
 import { TRANSFORMER_UID_MAP } from './transformer.factory';
@@ -46,8 +46,8 @@ export const FEED_LINE_TREE = [
     ],
   },
 ];
-export class FeedLineFactory extends Factory<FeedLineEntity> {
-  model = FeedLineEntity;
+export class FeedLineFactory extends Factory<FeederEntity> {
+  model = FeederEntity;
   definition() {
     return {
       name: faker.helpers.arrayElement(FEED_LINES),

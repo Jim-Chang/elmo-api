@@ -26,7 +26,7 @@ import { InternalApiController } from './adapter/in/internal-api/internal-api.co
 import { ChargingStationNegotiationController } from './adapter/in/api/charging-station-negotiation.controller';
 import { RealTimeDataController } from './adapter/in/api/real-time-data.controller';
 import { AccessTokenEntity } from './adapter/out/entities/access-token.entity';
-import { FeedLineEntity } from './adapter/out/entities/feed-line.entity';
+import { FeederEntity } from './adapter/out/entities/feeder.entity';
 import { LoadSiteEntity } from './adapter/out/entities/load-site.entity';
 import { AuthService } from './application/auth/auth.service';
 import { FeedLineService } from './application/feed-line/feed-line.service';
@@ -68,7 +68,7 @@ import { UserPasswordService } from './application/user/user-password.service';
       AvailableCapacityEmergencyEntity,
       AvailableCapacityNegotiationEntity,
       AvailableCapacityNegotiationDetailEntity,
-      FeedLineEntity,
+      FeederEntity,
       LoadSiteEntity,
       DistrictEntity,
       TransformerEntity,

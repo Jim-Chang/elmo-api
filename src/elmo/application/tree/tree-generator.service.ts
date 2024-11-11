@@ -7,7 +7,7 @@ import { TransformerService } from '../transformer/transformer.service';
 import { NodeData, NodeType, TreeData } from './types';
 import { groupBy } from 'lodash';
 import { DistrictEntity } from '../../adapter/out/entities/district.entity';
-import { FeedLineEntity } from '../../adapter/out/entities/feed-line.entity';
+import { FeederEntity } from '../../adapter/out/entities/feeder.entity';
 import { ChargingStationEntity } from '../../adapter/out/entities/charging-station.entity';
 import { LoadSiteEntity } from '../../adapter/out/entities/load-site.entity';
 import { TransformerEntity } from '../../adapter/out/entities/transformer.entity';
@@ -74,14 +74,14 @@ export class TreeGeneratorService {
 
 type SupportEntities =
   | DistrictEntity
-  | FeedLineEntity
+  | FeederEntity
   | LoadSiteEntity
   | ChargingStationEntity
   | TransformerEntity;
 
 function buildTreeData(
   districts: DistrictEntity[],
-  districtIdToFeedLines: Record<number, FeedLineEntity[]>,
+  districtIdToFeedLines: Record<number, FeederEntity[]>,
   feedLineIdToLoadSites: Record<number, LoadSiteEntity[]>,
   loadSiteIdToChargingStations: Record<number, ChargingStationEntity[]>,
   loadSiteIdToTransformers: Record<number, TransformerEntity[]>,
@@ -94,7 +94,7 @@ function buildTreeData(
     if (entity instanceof DistrictEntity) {
       nodeType = NodeType.District;
       childrenEntities = districtIdToFeedLines[entity.id];
-    } else if (entity instanceof FeedLineEntity) {
+    } else if (entity instanceof FeederEntity) {
       nodeType = NodeType.FeedLine;
       childrenEntities = feedLineIdToLoadSites[entity.id];
     } else if (entity instanceof LoadSiteEntity) {

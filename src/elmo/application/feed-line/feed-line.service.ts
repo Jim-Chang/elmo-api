@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/core';
-import { FeedLineEntity } from '../../adapter/out/entities/feed-line.entity';
+import { FeederEntity } from '../../adapter/out/entities/feeder.entity';
 import { UserEntity } from '../../adapter/out/entities/user.entity';
 
 @Injectable()
 export class FeedLineService {
   constructor(
-    @InjectRepository(FeedLineEntity)
-    private readonly feedLineRepository: EntityRepository<FeedLineEntity>,
+    @InjectRepository(FeederEntity)
+    private readonly feedLineRepository: EntityRepository<FeederEntity>,
   ) {}
 
-  async getAllFeedLines(user: UserEntity): Promise<FeedLineEntity[]> {
+  async getAllFeedLines(user: UserEntity): Promise<FeederEntity[]> {
     if (user.district) {
       return await this.feedLineRepository.find({ district: user.district });
     } else {

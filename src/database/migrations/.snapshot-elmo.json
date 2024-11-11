@@ -227,14 +227,14 @@
           "mappedType": "integer"
         }
       },
-      "name": "feed_lines",
+      "name": "feeders",
       "indexes": [
         {
           "columnNames": [
             "district_id"
           ],
           "composite": false,
-          "keyName": "feed_lines_district_id_index",
+          "keyName": "feeders_district_id_index",
           "constraint": false,
           "primary": false,
           "unique": false
@@ -252,12 +252,12 @@
       ],
       "checks": [],
       "foreignKeys": {
-        "feed_lines_district_id_foreign": {
-          "constraintName": "feed_lines_district_id_foreign",
+        "feeders_district_id_foreign": {
+          "constraintName": "feeders_district_id_foreign",
           "columnNames": [
             "district_id"
           ],
-          "localTableName": "feed_lines",
+          "localTableName": "feeders",
           "referencedColumnNames": [
             "id"
           ],
@@ -368,7 +368,7 @@
           "referencedColumnNames": [
             "id"
           ],
-          "referencedTableName": "feed_lines",
+          "referencedTableName": "feeders",
           "deleteRule": "set null",
           "updateRule": "cascade"
         }
@@ -569,7 +569,7 @@
           "referencedColumnNames": [
             "id"
           ],
-          "referencedTableName": "feed_lines",
+          "referencedTableName": "feeders",
           "deleteRule": "set null",
           "updateRule": "cascade"
         },
