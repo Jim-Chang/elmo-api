@@ -11,8 +11,8 @@ import { ChargingStationEntity } from './charging-station.entity';
 import { LoadSiteEntity } from './load-site.entity';
 import { DistrictEntity } from './district.entity';
 
-@Entity({ tableName: 'feed_lines' })
-export class FeedLineEntity {
+@Entity({ tableName: 'feeders' })
+export class FeederEntity {
   @PrimaryKey()
   id: number;
 
@@ -29,7 +29,7 @@ export class FeedLineEntity {
   // to child LoadSiteEntity
   @OneToMany({
     entity: () => LoadSiteEntity,
-    mappedBy: 'feedLine',
+    mappedBy: 'feeder',
     cascade: [Cascade.ALL],
   })
   loadSites = new Collection<LoadSiteEntity>(this);
@@ -37,7 +37,7 @@ export class FeedLineEntity {
   // to child ChargingStationEntity
   @OneToMany({
     entity: () => ChargingStationEntity,
-    mappedBy: 'feedLine',
+    mappedBy: 'feeder',
     cascade: [Cascade.ALL],
   })
   chargingStations = new Collection<ChargingStationEntity>(this);

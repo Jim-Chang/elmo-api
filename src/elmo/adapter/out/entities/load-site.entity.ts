@@ -11,7 +11,7 @@ import {
 import { LoadSiteCategory } from '../../../application/load-site/types';
 import { ChargingStationEntity } from './charging-station.entity';
 import { TransformerEntity } from './transformer.entity';
-import { FeedLineEntity } from './feed-line.entity';
+import { FeederEntity } from './feeder.entity';
 
 @Entity({ tableName: 'load_sites' })
 export class LoadSiteEntity {
@@ -30,12 +30,12 @@ export class LoadSiteEntity {
   @Property({ nullable: true })
   address?: string;
 
-  // to parent FeedLineEntity
-  @ManyToOne(() => FeedLineEntity, {
+  // to parent FeederEntity
+  @ManyToOne(() => FeederEntity, {
     nullable: true,
     deleteRule: 'set null',
   })
-  feedLine?: FeedLineEntity;
+  feeder?: FeederEntity;
 
   // to child ChargingStationEntity
   @OneToMany({

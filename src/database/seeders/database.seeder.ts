@@ -3,10 +3,7 @@ import { Seeder } from '@mikro-orm/seeder';
 import { LoadSiteFactory } from '../factories/load-site.factory';
 import { ChargingStationFactory } from '../factories/charging-station.factory';
 import { DistrictFactory } from '../factories/district.factory';
-import {
-  FEED_LINE_TREE,
-  FeedLineFactory,
-} from '../factories/feed-line.factory';
+import { FEEDER_TREE, FeederFactory } from '../factories/feeder.factory';
 import { TransformerFactory } from '../factories/transformer.factory';
 
 export class DatabaseSeeder extends Seeder {
@@ -16,23 +13,23 @@ export class DatabaseSeeder extends Seeder {
 
   /**
    * NOTE: 除建立 districts 外，
-   * 還會建立 feedLines、loadSites、transformers、chargingStations 等表
+   * 還會建立 feeders、loadSites、transformers、chargingStations 等表
    */
   private async createDistricts(em: EntityManager) {
     const allEntities = [];
 
-    for (const feedLineData of FEED_LINE_TREE) {
+    for (const feederData of FEEDER_TREE) {
       const district = new DistrictFactory(em).makeOne();
 
-      const feedLine = new FeedLineFactory(em).makeOne({
-        name: feedLineData.name,
+      const feeder = new FeederFactory(em).makeOne({
+        name: feederData.name,
         district: district,
       });
 
-      for (const loadSiteData of feedLineData.loadSites) {
+      for (const loadSiteData of feederData.loadSites) {
         const loadSite = new LoadSiteFactory(em).makeOne({
           uid: loadSiteData.uid,
-          feedLine: feedLine,
+          feeder: feeder,
         });
 
         const transformer = new TransformerFactory(em).makeOne({
@@ -42,14 +39,14 @@ export class DatabaseSeeder extends Seeder {
 
         const chargingStation = new ChargingStationFactory(em).makeOne({
           district: district,
-          feedLine: feedLine,
+          feeder: feeder,
           loadSite: loadSite,
           csms: null,
         });
 
         allEntities.push(
           district,
-          feedLine,
+          feeder,
           loadSite,
           transformer,
           chargingStation,

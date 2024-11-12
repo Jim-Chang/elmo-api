@@ -20,9 +20,9 @@ export class LoadSiteService {
     return loadSite.uid;
   }
 
-  async getUidsByFeedLineId(feedLineId: number): Promise<string[]> {
+  async getUidsByFeederId(feederId: number): Promise<string[]> {
     const loadSites = await this.loadSiteRepository.find({
-      feedLine: { id: feedLineId },
+      feeder: { id: feederId },
     });
     return loadSites.map((loadSite) => loadSite.uid);
   }
@@ -31,31 +31,31 @@ export class LoadSiteService {
     return await this.loadSiteRepository.findOne(
       { id },
       {
-        populate: ['chargingStations', 'feedLine', 'transformers'],
+        populate: ['chargingStations', 'feeder', 'transformers'],
       },
     );
   }
 
   async findLoadSiteWithChargeStationAndTransformer(filterBy: {
     districtId?: number;
-    feedLineId?: number;
+    feederId?: number;
     keyword?: string;
   }): Promise<LoadSiteEntity[]> {
-    const { districtId, feedLineId, keyword } = filterBy;
+    const { districtId, feederId, keyword } = filterBy;
 
     // filter load sites by district, feed line, keyword
     let loadSiteFilters: any = {};
 
     if (districtId) {
-      loadSiteFilters.feedLine = {
+      loadSiteFilters.feeder = {
         district: { id: districtId },
       };
     }
 
-    if (feedLineId) {
-      loadSiteFilters.feedLine = {
-        ...loadSiteFilters.feedLine,
-        id: feedLineId,
+    if (feederId) {
+      loadSiteFilters.feeder = {
+        ...loadSiteFilters.feeder,
+        id: feederId,
       };
     }
 
@@ -67,7 +67,7 @@ export class LoadSiteService {
     }
 
     return await this.loadSiteRepository.find(loadSiteFilters, {
-      populate: ['chargingStations', 'feedLine', 'transformers'],
+      populate: ['chargingStations', 'feeder', 'transformers'],
     });
   }
 

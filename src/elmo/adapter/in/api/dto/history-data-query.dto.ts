@@ -101,16 +101,16 @@ const LoadSiteOneDayHistoryDataSchema = z.object({
   demand_load_kwh: z.number().nullable(),
 });
 
-const FeedLineFifteenMinuteHistoryDataSchema = z.object({
+const FeederFifteenMinuteHistoryDataSchema = z.object({
   time_mark: z.string(),
   total_load_kw: z.number().nullable(),
   charge_load_kw: z.number().nullable(),
   demand_load_kw: z.number().nullable(),
 });
 
-const FeedLineOneHourHistoryDataSchema = FeedLineFifteenMinuteHistoryDataSchema;
+const FeederOneHourHistoryDataSchema = FeederFifteenMinuteHistoryDataSchema;
 
-const FeedLineOneDayHistoryDataSchema = z.object({
+const FeederOneDayHistoryDataSchema = z.object({
   time_mark: z.string(),
   total_load_kwh: z.number().nullable(),
   charge_load_kwh: z.number().nullable(),
@@ -128,9 +128,9 @@ const HistoryDataSchema = z.object({
     z.array(LoadSiteFifteenMinuteHistoryDataSchema),
     z.array(LoadSiteOneHourHistoryDataSchema),
     z.array(LoadSiteOneDayHistoryDataSchema),
-    z.array(FeedLineFifteenMinuteHistoryDataSchema),
-    z.array(FeedLineOneHourHistoryDataSchema),
-    z.array(FeedLineOneDayHistoryDataSchema),
+    z.array(FeederFifteenMinuteHistoryDataSchema),
+    z.array(FeederOneHourHistoryDataSchema),
+    z.array(FeederOneDayHistoryDataSchema),
   ]),
 });
 

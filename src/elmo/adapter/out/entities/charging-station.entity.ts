@@ -12,7 +12,7 @@ import { AvailableCapacityEmergencyEntity } from './available-capacity-emergency
 import { AvailableCapacityNegotiationEntity } from './available-capacity-negotiation.entity';
 import { CsmsEntity } from './csms.entity';
 import { LoadSiteEntity } from './load-site.entity';
-import { FeedLineEntity } from './feed-line.entity';
+import { FeederEntity } from './feeder.entity';
 import { DistrictEntity } from './district.entity';
 
 @Entity({ tableName: 'charging_stations' })
@@ -59,11 +59,11 @@ export class ChargingStationEntity {
   })
   loadSite?: LoadSiteEntity;
 
-  @ManyToOne(() => FeedLineEntity, {
+  @ManyToOne(() => FeederEntity, {
     nullable: true,
     deleteRule: 'set null',
   })
-  feedLine?: FeedLineEntity;
+  feeder?: FeederEntity;
 
   @ManyToOne(() => DistrictEntity, {
     nullable: true,

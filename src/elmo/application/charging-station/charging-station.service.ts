@@ -54,10 +54,10 @@ export class ChargingStationService {
     return this.chargingStationRepo.find({ loadSite: { id: loadSiteId } });
   }
 
-  async findChargingStationByFeedLineId(
-    feedLineId: number,
+  async findChargingStationByFeederId(
+    feederId: number,
   ): Promise<ChargingStationEntity[]> {
-    return this.chargingStationRepo.find({ feedLine: { id: feedLineId } });
+    return this.chargingStationRepo.find({ feeder: { id: feederId } });
   }
 
   async getConnectedChargingStations(): Promise<ChargingStationEntity[]> {
@@ -88,7 +88,7 @@ export class ChargingStationService {
   async findChargingStationWithNegotiation(filterBy: {
     date: Date;
     districtId?: number;
-    feedLineId?: number;
+    feederId?: number;
     loadSiteId?: number;
     negotiationStatusList?: NegotiationStatus[];
     emergencyStatus?: EmergencyStatus;
@@ -97,7 +97,7 @@ export class ChargingStationService {
     const {
       date,
       districtId,
-      feedLineId,
+      feederId,
       loadSiteId,
       negotiationStatusList,
       emergencyStatus,
@@ -111,8 +111,8 @@ export class ChargingStationService {
       chargingStationFilters.district = { id: districtId };
     }
 
-    if (feedLineId) {
-      chargingStationFilters.feedLine = { id: feedLineId };
+    if (feederId) {
+      chargingStationFilters.feeder = { id: feederId };
     }
 
     if (loadSiteId) {
@@ -135,7 +135,7 @@ export class ChargingStationService {
     const chargingStations = await this.chargingStationRepo.find(
       chargingStationFilters,
       {
-        populate: ['feedLine', 'loadSite'],
+        populate: ['feeder', 'loadSite'],
       },
     );
 

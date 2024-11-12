@@ -1,7 +1,7 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { API_PREFIX } from '../../../../constants';
 import { ReqUserId } from '../decorator/req-user-id';
-import { FeedLineService } from '../../../application/feed-line/feed-line.service';
+import { FeederService } from '../../../application/feeder/feeder.service';
 import {
   OptionsResponseDto,
   TreeDataResponseDto,
@@ -15,20 +15,20 @@ import { UserService } from '../../../application/user/user.service';
 @UseGuards(AuthUserGuard)
 export class FilterOptionsController {
   constructor(
-    private readonly feedLineService: FeedLineService,
+    private readonly feederService: FeederService,
     private readonly districtService: DistrictService,
     private readonly treeGeneratorService: TreeGeneratorService,
     private readonly userService: UserService,
   ) {}
 
-  @Get('feed-lines')
-  async getFeedLineOptions(
+  @Get('feeders')
+  async getFeederOptions(
     @ReqUserId() reqUserId: number,
   ): Promise<OptionsResponseDto> {
     const user = await this.userService.getUserById(reqUserId);
-    const feedLines = await this.feedLineService.getAllFeedLines(user);
+    const feeders = await this.feederService.getAllFeeders(user);
     return {
-      options: feedLines.map((fl) => ({ id: fl.id, name: fl.name })),
+      options: feeders.map((fl) => ({ id: fl.id, name: fl.name })),
     };
   }
 

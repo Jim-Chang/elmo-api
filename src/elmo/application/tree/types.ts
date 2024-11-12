@@ -1,6 +1,6 @@
 export enum NodeType {
   District = 'district',
-  FeedLine = 'feed-line',
+  Feeder = 'feeder',
   LoadSite = 'load-site',
   ChargingStation = 'charging-station',
   Transformer = 'transformer',
