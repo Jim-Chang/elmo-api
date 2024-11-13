@@ -4,6 +4,7 @@ import {
   LoadSiteFifteenMinuteESRawData,
   LoadSiteOneDayESRawData,
   LoadSiteOneHourESRawData,
+  LoadSiteOneHourMaxDemandLoadESData,
 } from './types';
 import {
   buildFifteenMinuteIntervalIndexNameList,
@@ -209,5 +210,71 @@ export class LoadSiteHistoryDataService {
             ? source.total_load_kwh - source.charge_load_kwh
             : null,
       }));
+  }
+
+  async queryMaxDemandKwInOneHourDataInterval(
+    uid: string,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<LoadSiteOneHourMaxDemandLoadESData[]> {
+    const indexNameList = buildFifteenMinuteIntervalIndexNameList(
+      FIFTEEN_MINUTE_INTERVAL_BASE_INDEX_NAME,
+      startDate,
+      endDate,
+    );
+
+    const query = {
+      bool: {
+        must: [
+          { match: { load_site_id: uid } },
+          {
+            range: {
+              time_mark: {
+                gte: startDate.toISOString(),
+                lte: endDate.toISOString(),
+              },
+            },
+          },
+        ],
+      },
+    };
+
+    const aggs = {
+      hourly_data: {
+        date_histogram: {
+          field: 'time_mark',
+          fixed_interval: '1h',
+        },
+        aggs: {
+          max_demand_load_kw: { max: { field: 'demand_load_kw' } },
+        },
+      },
+    };
+
+    const size = getDataSizeOfFifteenMinuteInterval(startDate, endDate);
+
+    const result = await this.es.search({
+      index: indexNameList.join(','),
+      query,
+      aggs,
+      size,
+      sort: [{ time_mark: { order: 'asc' } }],
+    });
+
+    // @ts-ignore
+    const buckets = result.aggregations.hourly_data.buckets;
+    const data = buckets.map((bucket: any) => {
+      return {
+        time_mark: ensureTimeMarkIsISOFormat(bucket.key_as_string),
+        max_demand_load_kw: bucket.max_demand_load_kw.value ?? null,
+      };
+    });
+
+    return fillMissingDataPoints(data, startDate, endDate, 60, (timeMark) => {
+      return {
+        time_mark: timeMark,
+        max_demand_load_kw: null,
+      };
+    });
   }
 }
