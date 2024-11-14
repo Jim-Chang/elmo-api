@@ -1,3 +1,10 @@
+# default admin account
+CLOUD_ADMIN_EMAIL=cloud.admin@thingnario.com
+CLOUD_ADMIN_PASSWORD=admin
+POWER_USER_EMAIL=poweruser@thingnario.com
+POWER_USER_PASSWORD=poweruser
+
+
 # database
 DATABASE_HOST=localhost
 DATABASE_PORT=3306
