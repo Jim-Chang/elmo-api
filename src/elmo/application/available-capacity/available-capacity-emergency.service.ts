@@ -97,8 +97,18 @@ export class AvailableCapacityEmergencyService {
     const emergencies = await this.emergencyRepo.find(
       {
         chargingStation: { id: chargingStationId },
-        periodStartAt: { $gte: startDate },
-        periodEndAt: { $lt: endDate },
+        $or: [
+          {
+            periodEndAt: { $gt: startDate, $lt: endDate },
+          },
+          {
+            periodStartAt: { $lte: startDate },
+            periodEndAt: { $gt: endDate },
+          },
+          {
+            periodStartAt: { $gte: startDate, $lt: endDate },
+          },
+        ],
         isSuccessSent: true,
       },
       {
