@@ -9,9 +9,11 @@ import {
 import {
   buildFifteenMinuteIntervalIndexNameList,
   ensureTimeMarkIsISOFormat,
+  FIFTEEN_MINUTES,
   fillMissingDataPoints,
   getDataSizeOfFifteenMinuteInterval,
   getDataSizeOfOneDayInterval,
+  ONE_HOUR,
 } from '../utils';
 
 // log-elmo-load_site-concentrated-{YYYY}-{mm}
@@ -84,14 +86,20 @@ export class LoadSiteHistoryDataService {
             : null,
       }));
 
-    return fillMissingDataPoints(data, startDate, endDate, 15, (timeMark) => {
-      return {
-        time_mark: timeMark,
-        total_load_kw: null,
-        charge_load_kw: null,
-        demand_load_kw: null,
-      };
-    });
+    return fillMissingDataPoints(
+      data,
+      startDate,
+      endDate,
+      FIFTEEN_MINUTES,
+      (timeMark) => {
+        return {
+          time_mark: timeMark,
+          total_load_kw: null,
+          charge_load_kw: null,
+          demand_load_kw: null,
+        };
+      },
+    );
   }
 
   async queryInOneHourDataInterval(
@@ -159,14 +167,20 @@ export class LoadSiteHistoryDataService {
       };
     });
 
-    return fillMissingDataPoints(data, startDate, endDate, 60, (timeMark) => {
-      return {
-        time_mark: timeMark,
-        total_load_kw: null,
-        charge_load_kw: null,
-        demand_load_kw: null,
-      };
-    });
+    return fillMissingDataPoints(
+      data,
+      startDate,
+      endDate,
+      ONE_HOUR,
+      (timeMark) => {
+        return {
+          time_mark: timeMark,
+          total_load_kw: null,
+          charge_load_kw: null,
+          demand_load_kw: null,
+        };
+      },
+    );
   }
 
   async queryInOneDayDataInterval(
@@ -270,11 +284,17 @@ export class LoadSiteHistoryDataService {
       };
     });
 
-    return fillMissingDataPoints(data, startDate, endDate, 60, (timeMark) => {
-      return {
-        time_mark: timeMark,
-        max_demand_load_kw: null,
-      };
-    });
+    return fillMissingDataPoints(
+      data,
+      startDate,
+      endDate,
+      ONE_HOUR,
+      (timeMark) => {
+        return {
+          time_mark: timeMark,
+          max_demand_load_kw: null,
+        };
+      },
+    );
   }
 }

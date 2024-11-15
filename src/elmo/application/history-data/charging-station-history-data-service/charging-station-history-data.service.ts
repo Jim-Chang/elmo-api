@@ -8,9 +8,11 @@ import {
 import {
   buildFifteenMinuteIntervalIndexNameList,
   ensureTimeMarkIsISOFormat,
+  FIFTEEN_MINUTES,
   fillMissingDataPoints,
   getDataSizeOfFifteenMinuteInterval,
   getDataSizeOfOneDayInterval,
+  ONE_HOUR,
 } from '../utils';
 
 // log-elmo-charging-station-concentrated-{YYYY}-{mm}
@@ -78,12 +80,18 @@ export class ChargingStationHistoryDataService {
         time_mark: ensureTimeMarkIsISOFormat(source.time_mark),
       }));
 
-    return fillMissingDataPoints(data, startDate, endDate, 15, (timeMark) => {
-      return {
-        time_mark: timeMark,
-        kw: null,
-      };
-    });
+    return fillMissingDataPoints(
+      data,
+      startDate,
+      endDate,
+      FIFTEEN_MINUTES,
+      (timeMark) => {
+        return {
+          time_mark: timeMark,
+          kw: null,
+        };
+      },
+    );
   }
 
   async queryInOneHourDataInterval(
@@ -144,12 +152,18 @@ export class ChargingStationHistoryDataService {
       };
     });
 
-    return fillMissingDataPoints(data, startDate, endDate, 60, (timeMark) => {
-      return {
-        time_mark: timeMark,
-        kw: null,
-      };
-    });
+    return fillMissingDataPoints(
+      data,
+      startDate,
+      endDate,
+      ONE_HOUR,
+      (timeMark) => {
+        return {
+          time_mark: timeMark,
+          kw: null,
+        };
+      },
+    );
   }
 
   async queryInOneDayDataInterval(

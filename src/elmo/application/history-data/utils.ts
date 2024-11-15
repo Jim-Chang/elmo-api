@@ -1,5 +1,8 @@
 import { DateTime, Interval } from 'luxon';
 
+export const FIFTEEN_MINUTES = 15;
+export const ONE_HOUR = 60;
+
 export function getDataSizeOfFifteenMinuteInterval(
   startDate: Date,
   endDate: Date,
