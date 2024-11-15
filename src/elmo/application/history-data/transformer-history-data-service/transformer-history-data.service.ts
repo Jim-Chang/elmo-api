@@ -8,9 +8,11 @@ import {
 import {
   buildFifteenMinuteIntervalIndexNameList,
   ensureTimeMarkIsISOFormat,
+  FIFTEEN_MINUTES,
   fillMissingDataPoints,
   getDataSizeOfFifteenMinuteInterval,
   getDataSizeOfOneDayInterval,
+  ONE_HOUR,
 } from '../utils';
 
 // log-elmo-transformer-concentrated-{YYYY}-{mm}
@@ -96,22 +98,28 @@ export class TransformerHistoryDataService {
         time_mark: ensureTimeMarkIsISOFormat(source.time_mark),
       }));
 
-    return fillMissingDataPoints(data, startDate, endDate, 15, (timeMark) => {
-      return {
-        time_mark: timeMark,
-        ac_power_meter_output_kw: null,
-        ac_power_meter_output_kvar: null,
-        ac_power_meter_output_kva: null,
-        ac_power_meter_output_pf: null,
-        ac_power_meter_freq: null,
-        ac_power_meter_line_amps_a: null,
-        ac_power_meter_line_amps_b: null,
-        ac_power_meter_line_amps_c: null,
-        ac_power_meter_line_volts_a_b: null,
-        ac_power_meter_line_volts_b_c: null,
-        ac_power_meter_line_volts_c_a: null,
-      };
-    });
+    return fillMissingDataPoints(
+      data,
+      startDate,
+      endDate,
+      FIFTEEN_MINUTES,
+      (timeMark) => {
+        return {
+          time_mark: timeMark,
+          ac_power_meter_output_kw: null,
+          ac_power_meter_output_kvar: null,
+          ac_power_meter_output_kva: null,
+          ac_power_meter_output_pf: null,
+          ac_power_meter_freq: null,
+          ac_power_meter_line_amps_a: null,
+          ac_power_meter_line_amps_b: null,
+          ac_power_meter_line_amps_c: null,
+          ac_power_meter_line_volts_a_b: null,
+          ac_power_meter_line_volts_b_c: null,
+          ac_power_meter_line_volts_c_a: null,
+        };
+      },
+    );
   }
 
   async queryInOneHourDataInterval(
@@ -222,22 +230,28 @@ export class TransformerHistoryDataService {
       };
     });
 
-    return fillMissingDataPoints(data, startDate, endDate, 60, (timeMark) => {
-      return {
-        time_mark: timeMark,
-        ac_power_meter_output_kw: null,
-        ac_power_meter_output_kvar: null,
-        ac_power_meter_output_kva: null,
-        ac_power_meter_output_pf: null,
-        ac_power_meter_freq: null,
-        ac_power_meter_line_amps_a: null,
-        ac_power_meter_line_amps_b: null,
-        ac_power_meter_line_amps_c: null,
-        ac_power_meter_line_volts_a_b: null,
-        ac_power_meter_line_volts_b_c: null,
-        ac_power_meter_line_volts_c_a: null,
-      };
-    });
+    return fillMissingDataPoints(
+      data,
+      startDate,
+      endDate,
+      ONE_HOUR,
+      (timeMark) => {
+        return {
+          time_mark: timeMark,
+          ac_power_meter_output_kw: null,
+          ac_power_meter_output_kvar: null,
+          ac_power_meter_output_kva: null,
+          ac_power_meter_output_pf: null,
+          ac_power_meter_freq: null,
+          ac_power_meter_line_amps_a: null,
+          ac_power_meter_line_amps_b: null,
+          ac_power_meter_line_amps_c: null,
+          ac_power_meter_line_volts_a_b: null,
+          ac_power_meter_line_volts_b_c: null,
+          ac_power_meter_line_volts_c_a: null,
+        };
+      },
+    );
   }
 
   async queryInOneDayDataInterval(

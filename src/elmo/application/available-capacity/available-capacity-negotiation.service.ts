@@ -28,6 +28,10 @@ import {
 } from '../../adapter/in/oscp/dto/enums';
 import { CsmsOscpRequestHelper } from '../../adapter/out/csms-oscp/csms-oscp-request-helper';
 import { UpdateGroupCapacityForecast } from '../oscp/types';
+import { LoadSiteHistoryDataService } from '../history-data/load-site-history-data-service/load-site-history-data.service';
+import { LoadSiteService } from '../load-site/load-site.service';
+import { LoadSiteOneHourMaxDemandLoadESData } from '../history-data/load-site-history-data-service/types';
+import { round } from 'lodash';
 
 @Injectable()
 export class AvailableCapacityNegotiationService {
@@ -41,6 +45,8 @@ export class AvailableCapacityNegotiationService {
     @InjectRepository(AvailableCapacityNegotiationDetailEntity)
     private readonly detailRepo: EntityRepository<AvailableCapacityNegotiationDetailEntity>,
     private readonly chargingStationService: ChargingStationService,
+    private readonly loadSiteService: LoadSiteService,
+    private readonly loadSiteHistoryDataService: LoadSiteHistoryDataService,
     private readonly oscpRequestHelper: CsmsOscpRequestHelper,
   ) {}
 
@@ -720,6 +726,26 @@ export class AvailableCapacityNegotiationService {
     return nextDayMidnight.toJSDate();
   }
 
+  getZonedSevenDaysAgoStartAndEnd(
+    day: Date,
+    timeZone: string,
+  ): { start: Date; end: Date } {
+    const nextDayDateTime = DateTime.fromJSDate(day).setZone(timeZone);
+    const startOfSevenDaysAgo = nextDayDateTime
+      .minus({ days: 7 })
+      .startOf('day')
+      .toJSDate();
+    const endOfSevenDaysAgo = nextDayDateTime
+      .minus({ days: 7 })
+      .endOf('day')
+      .toJSDate();
+
+    return {
+      start: startOfSevenDaysAgo,
+      end: endOfSevenDaysAgo,
+    };
+  }
+
   getZonedDateTimeISO(
     startOfDay: Date,
     hour: number,
@@ -734,10 +760,70 @@ export class AvailableCapacityNegotiationService {
   async predictHourCapacities(
     chargingStation: ChargingStationEntity,
   ): Promise<AvailableCapacityNegotiationHourCapacity[]> {
-    // TODO: 預測各時段用電量 by 充電站
-    return this.buildHourCapacitiesByChargingStationContractCapacity(
-      chargingStation,
+    try {
+      const zonedNextDay = this.getZonedNextDay(TAIPEI_TZ);
+      const { start: zonedSevenDaysAgoStart, end: zonedSevenDaysAgoEnd } =
+        this.getZonedSevenDaysAgoStartAndEnd(zonedNextDay, TAIPEI_TZ);
+
+      const loadSite = await this.loadSiteService.getLoadSiteById(
+        chargingStation.loadSite.id,
+      );
+      // For now, we only have one transformer in loadSite
+      const transformer = loadSite.transformers[0];
+
+      const maxDemandLoadData =
+        await this.loadSiteHistoryDataService.queryMaxDemandKwInOneHourDataInterval(
+          loadSite.uid,
+          zonedSevenDaysAgoStart,
+          zonedSevenDaysAgoEnd,
+        );
+
+      return this.buildHourCapacitiesByPredict(
+        chargingStation.contractCapacity,
+        transformer.capacity,
+        maxDemandLoadData,
+      );
+    } catch (e) {
+      this.logger.error(
+        `Failed to predict hour capacities for ChargingStation[${chargingStation.uid}], Fall back to contract capacity.\n ${e}`,
+      );
+      return this.buildHourCapacitiesByChargingStationContractCapacity(
+        chargingStation,
+      );
+    }
+  }
+
+  buildHourCapacitiesByPredict(
+    chargingStationContractCapacity: number,
+    transformerCapacity: number,
+    maxDemandLoadData: LoadSiteOneHourMaxDemandLoadESData[],
+  ): AvailableCapacityNegotiationHourCapacity[] {
+    const hourToMaxDemandLoadKwMap = new Map(
+      maxDemandLoadData.map((item) => {
+        const hour = DateTime.fromISO(item.time_mark)
+          .setZone(TAIPEI_TZ)
+          .get('hour');
+
+        return [hour, item.max_demand_load_kw ?? 0];
+      }),
     );
+
+    return Array.from({ length: 24 }, (_, hour) => {
+      const maxDemandLoadKw = hourToMaxDemandLoadKwMap.get(hour);
+      let capacity = round(transformerCapacity - maxDemandLoadKw, 2);
+
+      if (capacity > chargingStationContractCapacity) {
+        capacity = chargingStationContractCapacity;
+      }
+      if (capacity < 0) {
+        capacity = 0;
+      }
+
+      return {
+        hour,
+        capacity,
+      };
+    });
   }
 
   buildHourCapacitiesByChargingStationContractCapacity(
